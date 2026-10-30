@@ -329,3 +329,48 @@ Cơ sở: số công việc/phase bị chặn nếu chưa quyết. Mỗi đợt 
 - **Cần Owner quyết thêm:** vị trí thư mục (trong repo dự án hay ngoài), cách xử lý resume (a hoặc b), có cho `references/` và `scripts/` không, giới hạn kích thước, FR-293..FR-298.
 - **Bị chặn nếu chưa duyệt:** triển khai bộ quét overlay, thay đổi schema `agents.skills_config`, thêm `.ai/**` vào danh sách forbidden mặc định.
 - **Khả năng đảo ngược:** cao ở mức thiết kế, vì chưa có mã.
+
+
+## 8. Phản hồi của Owner, ghi nhận ngày 2026-10-30
+Nguồn: tin nhắn của Owner trong phiên làm việc, nhóm "Phản hồi các Quyết định Kiến trúc Trọng tâm". Ghi lại trung thực. Chỉ đánh dấu APPROVED cho phần khớp rõ ràng với nội dung của quyết định trong sổ này. Phần nhãn không khớp hoặc chưa trả lời được giữ PENDING_OWNER_APPROVAL và nêu câu hỏi xác nhận.
+
+### 8.1 Bảng ghi nhận
+| Mục | Owner nói | Ghi nhận | Trạng thái |
+|---|---|---|---|
+| D-001 | "Phê duyệt theo đề xuất hiện tại (Next.js/NestJS/TypeScript/Claude Code làm nền tảng cốt lõi)" | Duyệt: pnpm monorepo TypeScript, NestJS, web app cộng backend Node cục bộ ở MVP, Tauri 2 sau, pnpm thuần không Turborepo, Claude Code làm provider nền. **Không khớp:** đề xuất ghi frontend là React 19 + Vite, không phải Next.js. Khung frontend chưa được chốt, xem Q-16 | APPROVED (trừ khung frontend, Q-16) |
+| D-002 | "Cho phép sử dụng Drizzle ORM" (nhóm D-004 và D-010) | Duyệt Drizzle, PostgreSQL 16, Redis, event store phân vùng. Giữ khuyến nghị trong mục D-002: ghi đúng phiên bản 0.45.x và chạy spike partition và FK vòng trước khi khóa schema | APPROVED |
+| D-010 | "concurrency limit = 5 như thiết kế" | Duyệt mặc định 5, trần cấu hình 18, nâng 5, 10, 18 chỉ sau khi đo thực. **Chưa trả lời:** xác nhận điều khoản subscription (Q-07) | APPROVED (Q-07 còn mở) |
+| D-007 | "Phê duyệt mô hình 2 tầng", chấp nhận rủi ro agent ghi vào overlay qua Bash trên host ở Phase 0 và 1, giảm bằng checksum và audit log, rồi chuyển sang Linux/Docker ở phase sau | Duyệt sandbox hai tầng. Điều kiện của Owner: chấp nhận rủi ro ghi overlay ở Phase 0 đến 1 với phát hiện bằng checksum và audit. Điều kiện trong khuyến nghị D-007 vẫn áp dụng: fail-closed khi Docker tắt, test SB-00..SB-17 phải qua trên máy có Docker trước khi mở quyền thực thi. Phase 1 không cho agent chạy thật (xem 8.3) | APPROVED, có điều kiện |
+| D-004 | Gọi là "Kiến trúc Database và Quản lý State/Event" | **Không khớp.** D-004 trong sổ là điều khiển Claude Code bằng Agent SDK (cổng `canUseTool` và hook, so với spawn CLI thô) và yêu cầu xác nhận điều khoản gói `team`. Nội dung Owner mô tả (Drizzle, event naming, concurrency) thuộc D-002, Q-12, D-010. Owner có nhắc "Claude Code làm nền tảng cốt lõi" nhưng chưa chọn SDK hay spawn CLI, chưa trả lời điều khoản | PENDING_OWNER_APPROVAL, cần xác nhận (Q-17) |
+| D-014 | Gọi là "Cổng approval và cơ chế phân quyền Claude"; duyệt phương án có Human-in-the-loop cho hành động quan trọng trước khi giao tự trị | **Không khớp.** D-014 trong sổ là event system (outbox, Redis, replay). Phần Owner nói được ghi nhận như **chỉ thị chính sách**: hành động quan trọng cần duyệt thủ công, chưa trao tự trị hoàn toàn. Chỉ thị này khớp với CF-007, CF-013, POL-11, POL-12 và Q-04, Q-05 | D-014 PENDING; chỉ thị HITL được ghi nhận |
+| Event naming | "giữ nguyên event naming chuẩn hóa" | Hiểu là giữ tên UPPER_SNAKE theo yêu cầu gốc (FR-117). **Chưa rõ** lưu nội bộ dạng dotted lowercase rồi ánh xạ, hay UPPER_SNAKE cả trong DB (Q-12, Q-19) | Q-12 trả lời một phần |
+| Rủi ro bảo mật | "Thừa nhận và chấp nhận có điều kiện 13 rủi ro Tier 1" | Ghi nhận là xác nhận bằng văn bản có điều kiện cho Q-01 (R1, R2, R3, R5, R6) và 13 rủi ro NOT_ACCEPTABLE. Điều kiện ở 8.3. Tôi chưa tick từng ô trong checklist ký duyệt: các ô do Owner tự ký | Q-01 xác nhận có điều kiện |
+| Bốn FR bắt buộc | Owner đề xuất BDD cho "FR-122, FR-181, FR-182, FR-183" | **Không khớp mã FR.** Trong `FUNCTIONAL_REQUIREMENTS.md`: FR-122 là deliverable Stage 3 của workflow, FR-181 là định nghĩa "sự cố" của dashboard, FR-182 là công thức "tiến độ", FR-183 là chỉ số "hiệu suất". Ba tiêu chí Owner đưa (nạp skill động, phát hiện sửa overlay trái phép, resume và quota) thuộc tính năng D-021, không phải bốn FR này. Ghi nhận ở 8.2. Bốn FR cũ vẫn NEEDS_OWNER_CLARIFICATION | Xem 8.2, Q-18 |
+| Commit | Khuyến nghị commit gom nhóm | Cây làm việc đã sạch: Owner đã commit và đẩy lên main (commit `1aec2b3`, trước tin nhắn này). Không có gì để commit. Quét bí mật trên các file đã track: không có | Đã hoàn tất bởi Owner |
+
+### 8.2 Ba tiêu chí Owner cung cấp cho tính năng skill động (D-021)
+Ghi nhận ý Owner làm yêu cầu cho D-021. D-021 **vẫn PENDING_OWNER_APPROVAL** vì Owner chưa nói rõ duyệt D-021 và mã FR chưa khớp.
+
+| Mã | Given | When | Then (theo Owner) | Ánh xạ tạm | Ghi chú |
+|---|---|---|---|---|---|
+| OWN-AC-1 | Quản trị viên đã sửa hoặc thêm file Markdown vào `.ai/skills/<agent_name>/` | Hệ thống kích hoạt task kế tiếp cho agent đó | Nội dung file được tự động đọc và đưa vào ngữ cảnh Claude Code, không khởi động lại ứng dụng, không biên dịch lại | FR-293, FR-294 đề xuất; AC-501, AC-502 | Khớp đặc tả: quét lúc giao task |
+| OWN-AC-2 | Agent chạy lệnh Bash trên host Windows | Có thay đổi file overlay ngoài luồng phân quyền chuẩn | Hệ thống ghi log cảnh báo, đánh dấu thay đổi là nghi vấn, **chặn agent chạy tiếp cho đến khi người quản lý xác nhận** | FR-296 đề xuất; AC-513 | **Mạnh hơn đặc tả trước đó**, vốn chỉ cảnh báo và cách ly nội dung. Đặc tả đã cập nhật. Hệ thống chỉ biết thời điểm đổi, không biết ai sửa (cùng một người dùng hệ điều hành), nên chặn dựa trên "đổi trong lúc agent chạy" |
+| OWN-AC-3 | Phiên Claude Code bị gián đoạn (kể cả hết hạn mức 5 giờ) hoặc cần resume | Hệ thống nạp lại tiến trình | Kiểm tra thay đổi system prompt hoặc skill, nếu lệch thì **ép làm mới ngữ cảnh** thay vì giữ system prompt cũ | AC-511 | Chọn hướng "ép làm mới" thay cho chỉ gửi thông điệp cập nhật. Cách kỹ thuật (tắt snapshot hay mở hội thoại mới) vẫn cần PoC. Hết hạn mức là sự kiện của provider, không do hệ thống skill tạo ra |
+
+### 8.3 Điều kiện của Owner cho việc chấp nhận rủi ro bảo mật
+1. **Phase 1:** tuyệt đối không cho agent thực thi lệnh ghi dữ liệu hệ thống hoặc gọi external API thực. Chỉ chạy mô phỏng, dry-run, hoặc qua các runbook kiểm thử thủ công.
+2. **Đầu Phase 2:** xác thực API, hardening Docker sandbox và audit log phải được kiểm tra khắt khe **trước khi** cấp quyền tự trị rộng hơn.
+3. Rủi ro agent ghi vào overlay chấp nhận ở Phase 0 đến 1, giảm bằng checksum và audit log để phát hiện, trước khi chuyển sang môi trường Linux/Docker ở phase sau.
+
+Hệ quả cho roadmap: cổng vào Phase 2 cần thêm ba hạng mục trên. Đã ghi vào `docs/IMPLEMENTATION_ROADMAP.md` (phụ lục) và `PHASE_0_REMAINING_RISKS.md`.
+
+Về các runbook: Owner nhắc "27 runbook kiểm thử thủ công" như một cách chạy an toàn. **Chưa coi là cho phép** cài Codex CLI hay bật Docker. Cần Owner nói rõ nếu muốn tôi chạy, hoặc tự chạy theo runbook.
+
+### 8.4 Câu hỏi cần Owner xác nhận sau phản hồi này
+| Q | Câu hỏi |
+|---|---|
+| Q-16 | Khung frontend là Next.js (như Owner viết) hay React + Vite (như đề xuất đã duyệt)? Ảnh hưởng `FRONTEND_ARCHITECTURE.md`, mô hình triển khai (Next.js cần server riêng hoặc chế độ export) và Tauri sau này |
+| Q-17 | Xác nhận D-004: dùng Claude Agent SDK (đề xuất) thay vì spawn CLI thô? Và xác nhận điều khoản gói `team` cho tự động hóa (Q-07) |
+| Q-18 | Xác nhận D-021 (skill overlay) kèm OWN-AC-1..3. Và định nghĩa thật của bốn FR bắt buộc: FR-122 (deliverable Stage 3), FR-181 ("sự cố"), FR-182 ("tiến độ"), FR-183 ("hiệu suất") |
+| Q-19 | Event naming: lưu trong DB dạng dotted lowercase rồi ánh xạ UPPER_SNAKE khi hiển thị (đề xuất), hay UPPER_SNAKE cả trong DB (Q-12)? |
+| Q-20 | D-003 (workflow engine tự xây trên BullMQ) có được duyệt cùng đợt không? Owner gọi nhóm "công cụ điều phối chính" nhưng không nêu D-003 |

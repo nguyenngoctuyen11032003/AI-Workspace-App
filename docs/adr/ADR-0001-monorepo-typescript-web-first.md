@@ -5,9 +5,9 @@
 - **ID:** ADR-0001
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-001 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED (trừ khung frontend, Q-16)
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (tin nhắn trong phiên; xem PHASE_0_OWNER_DECISION_REGISTER.md mục 8)
 - **Nguồn:** research/LICENSE_AND_REUSE.md §5, development/DEPLOYMENT.md, research/TECHNOLOGY_EVALUATION.md TE-06/TE-09/TE-10
 
 ## 2. Context

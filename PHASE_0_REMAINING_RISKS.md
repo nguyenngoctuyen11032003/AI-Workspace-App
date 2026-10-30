@@ -108,3 +108,10 @@
 - Rủi ro đánh dấu **yes** cho Phase 1: SEC-10, SEC-13, SEC-14, SEC-16, SEC-17, SEC-19, SEC-22, TECH-02, TECH-05, SCOPE-02, SCOPE-03, SCOPE-04, LIC-07, DOC-01, DOC-05, DOC-06, DOC-07 (17 mục). Các mục còn lại không chặn Phase 1 nhưng nhiều mục chặn **P2-live** (xem cột).
 - Không có mục nào ở `Accepted`/`Closed`. Mọi chấp nhận thuộc Owner (ký trong `PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md` mục 2 và 5).
 - Phase 1 **chưa** được bắt đầu theo yêu cầu.
+
+## Cập nhật theo phản hồi của Owner (2026-10-30)
+Owner chấp nhận có điều kiện 13 rủi ro bảo mật mức NOT_ACCEPTABLE_UNTIL_MITIGATED của Tier 1 (xem `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8.3). Việc chấp nhận **không làm các rủi ro biến mất**. Chúng chuyển sang trạng thái "chấp nhận có điều kiện", và điều kiện là:
+- Phase 1 không có agent chạy thật, không ghi dữ liệu hệ thống, không gọi API ngoài thực.
+- Xác thực API, hardening Docker sandbox và audit log được kiểm tra khắt khe ở đầu Phase 2, trước khi mở quyền tự trị rộng hơn.
+- Rủi ro ghi overlay qua Bash trên host chấp nhận ở Phase 0 và 1, giảm bằng checksum và audit.
+Các rủi ro vẫn chặn Phase 2 nếu các điều kiện trên chưa đạt. Danh mục ký duyệt từng mục vẫn do Owner tự tick trong `PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md`.

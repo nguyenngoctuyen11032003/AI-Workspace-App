@@ -568,7 +568,7 @@ Visualizer 1.0: Flask `visualizer/app.py` với `/`, `/chain_visualizer`, `/repl
 6. **YAML workflow schema** (field names: `nodes/edges/start/end/vars`, edge `trigger/condition/carry_data/keep_message/clear_context/process/dynamic`) – chuyển thẳng sang Zod schema; giữ tương thích để import các YAML mẫu trong `yaml_instance/`.
 7. **Sprite pixel-art 12 nhân vật** (`frontend/public/sprites/`) & ý tưởng gán nhân vật theo node_id + walking animation khi active – kiểm tra license trước khi dùng cho Phaser.
 8. **Tài liệu** `docs/user_guide/en/*.md` (execution_logic, dynamic_execution, field_specs, mcp, nodes/*) – làm spec tham chiếu khi viết engine TS.
-9. **Test case bảo mật** (`tests/test_session_workspace_security.py`, `test_attachment_boundary_security.py`, `test_code_execution_security.py`) – port thành Jest tests cho path traversal/symlink/attachment.
+9. **Test case bảo mật** (`tests/test_session_workspace_security.py`, `test_attachment_boundary_security.py`, `test_code_execution_security.py`) – port thành Vitest tests (CF-028, D-001 APPROVED; Jest chỉ cho `apps/api` nếu spike `unplugin-swc` thất bại) cho path traversal/symlink/attachment.
 
 ### 11.2 Tham chiếu kiến trúc (viết lại bằng TS theo cùng thiết kế)
 
@@ -645,7 +645,7 @@ Visualizer 1.0: Flask `visualizer/app.py` với `/`, `/chain_visualizer`, `/repl
 | Token tracking | `utils/token_tracker.py` | ✔ (data model) | | ✔ | Bảng token_usage |
 | Artifact hook | `workflow/hooks/workspace_artifact.py`, `server/services/artifact_*.py` | | | ✔ | Thay bằng watcher trong Docker sandbox |
 | Code execution | `utils/code_execution.py`, `runtime/node/executor/python_executor.py`, `functions/function_calling/{code_executor,uv_related}.py` | | | ✔ | Docker sandbox bắt buộc |
-| Workspace path security | `utils/workspace_paths.py`, `tests/test_*security.py` | ✔ (rule + test cases) | | ✔ | Port sang TS/Jest |
+| Workspace path security | `utils/workspace_paths.py`, `tests/test_*security.py` | ✔ (rule + test cases) | | ✔ | Port sang TS/Vitest |
 | Python SDK / CLI | `runtime/sdk.py`, `run.py`, `server/routes/execute_sync.py` | | | ✔ | TS SDK + CLI tương đương |
 | Frontend builder | `frontend/src/pages/WorkflowView.vue`, `components/{WorkflowNode,WorkflowEdge,FormGenerator,DynamicFormField}.vue` | | | ✔ React Flow | Tham chiếu UX: form từ schema, lưu vuegraph layout riêng |
 | Launch console | `frontend/src/pages/LaunchView.vue` | | | ✔ | Tham chiếu state machine Connecting→Waiting→Launching→Running |

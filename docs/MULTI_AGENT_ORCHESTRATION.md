@@ -319,10 +319,10 @@ Mốc thời gian (heartbeat 30 s, lease 60 s gia hạn 20 s, stale 3 phút, `sp
 | ID | Mâu thuẫn | Xử lý |
 |---|---|---|
 | M-O1 | FR-109: "PM agent chấm điểm"; A07 §6/A13: scoring xác định, PM chỉ can thiệp khi bế tắc | Theo A07/A13 (§3.4) |
-| M-O2 | Global cap: A07 = 10 và per-provider 6; D-010/FR-231 = 5 mặc định, max 18; DB `provider_configs.max_concurrent` = 2; A13 claude 5, codex 3 | D-010 và FR thắng cho global; cap provider do `ResourceConfig`; cần owner chốt giá trị provider |
+| M-O2 | Global cap: A07 = 10 và per-provider 6; D-010/FR-231 = 5 mặc định, max 18; DB `provider_configs.max_concurrent` = 2; A13 claude 5, codex 3 | D-010 và FR thắng cho global; cap provider do `ResourceConfig`, giá trị theo D-010 APPROVED: Claude 5, Codex 3; DB default đã đổi 2 thành 5 |
 | M-O3 | A07 dùng `node_attempts` + `attempt` trong BullMQ, DB `node_runs.attempt` + `agent_sessions`; A07 retry trong node, A13 retry ở task | Một attempt = một `agent_sessions`; `node_runs.attempt` đếm; `tasks.retry_count` phản chiếu |
 | M-O4 | A07: `NodeRun` unique `(runId, nodeId, revision)`; DB: unique `(run, node_key, attempt)`, không có `revision` | Thêm cột `revision` (migration) |
-| M-O5 | A07/A13 dùng Prisma; D-002 chọn Drizzle | Drizzle thắng; mã giả Prisma trong A07 chỉ là minh họa |
+| M-O5 | A07/A13 dùng Prisma; D-002 chọn Drizzle | Drizzle thắng (D-002 APPROVED, 2026-10-30); mã giả Prisma trong A07 chỉ là minh họa |
 | M-O6 | Worktree: A07 `wt/<run>/<node>/<attempt>` và `wf/<runId>/<nodeId>/r<rev>`; D-009 `agent/<slug>/<task-id>` | D-009 thắng |
 | M-O7 | A07 đếm `agent_status` kiểu `working`; A13 TaskState có `DONE/DRAFT/PAUSED/QUEUED`; DB `task_status` 10 giá trị với `COMPLETED` | Dùng 10 giá trị DB; `QUEUED` chỉ là `queuedReason` |
 | M-O8 | `task_status` UPPERCASE, enum khác lowercase (DECISION_LOG mâu thuẫn 5) | Tài liệu viết HOA; casing lưu trữ chờ owner |

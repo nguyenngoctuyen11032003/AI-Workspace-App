@@ -8,7 +8,7 @@
 
 ## 1. Mục đích
 
-Thiết kế pipeline GitHub Actions cho repo AI WORKSPACE (monorepo pnpm + Turborepo) để mọi PR được lint, typecheck, test (unit/integration/e2e), build, quét bảo mật trước khi merge; và release có phiên bản, artifact, image đã scan. Áp dụng cho **mã nguồn của chính platform**, không phải cho project do agent sinh ra (những project đó được build/test trong Sandbox Executor – INFRASTRUCTURE_DESIGN §6).
+Thiết kế pipeline GitHub Actions cho repo AI WORKSPACE (monorepo pnpm workspaces, chưa dùng Turborepo; D-001 APPROVED) để mọi PR được lint, typecheck, test (unit/integration/e2e), build, quét bảo mật trước khi merge; và release có phiên bản, artifact, image đã scan. Áp dụng cho **mã nguồn của chính platform**, không phải cho project do agent sinh ra (những project đó được build/test trong Sandbox Executor – INFRASTRUCTURE_DESIGN §6).
 
 ## 2. Phạm vi
 
@@ -17,7 +17,7 @@ Workflow files, job graph, services, caching, matrix, security scans, branch pro
 ## 3. Giả định về repo
 
 - GitHub repo `<org>/ai-workspace-app`, default branch `main`, nhánh phát hành `release/*` (tuỳ chọn). `gh` CLI 2.102.0 trên máy dev [Đã xác minh].
-- Monorepo: `apps/api`, `apps/web`, `apps/desktop` (sau), `packages/*`, `infra/*`. pnpm 10 + Turborepo [Cần người dùng phê duyệt].
+- Monorepo: `apps/api`, `apps/web`, `apps/desktop` (sau), `packages/*`, `infra/*`. pnpm 10 workspaces thuần, chưa dùng Turborepo (D-001 APPROVED, 2026-10-30; thêm Turborepo khi > ~5 package hoặc CI vượt ngưỡng). Các lệnh `pnpm turbo ...` bên dưới là minh họa, Phase 1 thay bằng `pnpm -r`/`pnpm --filter`.
 - Node 24 (`.nvmrc`), `packageManager` field trong `package.json` để `corepack` chọn pnpm đúng.
 - Self-hosted runner: không dùng ở MVP; GitHub-hosted `ubuntu-24.04`, `windows-2025` cho Tauri. [Đề xuất]
 
@@ -252,7 +252,7 @@ Branch `integration/*` và `agent/*` trong **project sinh ra** (không phải re
 | Quyết định | Lý do | Trạng thái |
 |---|---|---|
 | GitHub Actions, GitHub-hosted runners | Repo trên GitHub, `gh` sẵn; không có hạ tầng runner riêng | [Đề xuất] |
-| Turborepo filter theo thay đổi | Giảm thời gian PR trong monorepo | [Cần người dùng phê duyệt] (cùng quyết định tool monorepo) |
+| Turborepo filter theo thay đổi | Giảm thời gian PR trong monorepo | Hoãn: D-001 APPROVED chọn pnpm thuần, chưa dùng Turborepo |
 | Integration test với service containers + sandbox thật trên ubuntu runner | Runner có Docker daemon, test được executor thật | [Đề xuất] |
 | Agent CLI mock trong CI | Không có login, chi phí, tính không xác định | [Đề xuất] |
 | release-please + SemVer chung | Đơn giản cho sản phẩm đơn | [Cần người dùng phê duyệt] |
@@ -260,7 +260,7 @@ Branch `integration/*` và `agent/*` trong **project sinh ra** (không phải re
 
 ## 10. Dependencies
 
-- ENVIRONMENT_SETUP.md: `packageManager`, `.nvmrc`, script `lint/typecheck/test:*` thống nhất tên trong `turbo.json`.
+- ENVIRONMENT_SETUP.md: `packageManager`, `.nvmrc`, script `lint/typecheck/test:*` thống nhất tên giữa các `package.json` (không dùng `turbo.json`, D-001).
 - A08: lệnh migration để chạy trước integration/e2e.
 - Frontend team: Playwright config, `AGENT_MODE=mock` adapter.
 - DEVSECOPS_GUIDE.md: ngưỡng CVE, quy trình triage khi `security` job fail.
@@ -278,7 +278,7 @@ Branch `integration/*` và `agent/*` trong **project sinh ra** (không phải re
 
 ## 12. Vấn đề chưa giải quyết
 
-1. pnpm/Turborepo vs npm/Nx – cần phê duyệt trước khi viết `turbo.json`.
+1. ĐÃ CHỐT (D-001): pnpm workspaces thuần, không có `turbo.json` ở Phase 1.
 2. Có bật GitHub merge queue không (hữu ích khi > 3 PR/ngày).
 3. Có yêu cầu signed commits không.
 4. Code signing certificate cho Windows/macOS (chi phí, chủ sở hữu).

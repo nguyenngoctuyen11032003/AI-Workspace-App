@@ -182,7 +182,7 @@ pnpm --filter api db:seed         # dữ liệu mẫu dev
 ### 4.8 Chạy ứng dụng
 
 ```powershell
-pnpm dev            # turbo/pnpm -r chạy song song: api (3000), web (5173), worker
+pnpm dev            # pnpm -r chạy song song: api (3000), web (5173), worker
 ```
 
 Mở `http://localhost:5173`. Kiểm tra `http://localhost:3000/ready` trả `200` với các check `postgres`, `redis`, `docker`, `workspaceRoot`, `claudeCli`.
@@ -267,7 +267,7 @@ Script `scripts/doctor.ts` kiểm tra và in bảng PASS/FAIL:
 | Quyết định | Lý do | Trạng thái |
 |---|---|---|
 | pnpm + workspaces | Store chung tiết kiệm disk cho nhiều worktree, strict hoisting giúp sandbox tái tạo đúng deps, nhanh | [Cần người dùng phê duyệt] (thay thế: npm workspaces) |
-| Turborepo làm task runner | Cache lint/test/build theo package, hỗ trợ `--filter` và remote cache (tuỳ chọn) | [Cần người dùng phê duyệt] (thay thế: Nx, hoặc `pnpm -r` thuần) |
+| Turborepo làm task runner | Cache lint/test/build theo package, hỗ trợ `--filter` và remote cache (tuỳ chọn) | Hoãn: D-001 APPROVED chọn `pnpm -r` thuần (2026-10-30) |
 | Backend chạy native, chỉ DB/Redis trong Docker | Spawn CLI với login của user; hot reload nhanh | [Đề xuất] |
 | `.env` chỉ cho dev, secrets thật trong OS keychain | Tránh lộ key qua repo/log | [Đề xuất] (DEVSECOPS_GUIDE) |
 | `core.autocrlf=false` global | Nhất quán LF với container | [Cần người dùng phê duyệt] |
@@ -287,7 +287,7 @@ Script `scripts/doctor.ts` kiểm tra và in bảng PASS/FAIL:
 
 ## 13. Vấn đề chưa giải quyết
 
-1. pnpm vs npm; Turborepo vs Nx – cần phê duyệt.
+1. ĐÃ CHỐT (D-001): pnpm workspaces thuần, không Turborepo.
 2. Có cài distro Ubuntu WSL2 riêng để chạy agent CLI/Linux tooling không?
 3. Vị trí `WORKSPACE_ROOT` (`D:\aiw`?) và `pnpm store` (`D:\pnpm-store`?).
 4. Tauri prerequisites (Rust toolchain, MSVC Build Tools, WebView2) – thêm vào tài liệu này khi desktop shell bắt đầu.

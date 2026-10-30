@@ -72,12 +72,12 @@ flowchart LR
 
 ### 3.3 Monorepo layout (pnpm workspaces)
 
-**[Đề xuất]**, dựa trên `docs/development/CI_CD.md` L20 (`apps/api`, `apps/web`, `apps/desktop`, `packages/*`, `infra/*`; pnpm 10 + Turborepo, đang là "Cần người dùng phê duyệt") và `docs/DATABASE_DESIGN.md` §1.3.
+**[Đề xuất]**, dựa trên `docs/development/CI_CD.md` L20 (`apps/api`, `apps/web`, `apps/desktop`, `packages/*`, `infra/*`; pnpm 10 workspaces thuần; D-001 APPROVED, chưa dùng Turborepo) và `docs/DATABASE_DESIGN.md` §1.3.
 
 ```
 ai-workspace/
 ├─ pnpm-workspace.yaml            # apps/*, packages/*
-├─ turbo.json                     # [Cần người dùng phê duyệt] Turborepo
+├─ (không turbo.json)             # D-001 APPROVED: pnpm thuần, Turborepo hoãn
 ├─ apps/
 │  ├─ api/                        # @aiw/api   NestJS (+ worker entry)
 │  │  └─ src/{modules/*, common/, database/ (schema, migrations, seeds), main.ts, worker.ts}
@@ -100,7 +100,7 @@ ai-workspace/
 
 Ghi chú đối chiếu tên package với nguồn:
 - `packages/agent-core` lấy từ `docs/research/CODEX_INTEGRATION.md` §11.2; `packages/workflow-schema` từ `ORCHESTRATION_WORKFLOW_RESEARCH.md` §3.1; `packages/workspace` từ `WORKSPACE_AND_GIT_ISOLATION.md` §12; `packages/codex-protocol` từ `CODEX_INTEGRATION.md` checklist; `packages/design-tokens`, `packages/ui`, `packages/shared` từ `docs/architecture/AGENT_ORGANIZATION.md` L64–66.
-- **Mâu thuẫn tên:** `AGENT_ORGANIZATION.md` dùng `packages/adapters`, `prisma/**`, `contracts/**` (thư mục gốc); `CODEX_INTEGRATION.md` dùng `apps/backend/...`. Tài liệu này chọn `apps/api`, `packages/contracts`, adapter nằm trong `apps/api/src/modules/providers` + phần thuần trong `packages/agent-core`, Drizzle thay Prisma (theo D-002). Cần cập nhật ownership glob trong seed của `AGENT_ORGANIZATION.md` khi duyệt.
+- **Mâu thuẫn tên:** `AGENT_ORGANIZATION.md` dùng `packages/adapters`, `prisma/**`, `contracts/**` (thư mục gốc); `CODEX_INTEGRATION.md` dùng `apps/backend/...`. Tài liệu này chọn `apps/api`, `packages/contracts`, adapter nằm trong `apps/api/src/modules/providers` + phần thuần trong `packages/agent-core`, Drizzle thay Prisma (theo D-002). Ownership glob trong `AGENT_ORGANIZATION.md` đã đổi sang `apps/api/src/database/**`, `drizzle/**` (D-002 APPROVED).
 - Schema Drizzle nằm trong `apps/api/src/database/` theo DATABASE_DESIGN §1.3 (không tách `packages/db`) **[Đề xuất]**: chỉ `api`/`worker` truy cập DB, tránh FE import nhầm.
 
 **Quy tắc phụ thuộc (enforce bằng eslint `no-restricted-imports` / dependency-cruiser):**
@@ -264,7 +264,7 @@ Quy tắc: module chỉ truy cập bảng do mình sở hữu; truy cập chéo 
 | S-4 | `office-engine` tách khỏi React | Phaser test được riêng, ranh giới rõ (D-011) | [Đề xuất] |
 | S-5 | Backend native trên host ở dev/desktop | Cần login CLI của user | [Đã xác minh] INFRASTRUCTURE_DESIGN §4.1 |
 | S-6 | Postgres là source of truth; Redis chỉ trạng thái tạm | Phục hồi sau crash | [Đã xác minh] AGENT_SCHEDULER §3 |
-| S-7 | Turborepo + pnpm 10 | Cache build trong monorepo | [Cần người dùng phê duyệt] CI_CD L20 |
+| S-7 | pnpm 10 workspaces thuần (Turborepo hoãn) | Ít công cụ ở Phase 1 | D-001 APPROVED (2026-10-30) |
 
 ## 5. Dependencies
 
@@ -276,7 +276,7 @@ Quy tắc: module chỉ truy cập bảng do mình sở hữu; truy cập chéo 
 
 | Rủi ro | Tác động | Giảm thiểu |
 |---|---|---|
-| CLI chạy trên host mâu thuẫn yêu cầu "không chạy code AI trên host" | Vi phạm yêu cầu gốc | D-007 hai tầng; cần Owner xác nhận R1–R6 (`SECURITY.md` §10) |
+| CLI chạy trên host mâu thuẫn yêu cầu "không chạy code AI trên host" | Vi phạm yêu cầu gốc | D-007 hai tầng (APPROVED có điều kiện, Owner 2026-10-30; CF-043): fail-closed khi Docker tắt; SB-00..SB-17 qua trước khi mở quyền thực thi; Owner chấp nhận rủi ro ghi overlay ở Phase 0-1, giảm bằng checksum và audit; xác nhận R1, R2, R3, R5, R6 theo Q-01 (`SECURITY.md` §10) |
 | Quota subscription giới hạn song song | 18 agent không khả thi | Mặc định 5, nâng theo bằng chứng (D-010) |
 | Docker daemon chưa xác minh cgroup/ECI/rootless | Sandbox có thể yếu | Kiểm thử trong Phase 1 |
 | Codex chưa cài, chưa test thực | Adapter Codex rủi ro | Dựng contract test với fixture; fallback `codex exec --json` |
@@ -286,7 +286,7 @@ Quy tắc: module chỉ truy cập bảng do mình sở hữu; truy cập chéo 
 
 ## 7. Vấn đề chưa giải quyết
 
-1. Turborepo có dùng không (CI_CD L20 đang chờ duyệt)?
+1. ĐÃ CHỐT (D-001): không dùng Turborepo ở Phase 1.
 2. Desktop có bắt buộc Docker Desktop hay bundle Postgres/Redis nhúng?
 3. Bearer token per-launch (SECURITY §7) và "desktop không màn hình login" (DATABASE_DESIGN §8) cần thống nhất cách shell cấp token ở chế độ trình duyệt thuần (MVP chưa có Tauri).
 4. Publish-after-commit (desktop) hay outbox đầy đủ (server)? Đề xuất của tài liệu này: **outbox đầy đủ cho cả hai** để một code path (xem BACKEND §8) **[Cần người dùng phê duyệt]**.
@@ -297,7 +297,7 @@ Quy tắc: module chỉ truy cập bảng do mình sở hữu; truy cập chéo 
 
 | # | Mâu thuẫn | Vị trí | Xử lý đề xuất |
 |---|---|---|---|
-| 1 | Prisma vs Drizzle | ORCHESTRATION §3.2 (Prisma schema), AGENT_ORGANIZATION L66–67 (`prisma/**`) vs D-002/DATABASE_DESIGN (Drizzle) | Theo D-002; coi Prisma schema trong ORCHESTRATION chỉ là minh họa |
+| 1 | Prisma vs Drizzle | ORCHESTRATION §3.2 (Prisma schema), AGENT_ORGANIZATION L66–67 (`prisma/**`) vs D-002/DATABASE_DESIGN (Drizzle) | Theo D-002 (APPROVED, 2026-10-30); coi Prisma schema trong ORCHESTRATION chỉ là minh họa |
 | 2 | Concurrency mặc định | ORCHESTRATION §0 "semaphore global 10" vs D-010 (mặc định 5, tối đa 18) | Theo D-010 |
 | 3 | Tên event | ORCHESTRATION §7 UPPERCASE (`AGENT_CREATED`) vs DATABASE_DESIGN §5.2 dotted lowercase (`session.started`) vs NAVIGATION §10 category dạng `approval.requested` | Chốt: `type` dotted lowercase trong `agent_events`; map 1-1 sang tên UPPERCASE chỉ ở lớp hiển thị/tài liệu (xem API_DOCUMENTATION §6.3) |
 | 4 | Kênh Redis | ORCHESTRATION §7.3 `ws:workspace:<id>` vs DATABASE_DESIGN §10 `aiw:ch:*` | Theo DATABASE_DESIGN (có prefix) |

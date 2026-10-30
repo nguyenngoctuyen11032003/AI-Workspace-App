@@ -38,8 +38,8 @@ Provider suggestion là gợi ý mặc định, không ràng buộc. Hiện ch�
 | 03 | `architect` Software Architect | Business & Architecture | Kiến trúc hệ thống, ADR, API contract, chuẩn code | SYSTEM_ARCHITECTURE, ADR/*, OpenAPI, event schema | architecture, adr, api-design, c4 | Claude (Opus-class cho ADR) | L1 |
 | 04 | `uiux` UI/UX Designer | Design & UX | Design system, wireframe, token, component spec | DESIGN_SYSTEM, wireframes, token JSON | design-system, wireframing, accessibility | Claude | L1 |
 | 05 | `frontend` Frontend Developer | Development | Triển khai UI (React/TS), state, integration với API | `apps/web/**`, component tests | react, typescript, tailwind, vitest | Claude hoặc Codex | L3 |
-| 06 | `backend` Backend Developer | Development | NestJS modules, services, API, business logic | `apps/api/src/**`, unit tests | nestjs, typescript, prisma, jest | Claude hoặc Codex | L3 |
-| 07 | `db_infra` DB & Infra Engineer | Infrastructure | Schema, migration, seed, docker-compose, Redis/Postgres | `prisma/**`, `docker/**`, migrations | sql, prisma, docker-compose, redis | Claude | L3 |
+| 06 | `backend` Backend Developer | Development | NestJS modules, services, API, business logic | `apps/api/src/**`, unit tests | nestjs, typescript, drizzle, vitest | Claude hoặc Codex | L3 |
+| 07 | `db_infra` DB & Infra Engineer | Infrastructure | Schema, migration, seed, docker-compose, Redis/Postgres | `apps/api/src/database/**`, `drizzle/**`, `docker/**`, migrations | sql, drizzle, docker-compose, redis | Claude | L3 |
 | 08 | `qa` QA Engineer | Quality & Security | Test plan, test case, manual verification, bug report | TEST_PLAN, test cases, bug tickets | test-design, exploratory-testing, bug-reporting | Claude | L1 (L3 khi chạy test) |
 | 09 | `security` Security Engineer | Quality & Security | Threat model, secure coding review, secret scanning, sandbox policy | SECURITY.md, threat model, findings | threat-modeling, owasp, secret-scan | Claude | L1 (read code) |
 | 10 | `reviewer` Code Reviewer & Product Evaluator | Quality & Security | Review diff, đánh giá sản phẩm so với PRD, gate "COMPLETED" | review report, evaluation scorecard | code-review, product-evaluation | Claude (Opus-class) | L0/L1 |
@@ -63,8 +63,8 @@ Provider suggestion là gợi ý mặc định, không ràng buộc. Hiện ch�
 | architect | `docs/architecture/**`, `docs/adr/**`, `contracts/**` | toàn bộ |
 | uiux, ux_research | `docs/design/**`, `packages/design-tokens/**` | `apps/web/**` |
 | frontend | `apps/web/**`, `packages/ui/**` | `contracts/**` |
-| backend | `apps/api/**`, `packages/shared/**` | `contracts/**`, `prisma/**` |
-| db_infra | `prisma/**`, `docker/**`, `infra/local/**` | `apps/api/**` |
+| backend | `apps/api/**`, `packages/shared/**` | `contracts/**`, `apps/api/src/database/**`, `drizzle/**` |
+| db_infra | `apps/api/src/database/**`, `drizzle/**`, `docker/**`, `infra/local/**` | `apps/api/**` (trừ `apps/api/src/database/**`) |
 | qa | `docs/qa/**`, `tests/manual/**` | toàn bộ |
 | security | `docs/security/**` | toàn bộ |
 | reviewer | `docs/reviews/**` | toàn bộ |
@@ -135,7 +135,7 @@ Quan hệ: Template 1—N Instance 1—N Execution. Xóa template → instance c
 {
   code: 'backend', name: 'Backend Developer', department: 'Development',
   version: 1, isSeed: true,
-  skills: [{ code: 'nestjs', required: true, weight: 1 }, { code: 'prisma', required: false, weight: 0.6 }],
+  skills: [{ code: 'nestjs', required: true, weight: 1 }, { code: 'drizzle', required: false, weight: 0.6 }],
   providerPolicy: { preferred: ['claude-code'], allowed: ['claude-code', 'codex'], switchRequiresApproval: true },
   permissionLevel: 'L3',
   ownershipPatterns: ['apps/api/**', 'packages/shared/**'],

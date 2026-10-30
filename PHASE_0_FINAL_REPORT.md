@@ -61,3 +61,13 @@ Xem `PHASE_0_REMAINING_RISKS.md` (62 dòng, 17 chặn Phase 1). Nổi bật: kh�
 | Owner có đủ thông tin để quyết định | Có, qua sổ quyết định |
 
 **Dừng tại đây.** Không bắt đầu Phase 1 cho đến khi có xác nhận rõ ràng của Owner.
+
+## 9. Cập nhật sau phản hồi của Owner (2026-10-30)
+- **Đã duyệt:** D-001 (trừ khung frontend, Q-16), D-002 (Drizzle), D-007 (sandbox hai tầng, có điều kiện), D-010 (concurrency mặc định 5, trần 18). Ghi nhận ở `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8, `DECISION_LOG.md` và ADR-0001, 0002, 0007, 0010.
+- **Không khớp nhãn, nên giữ PENDING:** D-004 (Owner mô tả như quyết định database), D-014 (Owner mô tả như cổng approval; ghi nhận chỉ thị Human-in-the-loop). Frontend: Owner viết Next.js, đề xuất đã duyệt là React + Vite, cần xác nhận (Q-16).
+- **Bốn FR bắt buộc (FR-122, 181, 182, 183):** ba tiêu chí Owner gửi thuộc tính năng skill động, không phải bốn FR này. Đã ghi thành OWN-AC-1..3 cho D-021 (vẫn chờ xác nhận). Bốn FR cũ vẫn thiếu thông tin.
+- **Rủi ro bảo mật:** chấp nhận có điều kiện. Phase 1 không cho agent chạy thật. Xác thực API, hardening Docker, audit log phải đạt trước khi mở quyền tự trị ở Phase 2. Đã ghi vào phụ lục `docs/IMPLEMENTATION_ROADMAP.md`.
+- **Đặc tả skill động** đã chỉnh theo Owner: thay đổi overlay nghi vấn thì chặn agent chờ xác nhận, resume thì ép làm mới ngữ cảnh.
+- **Git:** Owner đã tự commit và đẩy Phase 0 (`1aec2b3`), cây làm việc sạch lúc kiểm tra. Các thay đổi sau đó chưa commit.
+- **Đồng bộ tài liệu theo quyết định đã duyệt:** xem `docs/DOC_SYNC_LOG_PHASE0.md`, mục "Đồng bộ theo quyết định Owner đã duyệt".
+- **Còn mở:** Q-16..Q-20, Q-07 (điều khoản subscription) và các quyết định PENDING khác.

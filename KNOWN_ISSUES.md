@@ -15,6 +15,6 @@ Cập nhật: 2026-10-30.
 | 9 | Nhãn "Đã xác minh" đôi khi dùng cho "khớp với tài liệu khác" thay vì đã chạy thật | Có thể gây tin quá mức | Cần rà trong lần vá tới |
 | 10 | Python thật không có trên PATH, heredoc dài lỗi ENAMETOOLONG trên Windows | Hạn chế công cụ | Dùng công cụ Write |
 | 11 | herdr: `vendor/` và `assets/sounds` chưa kiểm tra license; chưa thử socket API | Không được sao chép các phần đó | Mở |
-| 12 | AI-Workspace-App đã là git repo (nhánh main, có remote origin, 2 commit do Owner), 44 thay đổi chưa commit. Chưa chốt chính sách tác giả commit | Agent không commit khi chưa có chính sách | Chờ Owner |
+| 12 | AI-Workspace-App là git repo (main, remote origin). Owner đã tự commit và đẩy toàn bộ Phase 0 (commit `1aec2b3`). Agent không commit trừ khi Owner yêu cầu; nếu yêu cầu thì tạo branch mới và không ghi Claude vào tác giả hay trailer | Không còn thay đổi chưa commit trước phản hồi của Owner | Đã chốt cách làm |
 | 13 | Claude Code mặc định ghi snapshot system prompt một lần mỗi hội thoại và dùng lại khi resume (`--system-prompt-snapshot`, xác minh bằng `claude --help` 2.1.312). Skill overlay đổi sau đó không có hiệu lực khi resume nếu không xử lý | Ảnh hưởng D-021 | Cần PoC, xem DYNAMIC_SKILL_INJECTION.md mục 4.5 |
 | 14 | Lộ trình cho agent chạy thật (Phase 2) trước khi có policy, API auth và audit (Phase 4) | Rủi ro bảo mật, từ PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md | Mở, cần Owner xếp lại thứ tự phase |

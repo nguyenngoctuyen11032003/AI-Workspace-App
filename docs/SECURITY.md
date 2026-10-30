@@ -238,7 +238,7 @@ và **mọi** segment phải pass. Chuỗi được decode nếu phát hiện `-
 ### 3.2 Ask-list (cần approval — §5)
 `git push` (không force, non-protected), `git merge`, `git rebase`, `npm publish`, `docker build`,
 `docker compose up`, `gh pr merge`, `gh release`, `terraform apply`, `kubectl apply`, `vercel --prod`,
-`prisma migrate (deploy|reset)`, `DROP TABLE|TRUNCATE|DELETE FROM .* WHERE 1`, ghi file > 5 MB,
+`drizzle-kit (migrate|push|drop)`, `DROP TABLE|TRUNCATE|DELETE FROM .* WHERE 1`, ghi file > 5 MB,
 xoá > 20 file trong một lệnh, bất kỳ `rm -r` trong worktree, thay đổi `package.json` scripts
 `pre|post(install)`, `.github/workflows/**`, `Dockerfile`, `*.lock` thủ công, `.env*`.
 
@@ -373,7 +373,7 @@ interface PolicyRule {
 Risk tags do classifier xác định (pattern trước, LLM-judge sau — OpenHands `PatternSecurityAnalyzer`
 → `LLMSecurityAnalyzer` là mô hình tham khảo; riêng ta coi LLM-judge là *advisory*, không bao giờ
 hạ mức từ `ask` xuống `allow`): `destructive_fs`, `destructive_git`, `network_egress`, `credential_access`,
-`arch_change` (sửa > N file trong `src/core`, `schema.prisma`, `*.proto`, `tsconfig`, DI module),
+`arch_change` (sửa > N file trong `src/core`, `apps/api/src/database/schema/**`, `*.proto`, `tsconfig`, DI module),
 `data_deletion` (migration drop, `DELETE`, `TRUNCATE`, xoá `*.db`), `prod_deploy`, `merge_main`,
 `dependency_add` (package.json/lockfile diff thêm dep), `ci_change`, `self_modify`.
 
@@ -427,9 +427,9 @@ approvals(id, task_id, agent_id, source{claude_hook|claude_control|codex|app}, t
 # .aiw/manifests/<taskId>.yaml (do orchestrator sinh, nằm NGOÀI worktree, agent chỉ đọc qua context)
 task: T-123
 agent: backend-02
-writable:  ["src/modules/billing/**", "test/billing/**", "prisma/migrations/2026*_billing*/**"]
+writable:  ["src/modules/billing/**", "test/billing/**", "drizzle/2026*_billing*/**"]
 readonly:  ["src/**", "docs/**", "package.json"]
-forbidden: ["src/core/auth/**", ".github/**", "infra/**", "prisma/schema.prisma"]
+forbidden: ["src/core/auth/**", ".github/**", "infra/**", "apps/api/src/database/schema/**"]
 maxFilesChanged: 40
 maxLinesChanged: 2500
 ```

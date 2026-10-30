@@ -5,9 +5,9 @@
 - **ID:** ADR-0010
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-010 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED (Q-07 điều khoản subscription còn mở)
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (tin nhắn trong phiên; xem PHASE_0_OWNER_DECISION_REGISTER.md mục 8)
 - **Nguồn:** architecture/RESOURCE_MANAGEMENT.md, research/MULTI_AGENT_SCALABILITY.md
 
 ## 2. Context

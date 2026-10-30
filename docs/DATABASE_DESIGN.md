@@ -26,7 +26,7 @@
 
 ### 1.1 Bảng so sánh
 
-| Tiêu chí | Prisma (v6/v7) | Drizzle (v1.x [cần xác minh phiên bản trước khi pin: npm latest 0.45.x, 1.0 đang beta]) | Kết luận |
+| Tiêu chí | Prisma (v6/v7) | Drizzle (stable 0.45.x; 1.0 còn beta, không dùng nhãn "v1.x") | Kết luận |
 |---|---|---|---|
 | Migrations | `prisma migrate` tốt, nhưng mọi object không mô tả được trong `schema.prisma` (partial index, partitioned table, trigger, `CHECK`) phải viết tay bằng `--create-only`; migrate diff có thể **drop** index lạ trên bảng nó quản lý | `drizzle-kit generate` sinh SQL thuần, editable; hỗ trợ custom migration `drizzle-kit generate --custom`; không xoá object nó không biết | Drizzle |
 | JSONB | `Json` type, không typed; filter JSON path giới hạn | `jsonb().$type<T>()` typed, query JSON bằng `sql` operator tự do | Drizzle |
@@ -321,7 +321,7 @@ export const providerConfigs = pgTable('provider_configs', {
   defaultModel: text('default_model'),
   availableModels: jsonb('available_models').$type<string[]>().notNull().default([]),
   pricing: jsonb('pricing').$type<ProviderPricing>().notNull().default({}), // {model:{inputPerM,outputPerM,cacheReadPerM,cacheWritePerM}}
-  maxConcurrent: integer('max_concurrent').notNull().default(2),
+  maxConcurrent: integer('max_concurrent').notNull().default(5), // D-010: mặc định 5; seed Claude 5, Codex 3
   rateLimitRpm: integer('rate_limit_rpm'),
   isEnabled: boolean('is_enabled').notNull().default(true),
   ...timestamps, ...softDelete,
@@ -1264,7 +1264,7 @@ END $$ LANGUAGE plpgsql;
 ## 8. Multi-tenancy & single-user desktop mode
 
 - Mọi bảng business có `organization_id NOT NULL`; bảng con (skill_documents, workflow_nodes, node_runs, desks...) suy ra qua parent, không lặp cột để tránh drift — trừ bảng ledger (`agent_events`, `usage_records`, `audit_logs`) denormalize `organization_id` để partition/query nhanh.
-- Scoping ở app: `TenantContext` (AsyncLocalStorage) set từ JWT/session; repository base class tự thêm `where organization_id = ctx.orgId`. Thêm **PostgreSQL RLS** làm hàng rào thứ hai cho server mode: policy `USING (organization_id = current_setting('app.org_id', true)::uuid)`; Drizzle `db.transaction` chạy `SET LOCAL app.org_id = ...` đầu tx. **[CẦN DUYỆT]**: bật RLS từ v1 hay để v2.
+- Scoping ở app: `TenantContext` (AsyncLocalStorage) set từ JWT/session ở server mode (desktop mode dùng bearer per-launch; D-001/CF-041); repository base class tự thêm `where organization_id = ctx.orgId`. Thêm **PostgreSQL RLS** làm hàng rào thứ hai cho server mode: policy `USING (organization_id = current_setting('app.org_id', true)::uuid)`; Drizzle `db.transaction` chạy `SET LOCAL app.org_id = ...` đầu tx. **[CẦN DUYỆT]**: bật RLS từ v1 hay để v2.
 - **Desktop mode** (`APP_MODE=desktop`): seed tạo org `local` (`is_default = true`) và user `local@localhost` (`is_local = true`, không password). Auth middleware tự inject user/org này, không màn hình login. Mọi query vẫn đi qua tenant scoping nên chuyển sang server mode không đổi code. Postgres chạy bằng Docker Desktop hoặc embedded Postgres (`embedded-postgres` npm) — **[CẦN DUYỆT]**: Docker bắt buộc hay bundle embedded Postgres cho bản desktop.
 - Secrets (API key, git token) **không** vào DB: `credential_ref` là key trong Windows Credential Manager (qua `@napi-rs/keyring` / `keytar`); server mode map sang Vault/env.
 
@@ -1315,7 +1315,7 @@ export default defineConfig({
    `start → pm.requirements (agent_task) → approval.prd (approval) → techlead.design → parallel[backend.impl, frontend.impl] → join → qa.test → condition(testsPassed) → [true] devops.release → approval.deploy → end ; [false] → backend.fix → qa.test`. Mỗi node `data.roleSelector = { jobTitle: 'Backend Developer', departmentSlug: 'engineering' }` để bind agent lúc run; `position` xếp theo lưới 260x140 để mở React Flow là đẹp ngay.
 5. **Default approval policies**: `git-push` (require admin), `shell-destructive` (reject by default), `spend-over-5usd`, `deploy`.
 6. **Default office layout**: 40x24 tiles, 1 room mỗi department (grid 2x3), 4 desks/room, lobby + meeting room, furniture cơ bản; `character_positions` tạo cho mỗi agent seeded, gán desk theo department.
-7. **system_settings** mặc định & `resource_limits` org-level (`max_concurrent_agents = 3`, `max_cost_usd_per_day = 20`).
+7. **system_settings** mặc định & `resource_limits` org-level (`max_concurrent_agents = 5` theo D-010, trần cấu hình 18; `max_cost_usd_per_day = 20`). Seed `provider_configs.max_concurrent`: `claude_code` 5, `codex` 3 (D-010 APPROVED).
 
 Dev fixtures (demo project, vài task, event mẫu) nằm ở `seeds/dev/` chỉ chạy với `pnpm db:seed --dev`.
 
@@ -1465,7 +1465,7 @@ EVENTS_RETENTION_DAYS=90
 
 ## 12. Các điểm cần user duyệt — tổng hợp
 
-1. **ORM = Drizzle** thay vì Prisma (lý do mục 1).
+1. **ORM = Drizzle** (stable 0.45.x) thay vì Prisma (lý do mục 1); D-002 APPROVED (Owner, 2026-10-30). **Tác vụ bắt buộc trước khi khóa schema (chưa thực hiện):** spike 1 ngày cho bảng phân vùng `agent_events` + partial unique index bằng `drizzle-kit generate --custom` (chạy migrate hai lần) và FK vòng bằng SQL tay.
 2. `task_status` giữ UPPERCASE theo spec trong khi enum khác lowercase — thống nhất hay giữ?
 3. **pgvector** cho `agent_memories.embedding` (cần image `pgvector/pgvector:pg16`) — bật v1 hay để v2 (bỏ cột, dùng FTS).
 4. **Transactional outbox** đầy đủ (server) hay publish-after-commit (desktop).

@@ -528,7 +528,7 @@ Ghi chú:
 - **Chiến lược cho platform:**
   1. Đọc `account/rateLimits/read` (hoặc notification `account/rateLimits/updated`) → hiển thị gauge, **throttle scheduler** khi `usedPercent > 80`.
   2. Gán model rẻ (`gpt-6-luna`) cho employee "junior"/task lặp, model mạnh cho architect/reviewer.
-  3. Queue task với concurrency cap cấu hình (mặc định 2–3 turn song song/account), backoff + jitter khi `-32001` hoặc rate-limit error.
+  3. Queue task với concurrency cap cấu hình (mặc định 2–3 turn song song/account trong nghiên cứu; giá trị áp dụng: cap provider Codex 3, global 5, theo D-010 APPROVED), backoff + jitter khi `-32001` hoặc rate-limit error.
   4. Cho phép employee cụ thể chạy bằng `CODEX_API_KEY` (billing API) khi quota plan cạn.
   5. ToS: ChatGPT plan là cho cá nhân; chạy "công ty AI" nhiều agent trên 1 tài khoản Plus có rủi ro fair-use – nên cân nhắc Business/Enterprise hoặc API key cho production.
 
@@ -619,7 +619,7 @@ export interface AgentAdapter {
 ```
 
 ```ts
-// apps/backend/src/agents/codex/codex-app-server.client.ts
+// apps/api/src/agents/codex/codex-app-server.client.ts
 @Injectable()
 export class CodexAppServerClient implements OnModuleDestroy {
   private proc?: ChildProcess;          // spawn(codexBin, ['app-server'], { env: {...process.env, CODEX_HOME} })
@@ -647,7 +647,7 @@ export class CodexAppServerClient implements OnModuleDestroy {
 ```
 
 ```ts
-// apps/backend/src/agents/codex/codex.adapter.ts
+// apps/api/src/agents/codex/codex.adapter.ts
 @Injectable()
 export class CodexAdapter implements AgentAdapter {
   readonly brain = 'codex' as const;
@@ -685,7 +685,7 @@ export class CodexAdapter implements AgentAdapter {
 ```
 
 ```ts
-// apps/backend/src/agents/codex/codex-exec.runner.ts  (fallback / batch)
+// apps/api/src/agents/codex/codex-exec.runner.ts  (fallback / batch)
 export class CodexExecRunner {
   run(o: { cwd: string; prompt: string; threadId?: string; sandbox: string; model?: string; outputSchemaFile?: string; lastMessageFile?: string; config?: Record<string, string> }) {
     const args = ['exec', '--json', '--color', 'never', '--skip-git-repo-check', '-C', o.cwd, '--sandbox', o.sandbox];

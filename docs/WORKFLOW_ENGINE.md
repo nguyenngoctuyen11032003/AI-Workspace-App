@@ -428,7 +428,7 @@ Giấy phép ChatDev Apache-2.0: tái sử dụng nội dung prompt/ý tưởng 
 | M-W7 | Hết hạn approval: A07 cron mỗi phút; DB delayed job per approval | Dùng cả hai |
 | M-W8 | Checkpoint: A07 bảng `Checkpoint`; DB `node_runs.checkpoint` (cursor) | Giữ cả hai, khác mục đích |
 | M-W9 | Template: A07 8 stage + gate 1,2,5,6,7 + deploy production; FR-119..127 8 stage khác + gate 2,4,8 + không auto-deploy production | Theo FR |
-| M-W10 | A07 dùng Prisma; D-002 Drizzle | Drizzle |
+| M-W10 | A07 dùng Prisma; D-002 Drizzle | Drizzle (D-002 APPROVED, 2026-10-30) |
 
 ## 16. Acceptance Criteria (Phase 1)
 

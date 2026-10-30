@@ -98,7 +98,7 @@ paths:                                      # glob, minimatch dot:true, sau real
     - "CLAUDE.md"
     - "AGENTS.md"
     - ".github/workflows/**"
-  ask_write: ["Dockerfile", "**/*.lock", "package.json#scripts", "prisma/schema.prisma"]
+  ask_write: ["Dockerfile", "**/*.lock", "package.json#scripts", "apps/api/src/database/schema/**"]
   reject: { uncPaths: true, reparsePoints: true, shortNames8dot3: true, alternateDataStreams: true }
 
 network:
@@ -117,7 +117,7 @@ commands:
     workspace_mutate:  ["git add","git commit","mkdir","touch","mv","cp"]   # target phải trong worktree
     executes_code:     ["npm","pnpm","yarn","bun","node","python","pip","cargo","go","dotnet","make","pytest","jest","vitest","tsc","npx","deno"]
   deny:  ["<danh sách regex SECURITY §3.1 theo nhóm>"]                       # tham chiếu, không nhân bản
-  ask:   ["git push","git merge","git rebase","npm publish","docker build","gh pr merge","prisma migrate"]
+  ask:   ["git push","git merge","git rebase","npm publish","docker build","gh pr merge","drizzle-kit migrate"]
   limits: { maxToolCallsPerTask: 300, taskWallClockMin: 120, bashTimeoutSec: 120, maxStdoutMB: 50, maxFilesDeletedPerCommand: 20, maxWriteMB: 5 }
 
 rules:                                      # xem §6; priority thấp thắng

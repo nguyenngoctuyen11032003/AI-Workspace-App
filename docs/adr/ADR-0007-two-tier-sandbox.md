@@ -5,9 +5,9 @@
 - **ID:** ADR-0007
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-007 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED, có điều kiện (xem sổ quyết định mục 8)
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (tin nhắn trong phiên; xem PHASE_0_OWNER_DECISION_REGISTER.md mục 8)
 - **Nguồn:** SECURITY.md §10 (R1–R10), security/SANDBOX_DESIGN.md, security/THREAT_MODEL.md, PROJECT_RISKS.md
 
 ## 2. Context

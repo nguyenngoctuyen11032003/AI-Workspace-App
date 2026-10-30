@@ -27,7 +27,7 @@ ai-workspace-app/
 ├── AGENTS.md                      # điểm vào cho agent AI (Phase 1, P1-03) — chưa tồn tại
 ├── CLAUDE.md                      # trỏ về AGENTS.md (nếu dùng Claude Code)
 ├── DECISION_LOG.md  WORK_PLAN.md  PROJECT_STATUS.md  IMPLEMENTATION_LOG.md  KNOWN_ISSUES.md
-├── package.json  pnpm-workspace.yaml  turbo.json  .nvmrc  tsconfig.base.json
+├── package.json  pnpm-workspace.yaml  .nvmrc  tsconfig.base.json
 ├── apps/
 │   ├── api/                       # NestJS backend (modular monolith)
 │   │   └── src/modules/           # agents, organization, providers, skills, workflows,
@@ -130,7 +130,7 @@ Bảng ownership mặc định theo role (rút gọn, chi tiết `AGENT_ORGANIZA
 | `packages/contracts/**`, `packages/events/**` | `architect` | hợp đồng FE/BE; thay đổi đi qua RFC ngắn (3.4.5) |
 | Migration `packages/db/migrations/**` | `db_infra` | thứ tự migration tuyến tính; mỗi agent khác chỉ đề xuất schema diff |
 | `.github/workflows/**` | `devsecops` | |
-| `turbo.json`, `tsconfig.base.json`, `eslint.config.*` | Orchestrator | |
+| `tsconfig.base.json`, `eslint.config.*` | Orchestrator | |
 
 3.4.4 **Bắt đầu và kết thúc một phiên agent:**
 - Bắt đầu: đọc theo thứ tự ở 3.5; chạy `git fetch && git rebase origin/main` trên branch của mình; xác nhận `owns` không giao với PR đang mở (`gh pr list --search "path:<glob>"` hoặc bảng claim trong `IMPLEMENTATION_LOG.md`).
@@ -227,7 +227,7 @@ Báo cáo ≤ 150 từ: (1) file đã tạo/sửa (đường dẫn tuyệt đố
 
 | # | Quyết định | Lý do | Nhãn |
 |---|---|---|---|
-| DG-1 | Monorepo pnpm + Turborepo, ranh giới import enforce bằng lint | Chặn FE gọi trực tiếp BE/DB, giữ contract rõ | [Đề xuất] theo D-001 (chờ duyệt) |
+| DG-1 | Monorepo pnpm workspaces (không Turborepo), ranh giới import enforce bằng lint | Chặn FE gọi trực tiếp BE/DB, giữ contract rõ | D-001 APPROVED (Owner, 2026-10-30) |
 | DG-2 | Mỗi task một worktree/branch `agent/<role>/<task-id>` | Cùng cơ chế sản phẩm sẽ dùng (D-009), tự "ăn thức ăn của mình" | [Đề xuất] |
 | DG-3 | Ownership theo glob + hot files một chủ | Tránh xung đột lockfile/migration/contract | [Đề xuất] |
 | DG-4 | Squash merge, history tuyến tính | Dễ revert theo task, khớp `CI_CD.md` §5 | [Đề xuất] |
@@ -259,7 +259,7 @@ Báo cáo ≤ 150 từ: (1) file đã tạo/sửa (đường dẫn tuyệt đố
 3. [Giả định] Solo developer + AI agents: số reviewer người = 1 (Owner). Cần xác nhận quy tắc self-approve (`CI_CD.md` §5).
 4. Chưa có `AGENTS.md` và `CLAUDE.md`; nội dung 3.5 là đề xuất.
 5. Mâu thuẫn số liệu chưa giải quyết ở tài liệu khác ảnh hưởng dev: `task_status` HOA vs thường (`DECISION_LOG.md` mục 5); 12 trạng thái agent (FR-024) vs danh sách trong `SCREEN_SPECIFICATION.md` §2. Cần Architect chốt trước P1-04 (contracts).
-6. Chọn Drizzle hay Prisma: WORK_PLAN §2 còn ghi "Prisma/Drizzle", DECISION_LOG D-002 đề xuất Drizzle (Chờ duyệt). Guide này giả định Drizzle.
+6. ORM: Drizzle (stable 0.45.x) theo D-002 (APPROVED, Owner 2026-10-30). Tác vụ bắt buộc trước khi khóa schema (chưa thực hiện): spike partition `agent_events` và FK vòng bằng SQL tay.
 
 ## 8. Acceptance Criteria (cho tài liệu và quy trình)
 

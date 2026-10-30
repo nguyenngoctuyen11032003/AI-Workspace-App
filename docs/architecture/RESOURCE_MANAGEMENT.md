@@ -46,7 +46,7 @@ Nhận xét quan trọng:
 
 ```
 global.max_concurrent_agents (default 5, max 18)
-  └─ provider_pool[credentialId].max_concurrent (default: claude-code 5, codex 3 [Giả định])
+  └─ provider_pool[credentialId].max_concurrent (default: claude-code 5, codex 3; D-010 APPROVED 2026-10-30)
        └─ project.max_concurrent (default = global; fair share xem AGENT_SCHEDULER §9)
             └─ agent.max_concurrent_executions (default 1)
                  └─ host guard: free RAM ≥ min_free_ram_mb (2048), CPU 1-min avg ≤ 90%

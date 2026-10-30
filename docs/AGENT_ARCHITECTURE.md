@@ -277,7 +277,7 @@ Giả định đầu vào: một `node_run` kiểu agent đã `READY` (xem `WORK
 | M-04 | A13 `AgentExecution` (8 state) vs DB `agent_sessions` (6 state) | §3.8 hợp nhất |
 | M-05 | A07 stale 3 phút (heartbeat process) vs A13 stale 5/20 phút (tiến triển) | Giữ hai lớp, khác ý nghĩa |
 | M-06 | DB cho `agent_provider_connections.priority` fallback vs A13 "không auto-failover" | AD-08 |
-| M-07 | Mặc định `provider_configs.max_concurrent=2` (DB) vs A13 claude 5, codex 3 | Cấu hình `ResourceConfig` thắng; DB default chỉ là giá trị khởi tạo [Đề xuất] |
+| M-07 | Mặc định `provider_configs.max_concurrent=2` (DB) vs A13 claude 5, codex 3 | Cấu hình `ResourceConfig` thắng (D-010 APPROVED: Claude 5, Codex 3); DB default `max_concurrent` đã đổi từ 2 thành 5 |
 | M-08 | A13 `maxRetries=3`, A07 `maxAttempts=3`, DB `agents.max_retry=2` / `tasks.max_retry=2` | Giá trị cuối lấy từ task (`tasks.max_retry`), mặc định cấu hình chung; cần owner chốt 2 hay 3 |
 
 ## 9. Acceptance Criteria (cho Phase 1)

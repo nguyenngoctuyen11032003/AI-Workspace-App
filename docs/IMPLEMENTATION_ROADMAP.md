@@ -558,3 +558,19 @@ Rủi ro cấp lộ trình (chi tiết, owner và trigger ở `PROJECT_RISKS.md`
 - [ ] Mỗi AC của 7 nhóm xuất hiện trong ít nhất một phase (bảng 3.15); các AC chưa có task được liệt kê ở mục 7.
 - [ ] Cả 18 role xuất hiện ít nhất một lần làm responsible trong roadmap.
 - [ ] Owner duyệt thứ tự phase và các cổng EXT.
+
+## Phụ lục theo quyết định Owner (2026-10-30)
+Nguồn: `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8. Các điều kiện này là chỉ thị của Owner và áp dụng cho lộ trình ở trên. Khi có mâu thuẫn, phụ lục này thắng.
+
+**Phase 1 (Foundation): không cho agent chạy thật.** Agent không được thực thi lệnh ghi dữ liệu hệ thống hay gọi external API thực. Chỉ mô phỏng, dry-run, hoặc kiểm thử thủ công theo runbook trong `PHASE_0_TECHNICAL_VALIDATION_REPORT.md`. Mock adapter vẫn chỉ dùng trong CI, không thay luồng sản phẩm.
+
+**Cổng vào Phase 2 (Provider Integration), phải đạt trước khi cấp quyền tự trị rộng hơn cho agent:**
+1. Xác thực API (token cục bộ, kiểm tra nguồn gốc) đã được cài đặt và kiểm thử.
+2. Hardening Docker sandbox đã được kiểm chứng trên máy có Docker chạy (test SB-00..SB-17), fail-closed khi daemon tắt.
+3. Audit log (ghi ý định trước khi thực thi, append-only) đã hoạt động, có phát hiện thay đổi overlay bằng checksum.
+4. Policy engine và cổng phê duyệt (Human-in-the-loop) cho hành động quan trọng đã hoạt động.
+Hạng mục 1 đến 4 trước đây nằm ở Phase 4 theo roadmap gốc; cần kéo các task tương ứng lên đầu Phase 2 hoặc cuối Phase 1. Việc xếp lại task chi tiết do Owner duyệt khi mở Phase 1.
+
+**Rủi ro chấp nhận có điều kiện:** rủi ro agent ghi vào thư mục overlay qua Bash trên host (Tier 1, Windows không có sandbox cấp hệ điều hành) được chấp nhận ở Phase 0 và 1, giảm bằng checksum và audit để phát hiện, trước khi chuyển sang môi trường Linux/Docker ở phase sau.
+
+**Chính sách autonomy:** hành động quan trọng cần duyệt thủ công. Agent chưa được trao tự trị hoàn toàn.

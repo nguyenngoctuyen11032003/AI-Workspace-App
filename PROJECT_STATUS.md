@@ -25,7 +25,7 @@ QA lần hai đã xong (PASS WITH FIXES, 0 P0, 3 P1, 8 P2, 6 P3). Các sửa sau
 | Viết AC cho 16 FR | Owner trả lời câu hỏi làm rõ |
 
 ## Quyết định đã phê duyệt
-**Chưa có.** D-001..D-021 đều PENDING_OWNER_APPROVAL (`PHASE_0_OWNER_DECISION_REGISTER.md`).
+Đã duyệt ngày 2026-10-30: D-001 (trừ khung frontend, Q-16), D-002, D-007 (có điều kiện), D-010 (Q-07 còn mở). Các quyết định còn lại PENDING_OWNER_APPROVAL; xem `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8.
 
 ## Vấn đề chưa giải quyết
 Xem `KNOWN_ISSUES.md`, `PHASE_0_REMAINING_RISKS.md`, `PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md`.

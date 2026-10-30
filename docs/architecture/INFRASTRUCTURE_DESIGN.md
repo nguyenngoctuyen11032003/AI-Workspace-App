@@ -93,7 +93,7 @@ Ghi chú: bind port vào `127.0.0.1` để không lộ ra LAN; `noeviction` vì 
 
 ### 6.1 Vai trò
 
-Chạy các job `build`, `test`, `lint`, `typecheck`, `preview` cho project sinh ra, theo yêu cầu của Orchestrator hoặc của Worktree Manager (validate trước merge). Mỗi job là một **ephemeral container**, không bao giờ reuse container giữa các task.
+Chạy các job `build`, `test`, `lint`, `typecheck`, `preview` cho project sinh ra, theo yêu cầu của Orchestrator hoặc của Worktree Manager (validate trước merge). Mỗi job là một **ephemeral container**, không bao giờ reuse container giữa các task. [Ngoại lệ theo D-007/CF-016 (APPROVED): container warm per project cho dev/build/test (xem SANDBOX_DESIGN §2); job preview/custom vẫn ephemeral.]
 
 ### 6.2 Lifecycle
 

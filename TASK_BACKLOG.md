@@ -38,7 +38,7 @@ Cập nhật: 2026-10-30. Trạng thái: DONE (có sản phẩm tài liệu và 
 |---|---|---|
 | ENV-001 | Cài Codex CLI (`npm i -g @openai/codex`) để test live | TODO, cần chủ sở hữu |
 | ENV-002 | Bật Docker Desktop và xác minh cgroup, ECI, flags sandbox | TODO |
-| ENV-003 | Chốt chính sách commit (repo đã có git, 44 thay đổi chưa commit) | TODO, cần Owner |
+| ENV-003 | Chính sách commit | DONE: Owner tự commit; agent chỉ commit khi được yêu cầu, trên branch mới, không trailer Claude |
 | ENV-004 | Xác minh điều khoản subscription cho nhiều phiên song song | TODO, cần chủ sở hữu |
 
 ## Phase 1 (chưa bắt đầu, chờ OWN-001)
@@ -56,5 +56,5 @@ Xem `docs/IMPLEMENTATION_ROADMAP.md`, mục Phase 1 breakdown. Các task F1..F6 
 | FIN-007 | Skill Markdown động (D-021) | DONE (đặc tả) | docs/architecture/DYNAMIC_SKILL_INJECTION.md |
 | FIN-008 | QA độc lập lần hai | DONE (PASS WITH FIXES, 0 P0, 3 P1, 8 P2, 6 P3) | PHASE_0_QA_REVIEW_2.md |
 | FIN-009 | PoC kiểm chứng skill động và resume | BLOCKED | Chờ Owner cho phép chạy |
-| FIN-010 | Đồng bộ giá trị phụ thuộc quyết định | BLOCKED | Chờ Owner duyệt D-xxx, Q-xx |
+| FIN-010 | Đồng bộ giá trị phụ thuộc quyết định | PARTIAL | Đã duyệt D-001 (trừ frontend), D-002, D-007, D-010; còn lại chờ Owner |
 | FIN-011 | AC cho 16 FR chờ làm rõ | BLOCKED | Chờ Owner |

@@ -25,7 +25,7 @@
 | Exec container | container Tier 1 chạy code sinh ra |
 | Agent container | container Tier 2 chạy cả CLI |
 
-**Khác biệt cần hoà giải với INFRASTRUCTURE_DESIGN:** SECURITY.md dùng 1 container sống lâu per project (`aiw-<projectId>`, `docker exec`), INFRA §6.1 dùng ephemeral container per job. Đề xuất hợp nhất: **container per project cho phase dev/build/test xen kẽ nhiều lệnh (warm), bị recreate khi project đổi trust level, mỗi 4 giờ, hoặc sau mọi job `install`**; container `preview` và `custom` Dockerfile luôn ephemeral. [Đề xuất, Cần người dùng phê duyệt]
+**Khác biệt cần hoà giải với INFRASTRUCTURE_DESIGN:** SECURITY.md dùng 1 container sống lâu per project (`aiw-<projectId>`, `docker exec`), INFRA §6.1 dùng ephemeral container per job. Đề xuất hợp nhất: **container per project cho phase dev/build/test xen kẽ nhiều lệnh (warm), bị recreate khi project đổi trust level, mỗi 4 giờ, hoặc sau mọi job `install`**; container `preview` và `custom` Dockerfile luôn ephemeral. [D-007 APPROVED (Owner, 2026-10-30); đóng CF-016. Điều kiện: fail-closed khi Docker tắt; SB-00..SB-17 phải qua trên máy có Docker trước khi mở quyền thực thi.]
 
 ## 4. Tier 1 — Exec container
 
@@ -268,7 +268,7 @@ Emergency stop không gọi bất kỳ đường nào có thể bị agent chặ
 
 | Quyết định | Lý do | Trạng thái |
 | --- | --- | --- |
-| Container per project (warm) cho dev/test, ephemeral cho preview/custom | Cân bằng độ trễ (18 agent ≈ ít project) và cách ly | Đề xuất; cần hoà giải INFRA §6.1 |
+| Container per project (warm) cho dev/test, ephemeral cho preview/custom | Cân bằng độ trễ (18 agent ≈ ít project) và cách ly | D-007 APPROVED (2026-10-30); đã hoà giải INFRA §6.1 |
 | `--network none` + proxy allowlist chỉ cho install | Giảm exfil; chấp nhận R6 | Đề xuất |
 | Digest pinning + `assertSafeSpec` deny-by-default | Chống drift cấu hình và chỉnh tay | Đề xuất |
 | Rewrite fail-closed, từ chối lệnh ghép host+container | Tránh quote injection khi bọc | Đề xuất |
@@ -326,8 +326,8 @@ Mọi mục chuyển từ "Giả định" sang "Đã xác minh" phải ghi lện
 ## 14. Vấn đề chưa giải quyết
 
 1. Daemon chưa chạy ⇒ mọi mục §11 còn "Giả định".
-2. Worktree host-truth vs volume-truth chưa chốt (Runtime team); ảnh hưởng §4.5.
-3. Hợp nhất mô hình container warm (SECURITY) vs ephemeral (INFRA) cần ADR.
+2. ĐÃ CHỐT (D-007/CF-053): host-truth, worktree nằm trên host, chỉ bind phần `writable` vào container; ảnh hưởng §4.5. Phần ADR-0009 (D-009) vẫn chờ duyệt.
+3. ĐÃ CHỐT (D-007/CF-016): warm per project cho dev/build/test, ephemeral cho preview/custom; recreate sau install, 4 giờ hoặc đổi trust level.
 4. Hiệu năng/độ ổn định của `aiw-job.exe` vs `koffi` trên Windows build 26300.
 5. Squid vs tinyproxy; có cần Verdaccio/pip cache nội bộ (INFRA §14.2).
 6. Tier 2: `enableWeakerNestedSandbox` có thực sự cần không; cách nhận hook trên `host.docker.internal` an toàn.

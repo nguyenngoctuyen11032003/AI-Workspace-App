@@ -19,7 +19,7 @@
 
 ### 3.1 Stack **[Đã xác minh]** từ `docs/research/LICENSE_AND_REUSE.md` §5.5 và D-001/D-011
 
-Vite 7 + TypeScript 5.9 · React 19.2 · Tailwind 4.1 (`@tailwindcss/vite`, cấu hình CSS-first `@theme`) · shadcn/ui + lucide-react · Phaser 3.90 · `@xyflow/react` 12 · Zustand 5 · TanStack Query 5 · socket.io-client 4. **[Đề xuất]** thêm: React Router (data router), Monaco (`@monaco-editor/react`), `react-hook-form` + Zod resolver, `i18next`, Vitest, Testing Library, Playwright, MSW.
+**Khung frontend: chờ Owner xác nhận (Q-16)** · Vite 7 + TypeScript 5.9 · React 19.2 · Tailwind 4.1 (`@tailwindcss/vite`, cấu hình CSS-first `@theme`) · shadcn/ui + lucide-react · Phaser 3.90 · `@xyflow/react` 12 · Zustand 5 · TanStack Query 5 · socket.io-client 4. **[Đề xuất]** thêm: React Router (data router), Monaco (`@monaco-editor/react`), `react-hook-form` + Zod resolver, `i18next`, Vitest, Testing Library, Playwright, MSW.
 
 ### 3.2 Cấu trúc ứng dụng **[Đề xuất]**
 

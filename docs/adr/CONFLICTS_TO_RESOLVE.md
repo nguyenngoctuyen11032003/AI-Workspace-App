@@ -455,3 +455,12 @@ Mọi cột "Đề xuất xử lý" là đề xuất của System Architect, ch�
 | CF-055 | Vai trò duyệt workflow vs RBAC | WORKFLOW_ENGINE M-W5: `approverRoles` (`product`, `tech_lead`, `qa_lead`) vs DB `org_role`: owner/admin/member/viewer | Bảng ánh xạ vai trò agent/người sang quyền duyệt, đối chiếu USER_ROLES_AND_PERMISSIONS trước P3 | ADR-0003, ADR-0016 | Có |
 
 Tổng: 55 mâu thuẫn (Có = 37, Không = 18 theo cột cuối).
+
+---
+
+## Cập nhật 2026-10-30 sau phản hồi của Owner
+Nguồn: `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8 và `docs/DOC_SYNC_LOG_PHASE0.md` mục "Đồng bộ theo quyết định Owner đã duyệt".
+- **Đã đóng bằng đồng bộ tài liệu theo quyết định đã duyệt:** CF-001 (D-002), CF-002 (D-010), CF-016, CF-043, CF-053 phần host (D-007), CF-027, CF-028, CF-041, CF-042 phần `apps/api` (D-001), CF-049.
+- **Vẫn hoãn:** CF-004, CF-035, CF-010, CF-036 (liên quan D-002 nhưng còn phụ thuộc D-014 và Q-12), CF-038 (số lần retry: 2 hay 3, chưa chốt), CF-048 (ngưỡng thời gian approval), phần đặt tên Redis, ID và queue của CF-042, phần D-009 của CF-053.
+- **Mới phát sinh:** Q-16 (khung frontend Next.js hay Vite), Q-17 (D-004), Q-18 (D-021 và bốn FR), Q-19 (event naming trong DB), Q-20 (D-003).
+- Kiểm tra độc lập sau đồng bộ: không còn đường dẫn `prisma/**` trong cấu hình; seed `max_concurrent_agents` là 5; không có thay đổi nào về Vite hay Next.js ngoài một dòng đánh dấu chờ xác nhận (Q-16).

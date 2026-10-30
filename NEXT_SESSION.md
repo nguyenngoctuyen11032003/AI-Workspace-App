@@ -30,7 +30,7 @@ Không có agent nào đang chạy, trừ QA lần hai nếu chưa kết thúc. 
 `KNOWN_ISSUES.md` (14 mục), `PHASE_0_REMAINING_RISKS.md`, `PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md`. Chính: Codex CLI chưa cài, Docker daemon chưa chạy, lộ trình phase đặt agent chạy thật trước policy và audit, `--system-prompt-snapshot` ảnh hưởng skill động khi resume, điều khoản subscription cho nhiều phiên.
 
 ## 9. File đã thay đổi
-Tất cả tài liệu trong `docs/`, các file `PHASE_0_*.md`, `AGENTS.md`, `DECISION_LOG.md`, `TASK_BACKLOG.md`, `PROJECT_STATUS.md`, `KNOWN_ISSUES.md`, `IMPLEMENTATION_LOG.md`, `AGENT_WORK_LOG.md`, `NEXT_SESSION.md`. Chi tiết thay đổi tài liệu nguồn: `docs/DOC_SYNC_LOG_PHASE0.md`. Không có mã ứng dụng. Repo đã là git repo (main, remote origin, 2 commit do Owner), nhiều thay đổi chưa commit; agent không commit khi chưa có chính sách.
+Tất cả tài liệu trong `docs/`, các file `PHASE_0_*.md`, `AGENTS.md`, `DECISION_LOG.md`, `TASK_BACKLOG.md`, `PROJECT_STATUS.md`, `KNOWN_ISSUES.md`, `IMPLEMENTATION_LOG.md`, `AGENT_WORK_LOG.md`, `NEXT_SESSION.md`. Chi tiết thay đổi tài liệu nguồn: `docs/DOC_SYNC_LOG_PHASE0.md`. Không có mã ứng dụng. Repo là git repo; Owner đã commit và đẩy Phase 0 lên main (1aec2b3). Các thay đổi sau đó (ghi nhận phản hồi Owner, đồng bộ tài liệu) chưa commit; agent không commit khi chưa được yêu cầu.
 
 ## 10. Chỉ dẫn chính xác cho phiên tiếp theo
 1. Đọc `PHASE_0_FINAL_REPORT.md`, `PHASE_0_QA_REVIEW_2.md`, `PHASE_0_OWNER_DECISION_REGISTER.md`.

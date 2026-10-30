@@ -3,6 +3,8 @@
 **Agent 07 — Multi-Agent Orchestration & Workflow Engine Architect**
 **Ngày:** 2026-10-30 · **Stack mục tiêu:** NestJS + TypeScript + PostgreSQL (Prisma) + Redis + BullMQ · **Platform:** Windows 11
 
+> Prisma được thay bằng Drizzle theo D-002 (APPROVED). Mã Prisma trong tài liệu này chỉ là nghiên cứu lịch sử, không phải lựa chọn ORM.
+
 ---
 
 ## 0. Tóm tắt điều hành (Executive Summary)
@@ -11,7 +13,7 @@
 
 - **Postgres** là *source of truth* duy nhất cho `workflow_runs`, `node_runs`, `approvals`, `checkpoints`, `events`.
 - **BullMQ** chỉ đóng vai trò *transport* + *retry/backoff* + *stalled-job detection*; **không** dùng BullMQ Flows làm cấu trúc DAG (Flows là *tree*, không biểu diễn được diamond/merge, và không có "wait hours for human").
-- **Scheduler** (NestJS service, idempotent, chạy được nhiều replica) làm *dependency resolver* kiểu ready-set; semaphore global 10 + per-provider trong Redis (Lua script).
+- **Scheduler** (NestJS service, idempotent, chạy được nhiều replica) làm *dependency resolver* kiểu ready-set; semaphore global 10 + per-provider trong Redis (Lua script). [Số 10 đã bị thay thế bởi D-010 (APPROVED): global 5, trần 18, nâng 5→10→18 chỉ sau khi đo thực.]
 - **Approval gate** = node_run ở trạng thái `WAITING_HUMAN`, không giữ bất kỳ job/worker nào; resume = ghi quyết định vào Postgres rồi kích scheduler.
 - **LangGraph JS không thắng rõ ràng**: `interrupt()` re-run node từ đầu, Send API + interrupt cùng lúc có hành vi không rõ, graph phải compile từ code (không tự nhiên cho React Flow JSON user-editable), và không có concurrency cap xuyên process. Dùng LangGraph **bên trong** một Agent node (nếu muốn) chứ không làm engine.
 - **Temporal** là lựa chọn kỹ thuật mạnh nhất nhưng kéo theo Temporal Server (4 service + DB + optional Elasticsearch) — chi phí vận hành không tương xứng với 10 agent đồng thời.
@@ -423,7 +425,7 @@ async dispatchReady(runId: string) {
 
 Khi một node release slot (`SREM` + `DEL lease`) → `schedulerQueue.add('tick')` cho **mọi run có node READY** (`SELECT DISTINCT "runId" FROM "NodeRun" WHERE status='READY' LIMIT 50`). Đây là cơ chế queueing khi hết limit: node chờ trong Postgres (READY), không chờ trong BullMQ, nên không bị stalled, không giữ lock.
 
-Per-provider cap đề xuất: `claude: 6`, `codex: 6`, global `10` (cấu hình ở `workspace_settings`, hot-reload qua Redis key `cfg:caps`).
+Per-provider cap đề xuất: `claude: 6`, `codex: 6`, global `10` (cấu hình ở `workspace_settings`, hot-reload qua Redis key `cfg:caps`). [Đã bị thay thế bởi D-010 (APPROVED): global 5, trần 18, Claude 5, Codex 3; giữ số 10/6 làm nghiên cứu lịch sử.]
 
 ### 4.3 Retry với exponential backoff + rate-limit awareness
 

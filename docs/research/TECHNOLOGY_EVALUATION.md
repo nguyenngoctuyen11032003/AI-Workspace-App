@@ -19,7 +19,7 @@ Ghi lại, cho từng lựa chọn công nghệ lớn của AI WORKSPACE: các p
 
 | # | Quyết định | Khuyến nghị | ID liên quan | Trạng thái | Độ tin cậy bằng chứng | Cờ |
 |---|---|---|---|---|---|---|
-| TE-01 | ORM | Drizzle (postgres.js) | D-002 | Cần phê duyệt | Trung bình: so sánh trên tài liệu, chưa có prototype migration | Xung đột C-1: tài liệu orchestration dùng Prisma |
+| TE-01 | ORM | Drizzle (postgres.js) | D-002 | APPROVED (Owner, 2026-10-30) | Trung bình: so sánh trên tài liệu, chưa có prototype migration | Xung đột C-1: tài liệu orchestration dùng Prisma |
 | TE-02 | Workflow engine | "Conductor" tự xây trên BullMQ + Postgres | D-003 | Cần phê duyệt | Trung bình: phân tích thiết kế, chưa có prototype | Chi phí tự xây lớn; Inngest license "cần verify" |
 | TE-03 | Tích hợp Claude | `@anthropic-ai/claude-agent-sdk` | D-004 | Đề xuất | **Cao** cho kỹ thuật (smoke test thật) | Điều khoản dùng OAuth subscription cho tự động hoá: **chưa xác minh** |
 | TE-04 | Tích hợp Codex | `codex app-server`; fallback `exec --json` | D-005 | Cần phê duyệt | **Thấp**: CLI chưa cài, chưa chạy live test nào | **Thiếu bằng chứng chạy thật** |
