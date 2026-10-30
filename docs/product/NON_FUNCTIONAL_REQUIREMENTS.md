@@ -159,3 +159,12 @@ Toàn hệ thống AI WORKSPACE chạy local trên Windows 11, single-user. Khô
 | AP-NFR-02 | Cấu hình máy tham chiếu để đo hiệu năng |
 | AP-NFR-03 | Mặc định network deny (NFR-049) |
 | AP-NFR-04 | Giải quyết OI-NFR-01…05 |
+
+## 10. Acceptance Criteria (bổ sung sau khi QA lần một)
+Mỗi NFR ở mục 4 có cột "cách đo". NFR được coi là đạt khi:
+- [ ] Cách đo của NFR được thực hiện đúng như ghi, trên môi trường ghi trong mục 3 (Load Profiles), và kết quả kèm bằng chứng (log, báo cáo, đường dẫn) được lưu trong báo cáo kiểm thử của phase tương ứng.
+- [ ] Mọi giá trị ngưỡng ghi nhãn Đề xuất được Owner duyệt trước khi dùng làm tiêu chí đạt hay không đạt. Ngưỡng chưa duyệt chỉ là mục tiêu tham khảo, không dùng để chặn phát hành.
+- [ ] NFR liên quan 18 agent đồng thời (hiệu năng, tài nguyên, độ tin cậy) chỉ được coi là đạt khi có phiên chạy thật với task ID, session ID và log, đúng yêu cầu ở `docs/research/MULTI_AGENT_SCALABILITY.md`. Hiện chưa có phiên chạy nào.
+- [ ] NFR bảo mật được kiểm bằng các test trong `docs/SECURITY.md` mục kiểm thử và `PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md`.
+- [ ] NFR không đo được hoặc thiếu cách đo được ghi vào mục 8 để Owner làm rõ, không tự coi là đạt.
+Liên kết AC tương ứng: `PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md` (cột Verification Status cho các FR liên quan).

@@ -59,3 +59,13 @@ Cách dùng: mỗi màn hình có một bản sao checklist; mỗi mục ghi Pas
 ## 7. Vấn đề chưa giải quyết
 1. Ngưỡng 80% ở M1 và độ lớn mẫu cần chủ sở hữu duyệt.
 2. Chưa có người dùng thật ngoài chủ sở hữu để làm usability test [GĐ].
+
+## 8. Rủi ro
+| Rủi ro | Mức | Giảm thiểu |
+|---|---|---|
+| Checklist bị điền cho có, không kèm bằng chứng | Trung bình | Mỗi mục phải có đường dẫn bằng chứng; Product Evaluator từ chối bản không có bằng chứng |
+| Ngưỡng 80% ở mục M1 và cỡ mẫu usability test là giả định | Trung bình | Chờ Owner duyệt ngưỡng; ghi rõ cỡ mẫu thực tế trong báo cáo |
+| Không có người dùng thật ngoài Owner để kiểm tra mục 10 | Cao ở giai đoạn đầu | Dùng đánh giá chuyên gia thay thế và ghi rõ đây không phải usability test thật |
+| Mục tự động hóa (5, 6, 7, 8) bỏ sót lỗi cảm nhận | Thấp | Kết hợp duyệt tay của UX Research |
+
+> Ghi chú: các mục "Mục đích", "Phạm vi", "Rủi ro" nay đã đủ theo mẫu tài liệu Phase 0; file này do Orchestrator viết bù phần agent UX bị ngắt.

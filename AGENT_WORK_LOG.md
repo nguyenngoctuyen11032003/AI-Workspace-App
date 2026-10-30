@@ -49,3 +49,6 @@ Kiểm tra môi trường, DECISION_LOG, phân tích herdr theo yêu cầu bổ 
 | Documentation (đồng bộ có giới hạn) | 29 thay đổi, log | Hoàn thành |
 | QA độc lập lần hai | Hoàn thành: PASS WITH FIXES (0 P0, 3 P1, 8 P2, 6 P3). Sau đó Orchestrator sửa F-01 (số liệu), F-02, F-03 (đặc tả), F-04, F-05; các sửa này chưa được QA kiểm lại | |
 Số agent chạy đồng thời tối đa trong đợt này: 7. Chưa từng đạt 18.
+
+## Hoàn tất công việc của 3 agent bị ngắt
+Sau khi đối chiếu, 3 agent (BA, 18-agent, UX) không còn nội dung thiếu. Hai mục theo mẫu đã được Orchestrator bổ sung (NFR Acceptance Criteria, checklist usability Rủi ro). Trạng thái đỏ trên giao diện chỉ phản ánh lần dừng do hạn mức, không phải nội dung thiếu.

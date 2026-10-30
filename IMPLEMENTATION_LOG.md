@@ -16,3 +16,5 @@
 - Chạy đồng bộ tài liệu có giới hạn (29 thay đổi), hoãn các mục phụ thuộc quyết định chưa duyệt.
 - Yêu cầu bổ sung: skill Markdown động. Viết DYNAMIC_SKILL_INJECTION.md, D-021, con trỏ vào 4 tài liệu, KNOWN_ISSUES #13 và #14. Phát hiện `--system-prompt-snapshot` của Claude Code ảnh hưởng resume.
 - Không cài phần mềm, không bật Docker, không chạy prompt model. Không viết mã ứng dụng.
+
+- Theo yêu cầu "làm nốt": đối chiếu file của 3 agent bị ngắt (BA, 18-agent, UX) với yêu cầu gốc. Đủ 8 + 6 + 5 tài liệu, 199 FR, 68 NFR, 100 AC, 15 user flow, 18 vai trò, 22 màn hình, 8 hành trình. Bổ sung mục Acceptance Criteria vào NON_FUNCTIONAL_REQUIREMENTS.md và mục Rủi ro vào USABILITY_AUDIT_CHECKLIST.md. Không chạy lại agent.
