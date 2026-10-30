@@ -1,4 +1,4 @@
-# ADR-0015 — Design: accent AI tím, Inter + JetBrains Mono, mật độ Comfortable, giao diện mặc định tiếng Anh
+# ADR-0015 — Design: accent AI tím, Inter + JetBrains Mono, mật độ Comfortable, giao diện mặc định tiếng Anh (đã giải quyết: locale mặc định tiếng Việt theo OWR-2 D-015)
 
 ## 1. Metadata
 
@@ -112,3 +112,11 @@ Nguồn: OWR-2 §3 D-015 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_fin
 - Primary accent Purple; font Inter + JetBrains Mono; density Comfortable; Agent avatar Square; Owner avatar Round.
 - **Locale mặc định ĐỔI: Vietnamese là mặc định, English là locale thứ hai.** Phần "giao diện mặc định tiếng Anh" ở tiêu đề, phương án và nội dung trên là đề xuất cũ, bị thay thế bởi cập nhật này (xung đột X-1 với DESIGN_TOKENS.md, UI_UX_GUIDELINES.md, FRONTEND_ARCHITECTURE.md, SYSTEM_ARCHITECTURE.md; chờ đồng bộ).
 - **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (B, C-FR-284). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED**.
+- Owner đồng ý đồng bộ X-1: **locale mặc định là tiếng Việt**, tiếng Anh là locale thứ hai (FR-284: tiếng Việt mặc định, hỗ trợ tiếng Anh). X-1 RESOLVED_BY_OWNER_DECISION; đồng bộ DESIGN_TOKENS.md, UI_UX_GUIDELINES.md, FRONTEND_ARCHITECTURE.md, SYSTEM_ARCHITECTURE.md do agent khác thực hiện.
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

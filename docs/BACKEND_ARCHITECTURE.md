@@ -1,7 +1,9 @@
 # BACKEND_ARCHITECTURE — Kiến trúc backend NestJS
 
 > Tác giả: System Architect · Phase 0 (chỉ tài liệu) · Draft v0.1 · 2026-10-30
-> Nhãn: **[Đã xác minh]** (có nguồn) · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**. Các D-xxx đều "Chờ duyệt" (`DECISION_LOG.md`).
+> Nhãn: **[Đã xác minh]** (có nguồn) · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**. Các D-xxx đều "Chờ duyệt" (`DECISION_LOG.md`) **[OWR-2/OWR-3: trạng thái hiện hành nằm ở `PHASE_0_OWNER_DECISION_REGISTER.md`]**.
+>
+> **[OWR-3, 2026-10-30; Phase 0 vẫn mở]** (A.8) Claude là provider MVP duy nhất; Codex hoãn, giữ `AgentAdapter`. (A.2/D) concurrency 5 là giới hạn scheduler nội bộ, không phải giới hạn provider. (A.15) `WAITING_APPROVAL` không tính vào 5 active workers nếu worker đã giải phóng và state đã persist. (A.10) **Xem conflict X-13**: Agent không chạy arbitrary code trên Windows host, mọi code Agent sinh ra chạy trong sandbox cô lập, sandbox không hoạt động thì fail closed, Tier 2/OpenHands hoãn khỏi MVP; module `sandbox` (§3.11) và các mô tả "CLI trên host" chưa được quyết lại ở đây, chờ Owner trả lời các câu hỏi mở của X-13. (A.16) event dotted lowercase (`EVENT_SYSTEM.md` §0).
 > Liên quan: `docs/SYSTEM_ARCHITECTURE.md`, `docs/API_DOCUMENTATION.md`, `docs/DATABASE_DESIGN.md`, `docs/SECURITY.md`.
 
 ---
@@ -99,7 +101,7 @@ Một envelope duy nhất do `AllExceptionsFilter` tạo (chi tiết ở `API_DO
 
 - **[Đề xuất]** `@nestjs/config` + schema Zod validate lúc boot; thiếu/sai thì process thoát với thông báo rõ. Tách `ConfigModule` có nhóm: `app` (`APP_MODE=desktop|server`, port), `db`, `redis`, `security` (token, origin allowlist, rate limit), `providers`, `workspace` (`WORKSPACE_ROOT`), `sandbox` (limits mặc định), `features`.
 - **[Nhất quán với tài liệu nguồn]** `APP_MODE` và `.env.example` đã có trong `docs/DATABASE_DESIGN.md` §8, §11.
-- Giới hạn runtime (concurrency, budget, retention) không nằm trong env mà trong `system_settings`/`resource_limits` để đổi lúc chạy; mặc định concurrency 5, trần 18 (D-010).
+- Giới hạn runtime (concurrency, budget, retention) không nằm trong env mà trong `system_settings`/`resource_limits` để đổi lúc chạy; mặc định concurrency 5, trần 18 (D-010; **[OWR-3 A.2/D]** giới hạn scheduler nội bộ, không phải giới hạn provider; không tăng khi chưa xác minh điều khoản).
 - Secret chỉ là `credential_ref`; giá trị lấy từ OS keychain (`@napi-rs/keyring`/`keytar`) hoặc Vault/env ở server (DATABASE_DESIGN §8; D-008).
 
 ### 3.7 Logging (pino)
@@ -128,7 +130,7 @@ Quy tắc **[Đề xuất]**: tên queue tập trung ở một enum trong `commo
 
 - **Ghi:** `EventService.append(tx, event)` cấp `sequence` per aggregate trong cùng transaction, ghi `agent_events` + `event_outbox`. Role DB của app chỉ INSERT/SELECT `agent_events` (DATABASE_DESIGN §5.1).
 - **Phát:** `OutboxRelay` poll 250 ms `SELECT ... FOR UPDATE SKIP LOCKED LIMIT 500` → `PUBLISH aiw:ch:*` và `XADD` stream, đánh dấu đã publish (ORCHESTRATION §7.3).
-- **Ephemeral:** `llm.stream_chunk`, `AGENT_OUTPUT_CHUNK`, `office.animation` không qua outbox, publish thẳng Redis (DATABASE_DESIGN §5.2, ORCHESTRATION §7.3).
+- **Ephemeral:** `llm.stream.chunk`, `AGENT_OUTPUT_CHUNK`, `office.animation` không qua outbox, publish thẳng Redis (DATABASE_DESIGN §5.2, ORCHESTRATION §7.3).
 - **Replay:** `GET /sessions/:id/events?afterSeq=`, Redis Stream buffer ~2000 sự kiện, reconnect < 10 phút (DATABASE_DESIGN §5.4); toàn cục bằng `lastEventId`/`global_seq`.
 - **[Cần người dùng phê duyệt]** Outbox đầy đủ cho cả desktop và server (một code path), thay vì publish-after-commit ở desktop như DATABASE_DESIGN §5.4/§12 mục 4 gợi ý. Lý do: giảm hai nhánh logic; chi phí là một bảng và độ trễ ≤ 250 ms.
 

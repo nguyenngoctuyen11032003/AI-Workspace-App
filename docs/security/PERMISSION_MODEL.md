@@ -33,7 +33,7 @@ Ma trận quyền chi tiết giữ nguyên ở `USER_ROLES_AND_PERMISSIONS.md` �
 
 ### 4.1 Hợp nhất L0–L5 với enum database
 
-`USER_ROLES_AND_PERMISSIONS.md` §4.2 đề xuất L0–L5; `DATABASE_DESIGN.md` enum `permission_level` = `read_only | standard | elevated | full` (dòng 170, 343). Đề xuất ánh xạ (không đổi enum, thêm cột/field chi tiết):
+`USER_ROLES_AND_PERMISSIONS.md` §4.2 đề xuất L0–L5; `DATABASE_DESIGN.md` enum `permission_level` = `read_only | standard | elevated | full` (dòng 170, 343). Đề xuất ánh xạ (không đổi enum, thêm cột/field chi tiết): **[OWR-3 A.13 và X-3: Owner bỏ `full`, chuẩn L0–L5; dòng này là mô tả lịch sử, nguồn hiện hành là banner ở đầu mục]**
 
 | Level (BA) | Enum DB | Ý nghĩa an ninh | Tool mặc định | Container exec | Ghi |
 | --- | --- | --- | --- | --- | --- |
@@ -43,11 +43,15 @@ Ma trận quyền chi tiết giữ nguyên ở `USER_ROLES_AND_PERMISSIONS.md` �
 | L3 Lead/Reviewer | `elevated` | Review, cấp quyền tạm thời trong phạm vi task | L2 + đọc rộng | Có | manifest + grant |
 | L4 Operator | `elevated` + `profile=operator` | Build artifact, preview non-prod | L3 + preview | Có | + preview |
 | L5 PM/Orchestrator | `elevated` + `profile=orchestrator` | Tạo task/assign; **không chạy code** (OI-ROLE-02) | Tool app-level, không Bash | Không | Không |
-| (không dùng) | `full` | Không bao giờ cấp cho agent | — | — | Enum tồn tại nhưng policy engine từ chối `full` [Đề xuất: bỏ khỏi enum hoặc khoá bằng CHECK] |
+| (không dùng) | `full` | Không bao giờ cấp cho agent | — | — | Enum tồn tại nhưng policy engine từ chối `full` [Đề xuất: bỏ khỏi enum hoặc khoá bằng CHECK] | **[OWR-3 A.13 và X-3: Owner bỏ `full`, chuẩn L0–L5; dòng này là mô tả lịch sử, nguồn hiện hành là banner ở đầu mục]**
 
 Cần mở rộng `agents.permission_level` thêm `permission_profile text` hoặc lưu L0–L5 vào `agents.config` [Cần người dùng phê duyệt].
 
 > **[Q-03, OWR-2 2026-10-30]**: Owner chấp thuận permission level L0 đến L5, dùng hai trường `permission_level` và `permission_profile`; **không hỗ trợ quyền `full`** (không cấp, không có giá trị `full` hợp lệ cho agent). Hai điểm còn mở, cần Architect/Owner chốt (CF-008): cách chốt enum DB (bỏ `full` khỏi enum hay khóa bằng CHECK) và nơi lưu L0–L5. USER_ROLES_AND_PERMISSIONS.md không thuộc agent A: báo cáo để đồng bộ.
+
+> **[OWR-3 A.13, 2026-10-30]**: Owner chuẩn hóa permission level **L0 đến L5** (sáu cấp, bảng trên là mapping chuẩn dùng trong các tài liệu của agent A; giữ mapping Q-03 sang `permission_level` + `permission_profile`, không có `full`). Mọi nơi ghi L0..L4 hoặc bốn cấp là lỗi thời; `AGENT_ORGANIZATION.md` thuộc agent B, cần agent B kiểm tra.
+>
+> **[OWR-3 A.10 / X-13 — PENDING_OWNER_CLARIFICATION]**: Các cấp L1 trở lên ở bảng trên có tool `Edit/Write` và L2 có `Bash (rewrite)` chạy trên host theo thiết kế Tier 1 (D-007) đã duyệt trước đó. OWR-3 A.10 chặt hơn: agent không chạy code tùy ý trên Windows host; công cụ shell/Bash tích hợp sẵn của agent KHÔNG được bật trên host; mọi code do agent sinh ra chỉ chạy qua sandbox execution tool trong container cô lập; sandbox hỏng thì fail closed. Cột "Tool mặc định" và "Container exec" cần viết lại khi Owner trả lời ba câu hỏi ở `SECURITY.md` §0.6 (Edit/Write host trong worktree; runtime SDK trên host có tính là host execution; runtime sandbox thay OpenHands). Xung đột với D-007: X-13. Chưa quyết định.
 
 ### 4.2 Giao của các nguồn quyền
 
@@ -189,7 +193,7 @@ Dùng bảng `approval_policies`/`approvals` hiện có (DATABASE_DESIGN §4.9) 
 | `risk_tags[]`, `rule_id` | `policy_id` | thêm `risk_tags text[]`, `rule_id text` |
 | status `denied`,`revoked` | enum `pending/approved/rejected/expired/cancelled` | map `denied→rejected`, `revoked→cancelled`; thêm `revoked` nếu cần phân biệt |
 | `scope{once,task,session,project}` | `decision{approve_once, approve_always}` | map: `approve_once→once`, `approve_always→task` (**không** `project` mặc định) |
-| `expires_at` | `expiresAt` | khớp |
+| `expires_at` | `expiresAt` | khớp; OWR-3 A.12: chỉ set 15 phút cho 3 hành động quan trọng; thêm cột/trường `remind_at` (nhắc 24 giờ) tách riêng — DATABASE_DESIGN thuộc agent khác, cần đồng bộ |
 | `on_timeout` | `onTimeout default 'reject'`, `timeoutSec 3600` | SECURITY: hook giữ 540 s; chính sách hết hạn 3600 s của DB khác với hook; xem §12 |
 
 ### 6.3 TOCTOU và tính toàn vẹn quyết định
@@ -202,7 +206,7 @@ Dùng bảng `approval_policies`/`approvals` hiện có (DATABASE_DESIGN §4.9) 
 
 ### 6.4 Timeout approval — hoà giải
 
-BA đề xuất "không timeout, nhắc 24 h" (USER_ROLES §5.5) vs SECURITY §5.3 "hook timeout 540 s ⇒ deny, task `blocked`". Đề xuất hợp nhất: không giữ kết nối/worker vô hạn. **[Q-05, OWR-2 2026-10-30]**: chờ approval tối đa **540 s**; hết thời gian thì lưu trạng thái (approval vẫn `pending` trong DB) và chuyển task `WAITING_HUMAN`, không giữ worker (D-003); có thể nhắc Owner sau **24 giờ**; `prod_deploy`, `data_deletion`, `merge_main` cần approval riêng và hết hiệu lực sau **15 phút**. Với SDK, callback `canUseTool` trả deny `pending_human` tại mốc 540 s (với CLI fallback là hook). Khi user duyệt muộn, orchestrator **kích hoạt lại** hành động từ đầu (agent được nhắc retry với hash đã duyệt) thay vì giữ kết nối. [CẦN QUYẾT ĐỊNH: `expires_at` mặc định 7 ngày và `onTimeout='reject'` ở bản đề xuất cũ chưa được OWR-2 xác nhận, và 3600 s `timeout_sec` ở DATABASE_DESIGN khác; xem DOC_SYNC_LOG_OWR2_A.md. Giá trị 15 phút chỉ áp dụng cho ba hành động nhạy cảm.]
+BA đề xuất "không timeout, nhắc 24 h" (USER_ROLES §5.5) vs SECURITY §5.3 "hook timeout 540 s ⇒ deny, task `blocked`". Đề xuất hợp nhất: không giữ kết nối/worker vô hạn. **[Q-05, OWR-2 2026-10-30]**: chờ approval tối đa **540 s**; hết thời gian thì lưu trạng thái (approval vẫn `pending` trong DB) và chuyển task `WAITING_HUMAN`, không giữ worker (D-003); có thể nhắc Owner sau **24 giờ**; `prod_deploy`, `data_deletion`, `merge_main` cần approval riêng và hết hiệu lực sau **15 phút**. Với SDK, callback `canUseTool` trả deny `pending_human` tại mốc 540 s (với CLI fallback là hook). Khi user duyệt muộn, orchestrator **kích hoạt lại** hành động từ đầu (agent được nhắc retry với hash đã duyệt) thay vì giữ kết nối. [OWR-3 A.12 + X-7: tách hai trường. `remind_at` = thời điểm nhắc Owner (24 giờ sau khi tạo approval), không làm approval hết hạn. `expires_at` = 15 phút, chỉ đặt cho approval hành động quan trọng (production deploy, data deletion, merge main), hết hạn thì approval vô hiệu và hành động phải xin lại. Timeout chờ approval tại callback/hook = 540 s (X-7).] [CẦN QUYẾT ĐỊNH: `expires_at` mặc định 7 ngày và `onTimeout='reject'` ở bản đề xuất cũ chưa được OWR-2 xác nhận, và 3600 s `timeout_sec` ở DATABASE_DESIGN khác; xem DOC_SYNC_LOG_OWR2_A.md. Giá trị 15 phút chỉ áp dụng cho ba hành động nhạy cảm.]
 
 ## 7. Enforcement file ownership manifest
 
@@ -310,7 +314,7 @@ Khác biệt cần chốt: POL-11 (merge vào nhánh chính "tùy chọn, code r
 | Quyền = giao của 6 nguồn; chỉ grant tạm thời mới là hợp | Tránh leo thang ngầm | Đề xuất |
 | Ánh xạ L0–L5 → enum DB + profile; cấm `full` | Giữ schema, mở rộng tối thiểu | Cần người dùng phê duyệt |
 | Policy file ngoài worktree, hash lưu audit | Chống TM-T-01 | Đề xuất |
-| Approval pending không expire theo hook; reactivation | Hợp nhất BA (không timeout) với giới hạn hook 600 s | Cần người dùng phê duyệt |
+| Approval pending không expire theo hook; reactivation | Hợp nhất BA (không timeout) với giới hạn chờ 540 s (X-7/OWR-3; giá trị 600 s cũ bị thay thế) | Đã chốt theo Q-05/OWR-2 và X-7/OWR-3; `remind_at` 24 giờ, `expires_at` 15 phút cho 3 hành động quan trọng (A.12) |
 | Manifest JSON chuẩn `readOnly`, đặt ngoài worktree | Hợp nhất hai tài liệu | Đề xuất |
 | Lead agent không approve thay human | Đóng OI-ROLE-03 theo hướng an toàn | Q-04 (OWR-2 2026-10-30): Lead Agent không được thay thế quyền phê duyệt của Owner; merge `main` luôn cần Owner; agent được merge vào `integration/*` sau gate |
 | Fail-closed ở mọi lỗi engine | Tránh bypass bằng lỗi | Đề xuất |
@@ -320,7 +324,7 @@ Khác biệt cần chốt: POL-11 (merge vào nhánh chính "tùy chọn, code r
 Dependencies: `USER_ROLES_AND_PERMISSIONS.md`, `SECURITY.md`, `WORKSPACE_AND_GIT_ISOLATION.md`, `DATABASE_DESIGN.md` §4.9, D-003, D-004, D-009; [`SANDBOX_DESIGN.md`](SANDBOX_DESIGN.md), [`AUDIT_LOGGING.md`](AUDIT_LOGGING.md), [`CREDENTIAL_MANAGEMENT.md`](CREDENTIAL_MANAGEMENT.md).
 
 Lệch cần chủ sở hữu từng doc xử lý (tôi không sửa file của người khác):
-1. Enum `permission_level` (4 giá trị) vs L0–L5; `full` vô nghĩa.
+1. Enum `permission_level` (4 giá trị) vs L0–L5; `full` vô nghĩa. **[OWR-3 A.13 và X-3: Owner bỏ `full`, chuẩn L0–L5; dòng này là mô tả lịch sử, nguồn hiện hành là banner ở đầu mục]**
 2. `approvals` thiếu `input_hash`, `source`, `risk_tags`; status `denied/revoked` vs `rejected/cancelled`.
 3. Timeout approval: 540 s (SECURITY) vs 3600 s `timeout_sec` DB vs "không timeout" BA.
 4. Manifest: JSON `readOnly` ở WORKSPACE vs YAML `readonly` ở SECURITY; vị trí trong/ngoài worktree.
@@ -352,7 +356,7 @@ Lệch cần chủ sở hữu từng doc xử lý (tôi không sửa file của 
 - [ ] Engine §6.1 có test PM-01..PM-13 pass; coverage ≥ 90 % cho module policy.
 - [ ] Mọi lỗi nội bộ (timeout, parse, DB down) trả deny (test chaos).
 - [ ] Manifest chuẩn hoá; 3 lớp enforcement có test: ghi ngoài `writable` ⇒ ask, `forbidden` ⇒ deny, bypass hook ⇒ Lớp 3 bắt.
-- [ ] Ánh xạ level↔enum được ADR hoá; `full` bị CHECK constraint.
+- [ ] Ánh xạ level↔enum được ADR hoá; `full` bị CHECK constraint. **[OWR-3 A.13 và X-3: Owner bỏ `full`, chuẩn L0–L5; dòng này là mô tả lịch sử, nguồn hiện hành là banner ở đầu mục]**
 - [ ] Approval có `input_hash`; thay đổi lệnh sau duyệt bị chặn; không cached decision cho `prod_deploy/data_deletion/merge_main`.
 - [ ] Rate limit approval hoạt động với 18 agent giả lập.
 - [ ] Danh sách lệch §12 được các owner xác nhận/đóng trước M1.

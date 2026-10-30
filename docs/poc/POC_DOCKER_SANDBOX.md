@@ -1,9 +1,11 @@
 # POC_DOCKER_SANDBOX.md — Kiểm chứng sandbox Docker
 
-Ngày: 2026-10-30. Cơ sở: OWR-2 mục 5.3 và Q-10. Trạng thái tổng: **BLOCKED, chờ Owner tự mở Docker Desktop.** Chưa có kết quả kiểm thử nào. Không có mục nào được coi là PASS.
+Ngày: 2026-10-30. Cơ sở: OWR-2 mục 5.3, Q-10 và OWR-3 mục E. Trạng thái tổng: **BLOCKED / NOT AUTHORIZED, chờ Owner cho phép.** Owner CHƯA cho phép mở Docker Desktop hoặc chạy VAL-DOCKER-01 đến 09 (OWR-3 mục E, 2026-10-30). Chưa có kết quả kiểm thử nào. Không có mục nào được coi là PASS.
 
-## 1. Vì sao BLOCKED
-OWR-2 mục 5.3 quy định Owner tự mở Docker Desktop, chờ Docker Engine sẵn sàng, rồi mới chạy kiểm tra. Tôi không khởi động Docker, không thay đổi cấu hình WSL và không chạy `wsl --shutdown`.
+> **[OWR-3 A.10 / X-13]**: Docker nay là điều kiện tiên quyết cứng cho mọi thực thi agent thật (agent không chạy code trên Windows host; mọi code chạy trong sandbox cô lập; sandbox hỏng thì fail closed). Vì Docker chưa được phép khởi động, chưa agent thật nào được chạy. Runtime sandbox thay OpenHands vẫn là PENDING_OWNER_CLARIFICATION (xem `../SECURITY.md` §0.6).
+
+## 1. Vì sao BLOCKED / NOT AUTHORIZED
+Trước đó OWR-2 mục 5.3 quy định Owner tự mở Docker Desktop; OWR-3 mục E nay ghi rõ **chưa cho phép** mở Docker Desktop và chạy VAL-DOCKER-01..09, nên chờ Owner cho phép. Tôi không khởi động Docker, không thay đổi cấu hình WSL và không chạy `wsl --shutdown`.
 
 Bằng chứng kiểm tra hôm nay (13:39 giờ máy, lệnh chỉ đọc):
 ```text
@@ -29,9 +31,10 @@ Tiến trình liên quan đang chạy: chỉ `wslservice` (14 MB). Không có `v
 | Docker/WSL | chưa chạy | `Get-Process` |
 Docker Desktop theo tài liệu cần khoảng 2 đến 4 GB RAM cho VM. Với 4,04 GB trống, có nguy cơ thiếu RAM. Nếu máy mất ổn định thì dừng Docker Desktop theo OWR-2 5.3.
 
-## 3. Quy trình Owner thực hiện
+## 3. Quy trình khi Owner cho phép (CHƯA ĐƯỢC PHÉP, không thực hiện bây giờ)
+> OWR-3 mục E: chưa cho phép. Các bước dưới chỉ là kế hoạch sẽ dùng sau khi Owner cho phép bằng văn bản; không ai được khởi động Docker Desktop trước đó.
 1. Đóng các ứng dụng nặng (trình duyệt nhiều tab, IDE phụ) nếu cần, rồi ghi RAM trống: `powershell -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB"`.
-2. Tự mở Docker Desktop. Chờ biểu tượng báo Engine running.
+2. Chỉ sau khi Owner cho phép: mở Docker Desktop (chờ Owner cho phép). Chờ biểu tượng báo Engine running.
 3. Chạy `docker version` và `docker info`. Dán kết quả vào đây hoặc báo cho agent.
 4. Ghi RAM trống lần nữa. Ghi chênh lệch.
 5. Nếu RAM trống dưới khoảng 1 GB hoặc máy giật: dừng Docker Desktop và báo. Không tiếp tục kiểm thử.
@@ -58,4 +61,4 @@ Không chạy kiểm thử stress, phá hủy hay liên quan credential thật. 
 - Kết quả của mục này **không** được dùng để tuyên bố ADR-0007 VERIFIED nếu chỉ một phần chạy.
 
 ## 6. Hành động tiếp theo
-Chờ Owner thực hiện mục 3. Sau khi có `docker version` và `docker info` thành công, agent chạy mục 4 và cập nhật file này.
+Chờ Owner cho phép (OWR-3 mục E: chưa cho phép). Nếu và khi Owner cho phép, thực hiện mục 3. Sau khi có `docker version` và `docker info` thành công, agent chạy mục 4 và cập nhật file này.

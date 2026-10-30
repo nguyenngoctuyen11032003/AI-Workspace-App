@@ -27,7 +27,7 @@ Ký hiệu trạng thái từng mục: **[Đã xác minh]** đo/kiểm tra thự
 
 ## 4. Catalogue 18 vai trò mặc định [Đề xuất]
 
-Ký hiệu permission level (xem mục 6): **L0** read-only, **L1** write-docs, **L2** write-code (sandbox workspace), **L3** write-code + run commands/tests, **L4** infra/deploy (luôn cần user approval từng lệnh nguy hiểm).
+Ký hiệu permission level (xem mục 6): **L0** read-only, **L1** write-docs, **L2** write-code (sandbox workspace), **L3** write-code + run commands/tests, **L4** infra/deploy (luôn cần user approval từng lệnh nguy hiểm), **L5** xem mục 6 (OWR-3 A.13; ý nghĩa PENDING P-17).
 
 Provider suggestion là gợi ý mặc định, không ràng buộc. Hiện chỉ Claude Code CLI được cài [Đã xác minh]; Codex CLI chưa cài nên mọi gợi ý "Codex" là [Giả định] cho đến khi A06 xác nhận.
 
@@ -95,7 +95,7 @@ Quy tắc xung đột: khi hai pattern chồng lấn (ví dụ `docs` và `resea
 
 ## 6. Permission level [Đề xuất] — [Cần người dùng phê duyệt]
 
-> **[OWR-2 Q-03]** Owner chấp thuận L0..L5 qua `permission_level` + `permission_profile`; không có quyền `full`. **XUNG ĐỘT CHƯA GIẢI QUYẾT:** bảng dưới có L0..L4, còn `product/USER_ROLES_AND_PERMISSIONS.md` §4.2 có L0..L5 với ngữ nghĩa khác (L5 = PM/Orchestrator). Chưa chọn chuẩn; xem DOC_SYNC_LOG_OWR2_B. 18 agent role là seed data, không hardcode; Agent Identity, Provider Identity, User Identity tách biệt (OWR-2 D-016).
+> **[OWR-2 Q-03]** Owner chấp thuận L0..L5 qua `permission_level` + `permission_profile`; không có quyền `full`. **[OWR-3 A.13: chuẩn hóa L0..L5]** bảng dưới trước đây có L0..L4, nay là **L0..L5** (hàng L5 thêm bên dưới; giữ Q-03: `permission_level` + `permission_profile`, không có `full`). **XUNG ĐỘT NGỮ NGHĨA CÒN MỞ:** `product/USER_ROLES_AND_PERMISSIONS.md` §4.2 định nghĩa L1..L5 với ngữ nghĩa khác (L5 = PM/Orchestrator); ý nghĩa L5 khi không có `full`: PENDING_OWNER_CLARIFICATION P-17; xem DOC_SYNC_LOG_OWR2_B và DOC_SYNC_LOG_OWR3_B. 18 agent role là seed data, không hardcode; Agent Identity, Provider Identity, User Identity tách biệt (OWR-2 D-016).
 
 | Level | Quyền | Cơ chế thực thi (phối hợp A09) |
 |---|---|---|
@@ -104,6 +104,7 @@ Quy tắc xung đột: khi hai pattern chồng lấn (ví dụ `docs` và `resea
 | L2 | L1 + ghi code trong workspace sandbox (worktree riêng) | worktree per task; không có quyền chạy lệnh ngoài `git`, package manager |
 | L3 | L2 + chạy test/build/dev server | Bash allowlist theo lệnh; timeout per command |
 | L4 | L3 + lệnh infra (docker, deploy, git push/tag) | mỗi lệnh L4 tạo `ApprovalRequest`; agent bị PAUSED tới khi user duyệt |
+| L5 | **[PENDING_OWNER_CLARIFICATION P-17]** Ý nghĩa chưa được Owner định nghĩa (OWR-3 A.13 chỉ chuẩn hóa số cấp L0..L5; không phải `full`). `USER_ROLES_AND_PERMISSIONS.md` §4.2 gán L5 = PM/Orchestrator [Đề xuất] | chưa xác định; đi qua `permission_profile` |
 
 Permission level của instance không được vượt template; user có thể hạ thấp per-instance hoặc per-task.
 
@@ -176,7 +177,7 @@ Nguyên tắc:
 | Role = seed data trong DB, không enum trong code | Owner yêu cầu thêm/xóa/thay thế; tránh deploy khi đổi tổ chức | [Đề xuất] |
 | Template versioning + instance pin | Cho phép đổi role mà không phá execution đang chạy | [Đề xuất] |
 | Ownership theo glob, kiểm bằng hook trước khi ghi | Khớp quy tắc "không hai agent ghi cùng file" đã có trong WORK_PLAN | [Đề xuất] |
-| 5 permission level thay vì bool "có thể chạy lệnh" | Hợp với permission-mode của Claude Code và approval flow L4 | [Đề xuất] — [Cần người dùng phê duyệt] |
+| 6 permission level L0..L5 (OWR-3 A.13; trước đây 5) thay vì bool "có thể chạy lệnh" | Hợp với permission-mode của Claude Code và approval flow L4 | [Đề xuất] — [Cần người dùng phê duyệt] |
 | Tách 3 identity | Một credential dùng chung cho nhiều agent (xác minh thực tế) nên quota/cost phải tính theo credential | [Đã xác minh] động cơ, [Đề xuất] thiết kế |
 | Reviewer (10) và Release (18) là role riêng, không gộp vào QA | Gate "COMPLETED cần bằng chứng" (WORK_PLAN §3) cần chủ thể độc lập với người viết test | [Đề xuất] |
 

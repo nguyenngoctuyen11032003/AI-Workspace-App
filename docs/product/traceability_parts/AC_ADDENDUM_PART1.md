@@ -45,6 +45,8 @@
 
 ## 4. Cần Owner làm rõ (không đủ thông tin để viết AC kiểm thử được)
 
+**Cập nhật OWR-3 (2026-10-30):** sáu câu hỏi dưới đây đã được Owner trả lời ở OWR-3 mục C. AC-631..AC-643 (PROPOSED) trong `AC_ADDENDUM_PART4_OWR2.md` thay cho trạng thái thiếu thông tin; FR-078 là WON'T DO IN MVP (D-006), không viết AC. Bảng gốc giữ để truy vết.
+
 | # | FR | Câu hỏi cụ thể | Lý do không viết AC |
 |---|---|---|---|
 | Q-06 | FR-006 (S, P2) | Có bao nhiêu cấp quản lý chính thức và tên từng cấp là gì (FR chỉ nêu "ví dụ" Director → Department Head → Lead → Member)? Quy tắc reporting chain cụ thể (một agent có đúng một manager? giới hạn độ sâu?) | Số cấp là [Giả định], không có tiêu chí đúng/sai |

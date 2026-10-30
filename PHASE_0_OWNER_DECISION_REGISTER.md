@@ -465,21 +465,21 @@ Chưa có D-xxx nào ở trạng thái PENDING_OWNER_APPROVAL sau OWR-2. Các m�
 
 | # | Mục | Loại | Nội dung còn mở |
 |---|---|---|---|
-| P-1 | D-014 | PENDING_OWNER_CLARIFICATION | Danh sách event "Prompt 1 mục 8.4" chưa có trong repo; Owner xác nhận bản sao lưu trong repo |
-| P-2 | Q-07 | PENDING_OWNER_CLARIFICATION | Xác minh ToS, usage limit và điều kiện API cho Claude Team và ChatGPT/Codex; chưa nâng concurrency |
-| P-3 | FR-122 | PENDING_OWNER_CLARIFICATION | Artifact nào bắt buộc; có export/download hay chỉ lưu và truy xuất trong workspace |
-| P-4 | FR-181 | PENDING_OWNER_CLARIFICATION | Approval chờ lâu là incident hay operational alert; quy tắc grouping incident lặp lại |
-| P-5 | FR-182 | PENDING_OWNER_CLARIFICATION | Xử lý task `cancelled`; chấp thuận equal-weight hay không |
-| P-6 | FR-183 | PENDING_OWNER_CLARIFICATION | Nhiều metric hay một KPI tổng hợp (nếu KPI: công thức và trọng số cần duyệt) |
-| P-7 | D-011 / CF-019 | PENDING_OWNER_CLARIFICATION | Tile size 16 hay 32 chưa được quyết định; benchmark chưa chạy |
-| P-8 | D-005 | PENDING_OWNER_CLARIFICATION | Owner xác nhận đã biết thay đổi nhóm chấp nhận MVP B (Codex) |
-| P-9 | Q-15 | PENDING_OWNER_CLARIFICATION | MIT cho asset không được OWR-2 nhắc; cần xác nhận có cho phép hay không |
+| P-1 | D-014 | PENDING_OWNER_CLARIFICATION | Danh sách event "Prompt 1 mục 8.4" chưa có trong repo; Owner xác nhận bản sao lưu trong repo [OWR-3 2026-10-30: 16 event gốc được xác nhận (A.1); bảng ánh xạ Owner nhắc không tồn tại, chuyển sang P-16 PENDING_OWNER_CLARIFICATION] |
+| P-2 | Q-07 | PENDING_OWNER_CLARIFICATION | Xác minh ToS, usage limit và điều kiện API cho Claude Team và ChatGPT/Codex; chưa nâng concurrency [OWR-3 2026-10-30: APPROVED mặc định 5 là giới hạn scheduler nội bộ, không phải bảo đảm provider; Owner nói đã kiểm tra điều khoản, agent chưa kiểm chứng độc lập] |
+| P-3 | FR-122 | PENDING_OWNER_CLARIFICATION | Artifact nào bắt buộc; có export/download hay chỉ lưu và truy xuất trong workspace [OWR-3 2026-10-30: APPROVED (A.3)] |
+| P-4 | FR-181 | PENDING_OWNER_CLARIFICATION | Approval chờ lâu là incident hay operational alert; quy tắc grouping incident lặp lại [OWR-3 2026-10-30: APPROVED (A.4)] |
+| P-5 | FR-182 | PENDING_OWNER_CLARIFICATION | Xử lý task `cancelled`; chấp thuận equal-weight hay không [OWR-3 2026-10-30: APPROVED (A.5)] |
+| P-6 | FR-183 | PENDING_OWNER_CLARIFICATION | Nhiều metric hay một KPI tổng hợp (nếu KPI: công thức và trọng số cần duyệt) [OWR-3 2026-10-30: APPROVED (A.6)] |
+| P-7 | D-011 / CF-019 | PENDING_OWNER_CLARIFICATION | Tile size 16 hay 32 chưa được quyết định; benchmark chưa chạy [OWR-3 2026-10-30: APPROVED tile 16 px, hiển thị x2; D-011 vẫn APPROVED_CONDITIONAL, benchmark chưa chạy] |
+| P-8 | D-005 | PENDING_OWNER_CLARIFICATION | Owner xác nhận đã biết thay đổi nhóm chấp nhận MVP B (Codex) [OWR-3 2026-10-30: APPROVED, Owner xác nhận MVP chỉ Claude, Codex sau] |
+| P-9 | Q-15 | PENDING_OWNER_CLARIFICATION | MIT cho asset không được OWR-2 nhắc; cần xác nhận có cho phép hay không [OWR-3 2026-10-30: APPROVED_CONDITIONAL, MIT chỉ khi xác minh nguồn gốc, license, NOTICE; CC0 mặc định] |
 | P-10 | Q-01 | APPROVED_CONDITIONAL | Owner tự ký từng ô checklist rủi ro; điều kiện OWR-1 mục 8.3 còn hiệu lực |
-| P-11 | D-003 / Q-20 | APPROVED_CONDITIONAL | Chờ PoC đạt tiêu chí Q-20 (chưa chạy) |
+| P-11 | D-003 / Q-20 | APPROVED_CONDITIONAL | Chờ PoC đạt tiêu chí Q-20 (chưa chạy) [OWR-3 2026-10-30: PoC Conductor chưa được cho phép chạy lúc này; giữ APPROVED_CONDITIONAL] |
 | P-12 | D-021 / Q-18 | APPROVED_CONDITIONAL | Chờ OWN-AC-1..3 (PoC SK-01..SK-05) đạt |
 | P-13 | D-011 | APPROVED_CONDITIONAL | Chờ benchmark `OfficeRenderer` |
 | P-14 | D-019 | APPROVED_CONDITIONAL | Chờ Security Review (Phase 3) |
-| P-15 | D-007 | APPROVED_CONDITIONAL | Điều kiện OWR-1 và OWR-2 §8; SB-00..SB-17 chưa chạy |
+| P-15 | D-007 | APPROVED_CONDITIONAL | Điều kiện OWR-1 và OWR-2 §8; SB-00..SB-17 chưa chạy [OWR-3 2026-10-30: thêm điều kiện chặt hơn A.10, xem X-13; giữ APPROVED_CONDITIONAL] |
 
 ## 11. Xung đột với tài liệu gốc
 
@@ -487,18 +487,18 @@ Theo OWR-2 §2: khi tài liệu gốc có giá trị hoặc quy tắc khác vớ
 
 | # | Xung đột | OWR-2 | Tài liệu gốc/hiện hành | Hành động |
 |---|---|---|---|---|
-| X-1 | Locale mặc định | D-015: Vietnamese mặc định, English thứ hai | ADR-0015 (nội dung gốc), DECISION_LOG D-015 (cũ), DESIGN_TOKENS.md, UI_UX_GUIDELINES.md, FRONTEND_ARCHITECTURE.md, SYSTEM_ARCHITECTURE.md ghi tiếng Anh mặc định | Đồng bộ tài liệu theo OWR-2 (agent khác) |
-| X-2 | Codex trong MVP | D-005: hoãn Codex khỏi MVP; Q-10 không cài Codex CLI | FR-077 (Adapter Codex, M, MVP, [Owner]); ACCEPTANCE_CRITERIA nhóm B (AC-022, GP-1 yêu cầu Codex CLI login); PRD.md:88; đặc tả gốc của Owner cho nhóm chấp nhận MVP B yêu cầu kết nối Codex | **Thay đổi yêu cầu gốc của Owner: Owner cần biết (P-8).** Không tự sửa FR/AC |
-| X-3 | Enum PermissionLevel có `full` | Q-03: không hỗ trợ `full` | DATABASE_DESIGN.md:170 `['read_only','standard','elevated','full']`; PERMISSION_MODEL.md; USER_ROLES_AND_PERMISSIONS.md L5 | Bỏ `full`, CHECK cấm; đồng bộ (CF-008) |
-| X-4 | Event naming | Q-12/Q-19: DB dotted lowercase; API có thể UPPER_SNAKE | EVENT_SYSTEM.md M-E2 và FR-117 dùng UPPER_SNAKE; OWR-1 mục 8.1 hiểu "giữ UPPER_SNAKE" (được Q-19 làm rõ) | Đồng bộ M-E2 (CF-003) |
-| X-5 | Chính sách asset | Q-15: CC0 mặc định; font OFL kèm license/NOTICE; CC-BY duyệt từng package; MIT cho asset không được nhắc | D-012/ADR-0012 đề xuất CC0/MIT/OFL; LICENSE_AND_REUSE.md:134 cho phép CC0 hoặc MIT/CC-BY; VIRTUAL_OFFICE.md §21 #1; JIK-A-4 chưa có bằng chứng license (CF-025) | Đồng bộ; P-9 |
-| X-6 | Tile size | D-011: không quyết định | DATABASE_DESIGN.md:1025 `tile_size` 32 và SCREEN_SPECIFICATION.md:127 32 px; VIRTUAL_OFFICE.md:60,116,331 và Pixel Agents 16 px | STILL_OPEN (P-7) |
-| X-7 | Timeout approval | Q-05: 540 s, WAITING_HUMAN, nhắc 24 h, 15 phút cho hành động quan trọng | DATABASE_DESIGN.md:832 (3600 s), PROVIDER_INTEGRATION.md:411 (10 phút), WORKFLOW_ENGINE.md:201,359 (null), USER_ROLES_AND_PERMISSIONS.md §5.5, research Claude (30 phút) | Đồng bộ (CF-007) |
-| X-8 | Retention audit | Q-06: 365 ngày + export 2 năm | SECURITY.md:498 ghi 180 ngày | Đồng bộ (CF-006) |
-| X-9 | OpenHands và Tier 2 | D-006: hoãn sau Phase 4, không provider thứ ba trong MVP | PRD.md:88 và SRS.md:28,53 liệt kê OpenHands là adapter; FR-078 (C, P2); ADR-0007 Tier 2 dựa vào OpenHands (ADR-0006). Tier 2 mặc định là đường lùi của D-007 nên phụ thuộc quyết định này | Owner cần biết Tier 2 chưa có runtime trong MVP; đồng bộ |
-| X-10 | Phase 2 provider thực | OWR-2 §8: Phase 2 chỉ build adapter ở mock/sandbox mode nếu security gate chưa đạt | Có thể xung đột với IMPLEMENTATION_ROADMAP.md và ADR-0004 (adapter Claude ở Phase 2); chưa đối chiếu chi tiết | Kiểm tra khi đồng bộ roadmap |
-| X-11 | Concurrency theo provider | Q-07: mặc định 5 là giới hạn ứng dụng, không phải xác nhận quota | ADR-0010 và RESOURCE_MANAGEMENT.md có cap Claude 5, Codex 3 và bảng ngoại suy 5/10/18; QA CF-044 | Chú thích chưa kiểm chứng; không tuyên bố 18 đã test |
-| X-12 | Bốn FR | OWR-2 §4: chỉ là đề xuất AC, chưa APPROVED | FR-122, FR-181, FR-182, FR-183 trong FUNCTIONAL_REQUIREMENTS.md có định nghĩa riêng; ghi nhận OWR-1 mục 8.1 (mã không khớp) | Đối chiếu với FR gốc trước khi cập nhật; không biến PROPOSED AC thành APPROVED AC |
+| X-1 | Locale mặc định | D-015: Vietnamese mặc định, English thứ hai | ADR-0015 (nội dung gốc), DECISION_LOG D-015 (cũ), DESIGN_TOKENS.md, UI_UX_GUIDELINES.md, FRONTEND_ARCHITECTURE.md, SYSTEM_ARCHITECTURE.md ghi tiếng Anh mặc định | Đồng bộ tài liệu theo OWR-2 (agent khác) [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION (B); đồng bộ do agent khác thực hiện, xem log] |
+| X-2 | Codex trong MVP | D-005: hoãn Codex khỏi MVP; Q-10 không cài Codex CLI | FR-077 (Adapter Codex, M, MVP, [Owner]); ACCEPTANCE_CRITERIA nhóm B (AC-022, GP-1 yêu cầu Codex CLI login); PRD.md:88; đặc tả gốc của Owner cho nhóm chấp nhận MVP B yêu cầu kết nối Codex | **Thay đổi yêu cầu gốc của Owner: Owner cần biết (P-8).** Không tự sửa FR/AC [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION, Owner acknowledged (A.8)] |
+| X-3 | Enum PermissionLevel có `full` | Q-03: không hỗ trợ `full` | DATABASE_DESIGN.md:170 `['read_only','standard','elevated','full']`; PERMISSION_MODEL.md; USER_ROLES_AND_PERMISSIONS.md L5 | Bỏ `full`, CHECK cấm; đồng bộ (CF-008) [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION (B); đồng bộ do agent khác thực hiện, xem log] |
+| X-4 | Event naming | Q-12/Q-19: DB dotted lowercase; API có thể UPPER_SNAKE | EVENT_SYSTEM.md M-E2 và FR-117 dùng UPPER_SNAKE; OWR-1 mục 8.1 hiểu "giữ UPPER_SNAKE" (được Q-19 làm rõ) | Đồng bộ M-E2 (CF-003) [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION (B, A.16); đồng bộ do agent khác thực hiện, xem log. Bảng ánh xạ 16 event còn thiếu: X-14, P-16] |
+| X-5 | Chính sách asset | Q-15: CC0 mặc định; font OFL kèm license/NOTICE; CC-BY duyệt từng package; MIT cho asset không được nhắc | D-012/ADR-0012 đề xuất CC0/MIT/OFL; LICENSE_AND_REUSE.md:134 cho phép CC0 hoặc MIT/CC-BY; VIRTUAL_OFFICE.md §21 #1; JIK-A-4 chưa có bằng chứng license (CF-025) | Đồng bộ; P-9 [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION (A.9)] |
+| X-6 | Tile size | D-011: không quyết định | DATABASE_DESIGN.md:1025 `tile_size` 32 và SCREEN_SPECIFICATION.md:127 32 px; VIRTUAL_OFFICE.md:60,116,331 và Pixel Agents 16 px | STILL_OPEN (P-7) [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION, tile 16 px x2 (A.7); benchmark D-011 chưa chạy] |
+| X-7 | Timeout approval | Q-05: 540 s, WAITING_HUMAN, nhắc 24 h, 15 phút cho hành động quan trọng | DATABASE_DESIGN.md:832 (3600 s), PROVIDER_INTEGRATION.md:411 (10 phút), WORKFLOW_ENGINE.md:201,359 (null), USER_ROLES_AND_PERMISSIONS.md §5.5, research Claude (30 phút) | Đồng bộ (CF-007) [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION (B); đồng bộ do agent khác thực hiện, xem log] |
+| X-8 | Retention audit | Q-06: 365 ngày + export 2 năm | SECURITY.md:498 ghi 180 ngày | Đồng bộ (CF-006) [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION (B); đồng bộ do agent khác thực hiện, xem log] |
+| X-9 | OpenHands và Tier 2 | D-006: hoãn sau Phase 4, không provider thứ ba trong MVP | PRD.md:88 và SRS.md:28,53 liệt kê OpenHands là adapter; FR-078 (C, P2); ADR-0007 Tier 2 dựa vào OpenHands (ADR-0006). Tier 2 mặc định là đường lùi của D-007 nên phụ thuộc quyết định này | Owner cần biết Tier 2 chưa có runtime trong MVP; đồng bộ [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION phần phạm vi: OpenHands hoãn, Tier 2 không có trong MVP (A.10); runtime sandbox thay thế xem X-13] |
+| X-10 | Phase 2 provider thực | OWR-2 §8: Phase 2 chỉ build adapter ở mock/sandbox mode nếu security gate chưa đạt | Có thể xung đột với IMPLEMENTATION_ROADMAP.md và ADR-0004 (adapter Claude ở Phase 2); chưa đối chiếu chi tiết | Kiểm tra khi đồng bộ roadmap [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION, Owner đồng ý sửa roadmap (A.11)] |
+| X-11 | Concurrency theo provider | Q-07: mặc định 5 là giới hạn ứng dụng, không phải xác nhận quota | ADR-0010 và RESOURCE_MANAGEMENT.md có cap Claude 5, Codex 3 và bảng ngoại suy 5/10/18; QA CF-044 | Chú thích chưa kiểm chứng; không tuyên bố 18 đã test [OWR-3 2026-10-30: chỉ là ghi chú, không hành động (B)] |
+| X-12 | Bốn FR | OWR-2 §4: chỉ là đề xuất AC, chưa APPROVED | FR-122, FR-181, FR-182, FR-183 trong FUNCTIONAL_REQUIREMENTS.md có định nghĩa riêng; ghi nhận OWR-1 mục 8.1 (mã không khớp) | Đối chiếu với FR gốc trước khi cập nhật; không biến PROPOSED AC thành APPROVED AC [OWR-3 2026-10-30: RESOLVED_BY_OWNER_DECISION bởi A.3 đến A.6; AC do agent khác viết, chưa kiểm thử] |
 
 ## 12. Nhật ký thay đổi OWR-2
 
@@ -511,3 +511,132 @@ Ngày: 2026-10-30. Tác nhân: Decision Records agent (chỉ tài liệu). Khôn
 | `docs/adr/ADR-0001..ADR-0020` | Cập nhật Metadata (Decision status, Approved by/date) và thêm mục "Cập nhật OWR-2" ở cuối mỗi ADR; Validation evidence không nâng |
 | `docs/adr/README.md` | Cập nhật cột Status; mức bằng chứng giữ nguyên Partial/Unverified |
 | `docs/adr/CONFLICTS_TO_RESOLVE.md` | Thêm mục "Cập nhật OWR-2" (RESOLVED_BY_OWNER_DECISION, đồng bộ tài liệu chưa xác nhận; hoặc STILL_OPEN) |
+
+## 13. Phản hồi OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3, nội dung Owner chép nguyên văn, kèm Phụ lục do agent ghi các điểm không khớp). Mục 9 đến 12 (OWR-2) giữ nguyên làm lịch sử; **trạng thái hiện hành khi hai mục khác nhau là mục 13 này**. Ngày ghi nhận: 2026-10-30.
+
+**Phase 0 vẫn mở. Phase 1 chưa được Owner cho phép; chỉ bàn Phase 1 khi Owner xác nhận rõ ràng.** Không mục nào dưới đây là VERIFIED: chưa có PoC report hay bằng chứng kiểm thử (Docker chưa mở, Codex CLI chưa cài, PoC Conductor và test Agent thật qua SDK chưa chạy). Việc đồng bộ tài liệu khác do agent khác thực hiện (xem `docs/DOC_SYNC_LOG_OWR3_A.md`, `docs/DOC_SYNC_LOG_OWR3_B.md`); cột "Tài liệu cần đồng bộ" chỉ liệt kê, không khẳng định đã đồng bộ.
+
+Cách ghi nhận: OWR-3 do Owner viết trực tiếp, nên "cách ghi" là trích lại lời Owner (mục A.n, B, C, D, E, F của OWR-3). Mọi điểm Owner để hở hoặc không có dữ liệu kèm theo được giữ PENDING_OWNER_CLARIFICATION, agent không tự điền.
+
+### 13.1 Mục A.1 đến A.16
+
+| ID | Quyết định của Owner (rút gọn) | Cách ghi | Trạng thái kết quả | D/Q/P/X/FR liên quan | Tài liệu cần đồng bộ | Câu hỏi còn lại |
+|---|---|---|---|---|---|---|
+| A.1 | 16 event trong Prompt 1 mục 8.4 là danh sách gốc; được chép nguyên văn vào repo; ánh xạ dotted lowercase theo "bảng Owner cung cấp"; không tự thêm, xóa, đổi tên | Trích A.1; danh sách 16 tên nằm ở Phụ lục OWR-3 | Danh sách 16 event gốc: APPROVED (xác nhận). Ánh xạ dotted: **PENDING_OWNER_CLARIFICATION (P-16, X-14)** vì bảng ánh xạ **không tồn tại** trong OWR-3 | D-014, Q-12, Q-19, P-1, P-16, X-4, X-14, FR-117 | EVENT_SYSTEM.md, ADR-0014, DATABASE_DESIGN.md, `@aiw/contracts` (bảng ánh xạ) | P-16: Owner xác nhận bảng ánh xạ dotted lowercase cho 16 event. Ví dụ `task.started`, `agent.blocked` (OWR-2) **không nằm trong 16 event gốc**; `TASK_COMPLETED` có trong danh sách |
+| A.2 | Giữ concurrency mặc định 5; không 10 hoặc 18; là giới hạn scheduler nội bộ, không phải provider bảo đảm | Trích A.2, D | APPROVED | D-010, Q-07, P-2, X-11, CF-044 | ADR-0010, RESOURCE_MANAGEMENT.md, MULTI_AGENT_SCALABILITY.md | Không (xem D về điều khoản provider) |
+| A.3 | FR-122: artifact bắt buộc là output của các node required trong workflow definition; MVP lưu và xem trong workspace; export ZIP để sau | Trích A.3 | APPROVED (đề xuất AC được Owner chấp thuận); AC do agent khác viết | FR-122, P-3, Q-18, X-12 | FUNCTIONAL_REQUIREMENTS.md, ACCEPTANCE_CRITERIA.md | Không |
+| A.4 | FR-181: approval chờ lâu là operational alert, không phải incident; incident cùng loại và cùng đối tượng trong 15 phút được grouping, có bộ đếm | Trích A.4 | APPROVED | FR-181, P-4, Q-18, X-12 | FUNCTIONAL_REQUIREMENTS.md, ACCEPTANCE_CRITERIA.md | Không |
+| A.5 | FR-182: task cancelled loại khỏi tử số và mẫu số; baseline gồm task ban đầu và thay đổi phạm vi đã duyệt; equal-weight cho MVP | Trích A.5 | APPROVED | FR-182, P-5, Q-18, X-12 | FUNCTIONAL_REQUIREMENTS.md, ACCEPTANCE_CRITERIA.md | Không |
+| A.6 | FR-183: dashboard nhiều metric, không KPI tổng hợp trong MVP | Trích A.6 | APPROVED | FR-183, P-6, Q-18, X-12 | FUNCTIONAL_REQUIREMENTS.md, ACCEPTANCE_CRITERIA.md | Không |
+| A.7 | Tile: art 16 px, hiển thị phóng 2 lần; benchmark sau | Trích A.7 | APPROVED cho tile 16 px x2. D-011 giữ **APPROVED_CONDITIONAL** (benchmark `OfficeRenderer` chưa chạy) | D-011, P-7, P-13, X-6, CF-019 | DATABASE_DESIGN.md:1025 (32), SCREEN_SPECIFICATION.md:127, VIRTUAL_OFFICE.md | Không về tile; benchmark vẫn chưa chạy |
+| A.8 | D-005: MVP chỉ tích hợp Claude; Codex để sau; giữ AgentAdapter | Trích A.8 | APPROVED (xác nhận, đóng P-8) | D-005, P-8, X-2, CF-057 | ADR-0005, FR-077, ACCEPTANCE_CRITERIA nhóm B (AC-022, GP-1), PRD.md:88 | Không |
+| A.9 | Q-15: asset MIT chỉ dùng nếu xác minh nguồn gốc, license, attribution trong NOTICE; không rõ nguồn gốc thì không dùng; CC0 vẫn mặc định | Trích A.9 | APPROVED_CONDITIONAL (điều kiện: xác minh nguồn gốc + license + NOTICE từng asset). Đóng P-9 | Q-15, D-012, P-9, X-5, CF-025, CF-026, CF-059 | ADR-0012, LICENSE_AND_REUSE.md:134, VIRTUAL_OFFICE.md §21, THIRD_PARTY_NOTICES | Không. JIK-A-4 chưa có bằng chứng license: không dùng cho đến khi có (CF-025) |
+| A.10 | Tier 2/OpenHands hoãn khỏi MVP. Không arbitrary code trên Windows host. Mọi code do Agent sinh phải chạy trong sandbox cô lập. Docker chỉ build/test/run không đủ nếu Agent vẫn thực thi trên host. Sandbox hỏng thì fail closed | Trích A.10 | OpenHands hoãn: APPROVED. Ràng buộc bảo mật: D-007 giữ **APPROVED_CONDITIONAL** với điều kiện chặt hơn; xung đột **X-13** (PENDING_OWNER_CLARIFICATION) | D-006, D-007, Q-01, X-9, X-13, CF-043, CF-060 | ADR-0006, ADR-0007, SECURITY.md, SANDBOX_DESIGN.md, PRD.md:88, SRS.md:28,53 | Xem 13.3: bốn câu hỏi (i) đến (iv) |
+| A.11 | Phase 2: chỉ mock hoặc sandbox khi security gate chưa đạt; không production-capable execution | Trích A.11 | APPROVED (đóng X-10) | X-10, CF-061, Q-01 | IMPLEMENTATION_ROADMAP.md, ADR-0004, PHASE_0_REMAINING_RISKS.md | Không |
+| A.12 | Tách `remind_at` (nhắc Owner sau 24 giờ) và `expires_at` (15 phút cho approval hành động quan trọng) | Trích A.12 | APPROVED (làm rõ Q-05) | Q-05, X-7, CF-007 | DATABASE_DESIGN.md (thêm hai cột), WORKFLOW_ENGINE.md, USER_ROLES_AND_PERMISSIONS.md §5.5 | Không |
+| A.13 | Permission chuẩn hóa L0 đến L5 | Trích A.13 | APPROVED, **phải vẫn theo Q-03**: `permission_level` + `permission_profile`, không có `full` | Q-03, X-3, CF-008, P-17 | DATABASE_DESIGN.md:170, PERMISSION_MODEL.md, USER_ROLES_AND_PERMISSIONS.md (L5), AGENT_ORGANIZATION.md:30 (ghi L0..L4) | **P-17 (PENDING_OWNER_CLARIFICATION):** L5 nghĩa là gì khi không có `full`? OWR-3 không định nghĩa từng level; agent không tự điền |
+| A.14 | 9 UI node types: Agent, Task, Approval, Condition, Parallel, Merge, Tool, Test, Deployment. Là UI node types, không phải 11 engine kinds | Trích A.14 | APPROVED (làm rõ Q-11) | Q-11, CF-029, FR-113 | FUNCTIONAL_REQUIREMENTS.md FR-113, WORKFLOW_ENGINE.md M-W2, SCREEN_SPECIFICATION.md:471 | Số và danh sách engine kinds **không được OWR-3 nêu lại**; tài liệu ghi 11. Không coi là đã quyết (Phụ lục điểm 3) |
+| A.15 | WAITING_APPROVAL không tính vào 5 active workers nếu worker đã giải phóng và trạng thái persist; vẫn tuân thủ quota provider | Trích A.15 | APPROVED | D-003, D-010, Q-05, CF-048 | RESOURCE_MANAGEMENT.md:55,104, ADR-0003, ADR-0010 | Không. Quy tắc chỉ đúng khi worker thực sự được giải phóng và state đã persist (PoC Q-20 chưa chạy) |
+| A.16 | Chỉ dotted lowercase là canonical; không dùng underscore làm chuẩn | Trích A.16 | APPROVED | Q-12, Q-19, X-4, CF-003, FR-117 | EVENT_SYSTEM.md M-E2, DATABASE_DESIGN.md §5, VIRTUAL_OFFICE.md | Bảng ánh xạ 16 event: xem P-16 |
+
+### 13.2 Mục B, C, D, E, F
+
+| ID | Quyết định của Owner (rút gọn) | Cách ghi | Trạng thái kết quả | D/Q/P/X/FR liên quan | Tài liệu cần đồng bộ | Câu hỏi còn lại |
+|---|---|---|---|---|---|---|
+| B | Đồng bộ X-1 (locale mặc định tiếng Việt), X-3 (bỏ `full`), X-4 (dotted lowercase), X-7 (timeout 540 s), X-8 (audit online 365 ngày). X-11 chỉ là ghi chú | Trích B | APPROVED (cho phép đồng bộ); X-1, X-3, X-4, X-7, X-8 RESOLVED_BY_OWNER_DECISION; X-11 ghi chú | X-1, X-3, X-4, X-7, X-8, X-11, CF-003, 006, 007, 008, 058 | Như mục 11 (X-1, X-3, X-4, X-7, X-8) | Không |
+| C-FR-006 | Một quản lý trực tiếp mỗi nhân sự, không giới hạn độ sâu, chặn vòng lặp | Trích C | APPROVED | FR-006 | FUNCTIONAL_REQUIREMENTS.md, ACCEPTANCE_CRITERIA.md | Không |
+| C-FR-009 | Budget theo chi phí ước tính quy đổi từ token và phí liên quan; theo dõi token riêng; cảnh báo 80%; vượt 100% dừng cấp task và gọi model mới, Owner quyết | Trích C | APPROVED | FR-009 | như trên | Công thức quy đổi và đơn giá là thiết kế, Owner chưa nêu |
+| C-FR-038 | Meeting là thread thực; PM ghi biên bản; animation chỉ phản ánh sự kiện | Trích C | APPROVED | FR-038, D-011 | như trên | Không |
+| C-FR-078 | WON'T DO IN MVP theo D-006; giữ trong traceability | Trích C | APPROVED | FR-078, D-006, X-9 | FUNCTIONAL_REQUIREMENTS.md, PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md | Không. Tài liệu cũ ghi FR-078 là "C, P2" |
+| C-FR-088 | Không lưu hoặc tự ý đọc credential trong ứng dụng theo D-008 | Trích C | APPROVED | FR-088, D-008 | như trên | Không |
+| C-FR-098 | Không có API key fallback trong MVP | Trích C | APPROVED | FR-098, D-004 | như trên | Không |
+| C-FR-153 | Một tầng trong MVP; không tự mở rộng | Trích C | APPROVED | FR-153 | như trên | Không |
+| C-FR-186 | success rate = completed / (completed + failed) x 100%; không tính running, blocked, cancelled; mẫu số 0 thì N/A | Trích C | APPROVED | FR-186, FR-182 | như trên | Không |
+| C-FR-200 | N = 24 giờ, là operational alert | Trích C | APPROVED | FR-200, FR-181 | như trên | Không |
+| C-FR-283 | Checklist usability 10 tiêu chí; không tự xóa P0 nếu chưa có bằng chứng QA | Trích C | APPROVED | FR-283 | như trên | Danh sách 10 tiêu chí do agent khác soạn; Owner chưa duyệt từng tiêu chí |
+| C-FR-284 | Tiếng Việt mặc định, hỗ trợ tiếng Anh | Trích C | APPROVED | FR-284, D-015, X-1 | như trên | Không |
+| C-FR-292 | MVP chỉ hướng dẫn PostgreSQL dump; workspace export để sau | Trích C | APPROVED | FR-292 | như trên | Không |
+| D | Đã kiểm tra tài liệu chính thức Anthropic và OpenAI: không có căn cứ công khai đủ rõ cho 5, 10 hay 18 session song song trên một seat Claude Team hoặc ChatGPT plan. Giữ 5; không tuyên bố đây là giới hạn provider cho phép; không chia sẻ credential hoặc seat; không tăng khi chưa xác minh điều khoản và usage thực tế | Trích D. **Agent không tự kiểm chứng độc lập nhận định "không có căn cứ công khai"**; ghi nhận là lời Owner | APPROVED (đóng P-2 và Q-07 ở mức quyết định mặc định); xác minh điều khoản **không** được đánh dấu VERIFIED | Q-07, P-2, D-004, D-010, CF-044 | ADR-0004, ADR-0010, SECURITY.md §5.1 | Không tăng concurrency khi chưa xác minh điều khoản và usage thực tế (điều kiện luôn hiệu lực) |
+| E | RAM trống khoảng 4,04 GB. Chưa cho phép mở Docker Desktop hay chạy VAL-DOCKER-01..09; không cài Codex CLI; không chạy 27 runbook; không chạy PoC Conductor; không test Agent thật qua SDK. Giữ phạm vi cũ cho Drizzle PoC và Dynamic Skill/Resume PoC (scratch, không production, không secret thật, không API ngoài). Cho phép QA độc lập lần 3 về tài liệu, traceability, AC | Trích E | Ghi nhận phạm vi. Các mục chưa chạy giữ NOT RUN. **Hẹp hơn** OWR-2 §5.6 (cho phép Docker sandbox validation): theo OWR-3 chưa được chạy lúc này | Q-10, Q-01, D-003, D-007, D-021, P-11, P-12, P-15 | PHASE_0_REMAINING_RISKS.md, PHASE_0_FINAL_REPORT.md | Khi nào Owner cho phép Docker: chưa nêu |
+| F | Hai commit trên branch `docs/phase0-owner-decisions`, chưa push. Không push. Được chuẩn bị PR description. Kiểm tra git status, diff, secret, commit history trước khi báo cáo; không tự thêm commit khi chưa kiểm tra | Trích F | Chỉ thị quy trình; không đổi trạng thái D-xxx. Agent này không chạy git | không | không | Không |
+
+### 13.3 Xung đột mới: X-13 và X-14
+
+**X-13: OWR-3 A.10 (không arbitrary code trên Windows host) so với thiết kế Tier 1 của D-007/ADR-0007**
+- D-007/ADR-0007 (nội dung gốc, OWR-1 8.1): CLI/Agent chạy **trên host** với quyền người dùng thường, có chính sách và hook; chỉ lệnh build/test/run chạy trong Docker; chính sách CLI là lớp chính sách, không phải ranh giới bảo mật. Owner đã chấp nhận rủi ro ghi overlay ở Phase 0 đến 1.
+- OWR-3 A.10: mọi code do Agent sinh phải chạy trong sandbox cô lập; "Docker chỉ chạy build/test/run không đủ nếu Agent vẫn có quyền thực thi trên host"; sandbox không hoạt động thì fail closed. Đây là điều kiện **chặt hơn** Tier 1.
+- Ghi nhận: **D-007 giữ APPROVED_CONDITIONAL**, nay thêm điều kiện chặt hơn của A.10 vào điều kiện OWR-1 và OWR-2 §8. Không nâng trạng thái.
+- Câu hỏi còn lại, đều **PENDING_OWNER_CLARIFICATION** (agent không tự điền):
+  - (i) Thao tác Edit/Write file trên host, bên trong worktree của task, có được tính là cho phép không (ghi file, không phải thực thi code)?
+  - (ii) Bản thân tiến trình runtime của Agent (Claude Agent SDK hoặc CLI chạy trên host, giữ phiên đăng nhập) có bị coi là "Agent thực thi trên host" không?
+  - (iii) Runtime sandbox nào cung cấp môi trường thực thi cô lập khi OpenHands bị hoãn? Đường suy ra là executor dựa trên Docker do dự án tự xây, nhưng cần Docker, mà Owner **chưa cho phép** mở Docker lúc này (OWR-3 E).
+  - (iv) Hệ quả cần Owner biết: Docker (hoặc sandbox tương đương) trở thành điều kiện **bắt buộc** cho mọi lần thực thi Agent thật; khi chưa có thì không có thực thi Agent thật nào (chỉ mock/dry-run).
+- Phân loại: OWNER_DECISION. Trạng thái: STILL_OPEN / PENDING_OWNER_CLARIFICATION.
+
+**X-14: bảng ánh xạ event bị thiếu (liên kết P-16)**
+- OWR-3 A.1 nhắc "bảng Owner cung cấp" nhưng tin nhắn không có bảng. Chỉ có quy tắc dotted lowercase và danh sách 16 tên UPPER_SNAKE (Phụ lục OWR-3). Ví dụ `task.started`, `agent.blocked` (OWR-2) không thuộc 16 tên gốc.
+- Trạng thái: STILL_OPEN / PENDING_OWNER_CLARIFICATION (P-16). Agent không tự soạn bảng ánh xạ và không thêm, xóa, đổi tên event gốc.
+
+### 13.4 Xử lý các mục Pending (mục 10) và xung đột (mục 11) theo OWR-3
+
+| Mục | Kết quả theo OWR-3 | Trạng thái hiện hành |
+|---|---|---|
+| P-1 (D-014 danh sách event) | 16 event gốc được xác nhận (A.1); được chép nguyên văn vào repo. Phần "bảng ánh xạ do Owner cung cấp" không tồn tại, chuyển sang P-16 | Danh sách: APPROVED. Ánh xạ: xem P-16 |
+| **P-16 (MỚI)** | Owner xác nhận bảng ánh xạ dotted lowercase cho 16 event (cũng là X-14). Ví dụ Owner nêu `task.started`, `agent.blocked` không nằm trong 16 event | PENDING_OWNER_CLARIFICATION |
+| **P-17 (MỚI)** | Ý nghĩa của L5 khi không có quyền `full` (A.13 so với Q-03) | PENDING_OWNER_CLARIFICATION |
+| P-2 / Q-07 | Mặc định 5 là giới hạn scheduler nội bộ, không phải bảo đảm của provider. Owner nói đã kiểm tra điều khoản chính thức và không thấy căn cứ công khai đủ rõ; agent chưa kiểm chứng độc lập | APPROVED (mặc định 5); không VERIFIED |
+| P-3 (FR-122) | A.3 | APPROVED (AC do agent khác viết) |
+| P-4 (FR-181) | A.4 | APPROVED |
+| P-5 (FR-182) | A.5 | APPROVED |
+| P-6 (FR-183) | A.6 | APPROVED |
+| P-7 (tile) | 16 px, hiển thị x2; benchmark sau. D-011 vẫn APPROVED_CONDITIONAL | APPROVED (tile); D-011 giữ APPROVED_CONDITIONAL |
+| P-8 (D-005) | Owner xác nhận MVP chỉ Claude, Codex sau, giữ AgentAdapter | APPROVED |
+| P-9 / Q-15 | MIT cho asset chỉ khi xác minh nguồn gốc, license, NOTICE; không rõ nguồn gốc thì không dùng; CC0 mặc định | APPROVED_CONDITIONAL |
+| P-10..P-14 | Không đổi bởi OWR-3 (P-11: PoC Conductor chưa được cho phép chạy lúc này; P-13: benchmark chưa chạy) | APPROVED_CONDITIONAL (giữ) |
+| P-15 (D-007) | Thêm điều kiện chặt hơn A.10, xem X-13 | APPROVED_CONDITIONAL (giữ) |
+| X-1, X-3, X-4, X-7, X-8 | Owner đồng ý đồng bộ (B) | RESOLVED_BY_OWNER_DECISION (đồng bộ do agent khác thực hiện, xem log) |
+| X-2 | Owner xác nhận biết thay đổi nhóm MVP B (A.8) | RESOLVED_BY_OWNER_DECISION (acknowledged) |
+| X-5 | CC0 mặc định, MIT có điều kiện xác minh (A.9) | RESOLVED_BY_OWNER_DECISION |
+| X-6 | Tile 16 px x2 (A.7); benchmark sau | RESOLVED_BY_OWNER_DECISION (D-011 vẫn có điều kiện benchmark) |
+| X-9 | OpenHands hoãn, Tier 2 không có trong MVP (A.10) | RESOLVED_BY_OWNER_DECISION (phần phạm vi); runtime sandbox thay thế xem X-13 (iii) |
+| X-10 | Owner đồng ý sửa roadmap (A.11) | RESOLVED_BY_OWNER_DECISION |
+| X-11 | Chỉ là ghi chú (B) | Ghi chú, không hành động |
+| X-12 | Bốn FR được trả lời bởi A.3 đến A.6 | RESOLVED_BY_OWNER_DECISION (AC do agent khác viết; chưa kiểm thử) |
+| X-13, X-14 | Mới | STILL_OPEN / PENDING_OWNER_CLARIFICATION |
+
+Ghi nhận bổ sung: Q-03 (L0 đến L5, vẫn `permission_level` + `permission_profile`, không `full`); Q-05 (`remind_at` 24 giờ tách `expires_at` 15 phút cho approval quan trọng; chờ tool tối đa 540 giây không đổi); mục 15 (WAITING_APPROVAL không chiếm slot nếu worker đã giải phóng và state đã persist; quota provider vẫn áp dụng); Q-11 (9 UI node types chỉ là UI; engine kinds tách riêng, **không nêu lại con số nào là đã quyết**); mục 16 (chỉ dotted lowercase là canonical, tên underscore không phải chuẩn).
+
+### 13.5 Điểm không khớp trong OWR-3 (đối chiếu của agent, không sửa lời Owner)
+1. A.1: "bảng Owner cung cấp" không tồn tại; ví dụ `task.started`, `agent.blocked` không nằm trong 16 event gốc (X-14, P-16).
+2. A.10 chặt hơn Tier 1 của D-007 (X-13).
+3. A.14: không nêu lại số engine kinds (tài liệu ghi 11).
+4. A.13 (L0 đến L5) so với Q-03 (không `full`) và AGENT_ORGANIZATION.md ghi L0..L4: ý nghĩa L5 chưa rõ (P-17).
+5. E hẹp hơn OWR-2 §5.6: Docker sandbox validation, trước đó được phép, nay chưa được chạy; trong khi A.10 làm sandbox thành điều kiện bắt buộc (X-13 iv).
+6. C-FR-078: tài liệu cũ ghi FR-078 ở mức "C, P2"; Owner nay ghi WON'T DO IN MVP: cần đồng bộ nhãn ưu tiên.
+
+## 14. Nhật ký thay đổi OWR-3
+
+Ngày: 2026-10-30. Tác nhân: Decision Records agent (chỉ tài liệu). Không chạy git add/commit/push/checkout. Không đổi file ngoài danh sách dưới đây. Lịch sử không bị xóa: chỉ thêm mục hoặc ghi chú có ngày.
+
+| File | Thay đổi |
+|---|---|
+| `PHASE_0_OWNER_DECISION_REGISTER.md` | Thêm mục 13 (13.1 đến 13.5) và mục 14; thêm ghi chú OWR-3 có ngày vào cột trạng thái của mục 10 và 11; thêm P-16, P-17, X-13, X-14 |
+| `DECISION_LOG.md` | Thêm mục "Phản hồi OWR-3" và ghi chú dòng D-005, D-006, D-007, D-010, D-011, D-012, D-014, D-015 |
+| `docs/adr/ADR-0003, 0004, 0005, 0006, 0007, 0010, 0011, 0012, 0014, 0015` | Thêm mục "14. Cập nhật OWR-3" ở cuối (ADR-0007 kèm điều kiện chặt hơn và bốn câu hỏi mở); mục 1 đến 13 giữ nguyên |
+| `docs/adr/README.md` | Thêm đoạn cập nhật OWR-3 và ghi chú ở cột Status; mức bằng chứng giữ nguyên |
+| `docs/adr/CONFLICTS_TO_RESOLVE.md` | Thêm mục "Cập nhật OWR-3" cho CF-003, 005, 006, 007, 008, 011, 019, 022, 025, 026, 029, 044, 048, 056 đến 062 và CF-063, CF-064 (tạm, tương ứng X-13, X-14) |
+
+Số trạng thái mới ghi nhận từ OWR-3: PENDING_OWNER_CLARIFICATION mới 4 (P-16, P-17, X-13, X-14); APPROVED_CONDITIONAL mới 1 (Q-15 asset MIT); đóng P-1 (một phần), P-2 đến P-9; xung đột đóng X-1..X-10, X-12 (X-11 ghi chú). Không VERIFIED nào.
+
+## 15. Câu hỏi bổ sung sau QA lần ba (2026-10-30)
+Tất cả PENDING_OWNER_CLARIFICATION. Mỗi câu có đề xuất mặc định của agent, không phải quyết định.
+| # | Câu hỏi | Đề xuất mặc định |
+|---|---|---|
+| Q-21 | FR-088 nói ứng dụng không lưu hoặc tự đọc credential theo D-008, nhưng D-008 cũng cho phép secret khác lưu OS keychain. Secret **không phải credential provider** (token git, secret của dự án sinh ra) có được lưu bằng OS keychain trong MVP không? | Có, chỉ cho secret không phải credential provider; không lưu credential provider |
+| Q-22 | A.13 "L0 đến L5": Q-03 không cho `full`. L5 có nghĩa gì khi không map sang `full`? | L5 là mức cao nhất vẫn ánh xạ `elevated` cộng profile, không bao giờ cấp cho agent |
+| Q-23 | Mục E không cho mở Docker lúc này, nhưng A.10 bắt buộc sandbox cô lập cho mọi mã do agent sinh ra (Docker là điều kiện tiên quyết cho mọi lần chạy agent thật). Chấp nhận Docker là điều kiện cứng, và khi nào cho phép bật? | Chấp nhận; không chạy agent thật cho đến khi Owner cho phép bật Docker và sandbox đạt VAL-DOCKER |
+| Q-24 | A.2 "không tăng lên 10 hoặc 18": trần cấu hình 18 trong D-010 vẫn giữ trong cài đặt nhưng khóa ở 5 cho đến khi Owner mở khóa? | Có: trường cấu hình tồn tại, giá trị tối đa khóa ở 5 |
+| Q-25 | FR-009 "vượt 100%": dừng khi chạm hay khi vượt 100%? FR-181 cửa sổ 15 phút là cố định hay trượt từ lần thấy đầu? | Dừng khi chạm 100%; cửa sổ trượt từ `first_seen` |
+| Q-26 | Có xác nhận X-13 (i) host Edit/Write trong worktree của task có được phép không, (ii) tiến trình runtime agent trên host có tính là host execution không, (iii) runtime sandbox nào khi OpenHands hoãn? | (i) cho phép, giới hạn trong worktree; (ii) chỉ vào/ra mô hình, không tool shell; (iii) executor Docker của riêng dự án |

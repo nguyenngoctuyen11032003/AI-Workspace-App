@@ -53,7 +53,7 @@ interface AgentMessage {
 | `CONTEXT_UPDATE` | orchestrator → broadcast/role | `scope: 'global'|'project'`, `docRef`, `version`, `changeSummary` | PRD/ADR/standards đổi version; agent nên đọc lại phần liên quan |
 | `ARTIFACT_SHARED` | agent → agent/role/broadcast | `artifacts[]`, `note` | Chia sẻ file/diff/log; **tham chiếu**, không nhúng nội dung (xem §5) |
 | `MEETING_INVITE` / `MEETING_INPUT` / `MEETING_MINUTES` | orchestrator/PM → role list | xem §7 | Họp bất đồng bộ |
-| `APPROVAL_REQUEST` | agent → user (qua orchestrator) | `action`, `risk`, `command?` | L4 hoặc chuyển provider [Q-08/OWR-2: không tự động chuyển provider khi hết quota; thông báo Owner và chờ quyết định; Q-05: chờ tối đa 540 s rồi `WAITING_HUMAN`]; agent PAUSED/WAITING_APPROVAL |
+| `APPROVAL_REQUEST` | agent → user (qua orchestrator) | `action`, `risk`, `command?` | L4 hoặc chuyển provider [OWR-3 A.13: permission level chuẩn hóa L0 đến L5 (`permission_level` + `permission_profile`, không có `full`; mapping Q-03 xem `security/PERMISSION_MODEL.md` §4.1). Ký hiệu "L4 command" ở dòng này là nhãn cũ của loại hành động cần approval; cần làm rõ không nhầm với permission level L4 Operator — PENDING_OWNER_CLARIFICATION/Architect, xem DOC_SYNC_LOG_OWR3_A.md. OWR-3 A.12: `remind_at` nhắc sau 24 giờ; `expires_at` 15 phút chỉ cho prod deploy/data deletion/merge main] [Q-08/OWR-2: không tự động chuyển provider khi hết quota; thông báo Owner và chờ quyết định; Q-05: chờ tối đa 540 s rồi `WAITING_HUMAN`]; agent PAUSED/WAITING_APPROVAL |
 | `ACK` | agent → orchestrator | `messageId`, `status: 'read'|'accepted'|'declined'`, `reason?` | Dùng cho HANDOFF/REVIEW/MEETING |
 
 Ownership bất biến: **không message nào tự đổi owner của task**; chỉ scheduler (orchestrator) đổi và ghi `scheduler_event`.

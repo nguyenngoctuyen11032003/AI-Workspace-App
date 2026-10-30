@@ -6,9 +6,41 @@ Anh em: `AGENT_ARCHITECTURE.md` (state, session), `MULTI_AGENT_ORCHESTRATION.md`
 
 Nhãn: **[Đã xác minh]** · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**.
 
-> **[OWR-2 / Q-12, Q-19, D-014 — CHUẨN TÊN EVENT, ghi đè các câu "chọn UPPER_SNAKE" bên dưới]** Tên event **lưu trong database** (cột `type`, outbox, replay) là `lowercase.dot.notation`, ví dụ `task.started`, `task.completed`, `agent.blocked`. Dạng `UPPER_SNAKE_CASE` (ví dụ `TASK_COMPLETED`) **chỉ** là tên tương thích ở API/output bên ngoài, sinh ra từ DUY NHẤT một hàm ánh xạ xác định `toLegacyName(dbName)` (tên khớp `API_DOCUMENTATION.md` §6.3; đề xuất: `dbName.toUpperCase().replaceAll('.', '_')`, đặt trong `packages/contracts`); không được có hệ thống đặt tên thứ hai độc lập. Các bảng §4–§9 hiện còn liệt kê tên ở dạng UPPER_SNAKE: **đọc là tên tương thích bên ngoài**; tên DB tương ứng là dạng dotted của cùng tên (ví dụ `AGENT_STATE_CHANGED` ↔ `agent.state.changed`) và việc đổi từng dòng sang dotted nằm trong hạng mục dọn dẹp tiếp theo của Phase 0 (OWR-2 §1 Q-19, §3 D-014).
+> **[OWR-2 / Q-12, Q-19, D-014 — CHUẨN TÊN EVENT, ghi đè các câu "chọn UPPER_SNAKE" bên dưới]** Tên event **lưu trong database** (cột `type`, outbox, replay) là `lowercase.dot.notation`, ví dụ `task.completed`, `agent.tool.started`. **[OWR-3 A.16/X-4]** chỉ dotted lowercase là canonical, không dùng underscore làm chuẩn; quy tắc cơ học duy nhất: viết thường, MỌI dấu gạch dưới thành dấu chấm, nên tên canonical KHÔNG có phân đoạn chứa `_`. (`task.started` và `agent.blocked` là ví dụ trong OWR-2, **không thuộc 16 event gốc**; xem §0.) Dạng `UPPER_SNAKE_CASE` (ví dụ `TASK_COMPLETED`) **chỉ** là tên tương thích ở API/output bên ngoài, sinh ra từ DUY NHẤT một hàm ánh xạ xác định `toLegacyName(dbName)` (tên khớp `API_DOCUMENTATION.md` §6.3; đề xuất: `dbName.toUpperCase().replaceAll('.', '_')`, đặt trong `packages/contracts`); không được có hệ thống đặt tên thứ hai độc lập. Các bảng §4–§9 hiện còn liệt kê tên ở dạng UPPER_SNAKE: **đọc là tên tương thích bên ngoài**; tên DB tương ứng là dạng dotted của cùng tên (ví dụ `AGENT_STATE_CHANGED` ↔ `agent.state.changed`) và việc đổi từng dòng sang dotted nằm trong hạng mục dọn dẹp tiếp theo của Phase 0 (OWR-2 §1 Q-19, §3 D-014).
 >
-> **[PENDING_OWNER_CLARIFICATION — D-014 / OWR-2 §3]** Mười sáu tên event gốc của Owner ("Prompt 1 mục 8.4") **không được lưu trong repo**. Owner cần cung cấp hoặc xác nhận danh sách gốc. Toàn bộ danh mục §5–§6 dưới đây là **đề xuất, chưa phải danh sách gốc của Owner**, không được xem là đã phê duyệt.
+> **[OWR-3 A.1/A.16/X-4 — ĐÃ GIẢI QUYẾT phần danh sách gốc]** Owner xác nhận 16 tên trong Prompt 1 mục 8.4 là **danh sách event gốc** (thay cho ghi chú PENDING trước đây về việc thiếu danh sách gốc; xem §0). Toàn bộ event khác trong §5–§6 là **đề xuất ngoài danh sách gốc, chờ Owner**, không được xem là đã phê duyệt.
+>
+> **[PENDING_OWNER_CLARIFICATION (P-16 và X-14)]** Owner viết "theo bảng Owner cung cấp" nhưng **chưa cung cấp bảng ánh xạ** event gốc sang dotted lowercase. Cột ánh xạ ở §0 là **đề xuất theo quy tắc cơ học (viết thường, mọi dấu gạch dưới thành dấu chấm)**, không phải bảng của Owner.
+
+---
+
+## 0. Danh sách event gốc của Owner
+
+Nguồn: Prompt 1 mục 8.4 (trích nguyên văn ở phụ lục `owner-responses/OWR-3_2026-10-30_decision_clarification.md`); Owner xác nhận ở OWR-3 A.1 đây là danh sách gốc. **Không thêm, xóa hay đổi tên** 16 tên dưới đây. Cột 3 là **đề xuất theo quy tắc cơ học, PENDING_OWNER_CLARIFICATION (P-16): Owner chưa cung cấp bảng ánh xạ**. Canonical = dotted lowercase; UPPER_SNAKE chỉ là tên tương thích ngoài, sinh bởi đúng một hàm xác định `toLegacyName()`.
+
+| # | Tên gốc (nguyên văn) | Dotted lowercase (đề xuất cơ học, P-16) |
+|---|---|---|
+| 1 | AGENT_CREATED | agent.created |
+| 2 | AGENT_ASSIGNED | agent.assigned |
+| 3 | AGENT_STARTED | agent.started |
+| 4 | AGENT_THINKING | agent.thinking |
+| 5 | AGENT_TOOL_STARTED | agent.tool.started |
+| 6 | AGENT_TOOL_COMPLETED | agent.tool.completed |
+| 7 | AGENT_WAITING_APPROVAL | agent.waiting.approval |
+| 8 | AGENT_COMPLETED | agent.completed |
+| 9 | AGENT_FAILED | agent.failed |
+| 10 | TASK_CREATED | task.created |
+| 11 | TASK_COMPLETED | task.completed |
+| 12 | TASK_BLOCKED | task.blocked |
+| 13 | WORKFLOW_STAGE_CHANGED | workflow.stage.changed |
+| 14 | HUMAN_APPROVAL_REQUIRED | human.approval.required |
+| 15 | HUMAN_APPROVED | human.approved |
+| 16 | HUMAN_REJECTED | human.rejected |
+
+Ghi chú:
+- Văn bản gốc dùng từ "Ví dụ"; Owner nay xác nhận 16 tên là danh sách gốc. Các ví dụ `task.started` và `agent.blocked` (OWR-2) **không** nằm trong 16 event gốc và không được trình bày như event gốc.
+- **[Xung đột, ghi nhận không sửa]** 10 trong 16 tên gốc (AGENT_ASSIGNED, AGENT_STARTED, AGENT_THINKING, AGENT_TOOL_STARTED, AGENT_TOOL_COMPLETED, AGENT_WAITING_APPROVAL, AGENT_COMPLETED, AGENT_FAILED, WORKFLOW_STAGE_CHANGED, HUMAN_APPROVAL_REQUIRED) **chưa có trong danh mục đề xuất §5–§6**, nơi dùng tên gần nghĩa (`AGENT_STATE_CHANGED`, `WORKFLOW_STAGE_STARTED/COMPLETED`, `HUMAN_APPROVAL_REQUESTED`, `PROVIDER_TOOL_*`...). Không đổi tên cũng không xóa: Owner/Architect cần chốt quan hệ giữa event gốc và event đề xuất (thay thế, bí danh hay bổ sung).
+- Danh sách này chỉ là hợp đồng tên; payload và schema của từng event gốc chưa được Owner định nghĩa (vẫn là đề xuất ở §5).
 
 ---
 
@@ -73,7 +105,7 @@ Cấp `sequence` trong transaction: aggregate `session` dùng `UPDATE agent_sess
 
 ## 5. Danh mục event
 
-**[Đề xuất, chưa phải danh sách gốc của Owner — xem PENDING_OWNER_CLARIFICATION ở đầu tài liệu]** Quy ước: tên liệt kê dạng UPPER_SNAKE theo tiền tố = tên tương thích API (OWR-2 Q-19); tên lưu DB là dạng lowercase.dot; cột "D/T" = Durable (ghi `agent_events` + outbox) hoặc Transient (chỉ Redis). Trường `?` là tùy chọn. Mọi event có envelope §4; bảng chỉ liệt kê `payload`.
+**[Đề xuất ngoài danh sách gốc, chờ Owner — trừ 6 tên trùng danh sách gốc ở §0 (AGENT_CREATED, TASK_CREATED, TASK_COMPLETED, TASK_BLOCKED, HUMAN_APPROVED, HUMAN_REJECTED); P-16 ở đầu tài liệu]** Tên canonical dotted lowercase của từng dòng xem §5.7. Quy ước: tên liệt kê dạng UPPER_SNAKE theo tiền tố = tên tương thích API (OWR-2 Q-19); tên lưu DB là dạng lowercase.dot; cột "D/T" = Durable (ghi `agent_events` + outbox) hoặc Transient (chỉ Redis). Trường `?` là tùy chọn. Mọi event có envelope §4; bảng chỉ liệt kê `payload`.
 
 ### 5.1 AGENT_*
 
@@ -131,7 +163,7 @@ Cấp `sequence` trong transaction: aggregate `session` dùng `UPDATE agent_sess
 | WORKFLOW_REVISION_STARTED | run | D | `runId`, `revision`, `gateNodeKey`, `fixTasks[{targetNodeKey,assignee}]` |
 | WORKFLOW_CHECKPOINT_SAVED | run | D | `runId`, `seq`, `reason` |
 
-Ghi chú: FR-117 dùng `STAGE_STARTED/STAGE_COMPLETED`; A07 dùng `WORKFLOW_STAGE_CHANGED`. Chọn `WORKFLOW_STAGE_STARTED/COMPLETED` (hai sự kiện rõ nghĩa cho office và timeline); alias `STAGE_STARTED` giữ trong ánh xạ FR (M-E2).
+Ghi chú: FR-117 dùng `STAGE_STARTED/STAGE_COMPLETED`; A07 dùng `WORKFLOW_STAGE_CHANGED`. Đề xuất `WORKFLOW_STAGE_STARTED/COMPLETED` (hai sự kiện rõ nghĩa cho office và timeline); alias `STAGE_STARTED` giữ trong ánh xạ FR (M-E2). **[OWR-3 A.1]** `WORKFLOW_STAGE_CHANGED` nay là event GỐC của Owner (§0, `workflow.stage.changed`); `WORKFLOW_STAGE_STARTED/COMPLETED` là đề xuất ngoài danh sách gốc, chờ Owner chốt quan hệ (không đổi tên, không xóa).
 
 ### 5.4 HUMAN_*
 
@@ -173,13 +205,99 @@ Ghi chú: FR-117 dùng `STAGE_STARTED/STAGE_COMPLETED`; A07 dùng `WORKFLOW_STAG
 | A07 | `SEMAPHORE_WAIT` | `RESOURCE_SEMAPHORE_WAIT` |
 | DB §5.2 | `session.started` … `office.animation` (dotted, lowercase) | Bảng dưới |
 
-DB §5.2 dùng dạng dotted (`task.status_changed`, `run.node_entered`, `approval.requested`...). Hai kiểu đặt tên cùng tồn tại trong tài liệu nguồn; ~~chọn **UPPER_SNAKE** vì FR-117 là yêu cầu của owner~~ **[bị thay thế bởi OWR-2 Q-12/Q-19: DB dùng lowercase.dot; UPPER_SNAKE chỉ là ánh xạ API qua một hàm duy nhất]**. Xung đột còn lại: DB §5.2 có phân đoạn chứa dấu gạch dưới (`task.status_changed`) trong khi quy tắc ánh xạ đề xuất thay `.`→`_`; cần Owner/Architect chốt dùng `status.changed` hay giữ `status_changed` (xem DOC_SYNC_LOG_OWR2_B, Conflicts). Quy đổi: `session.*→AGENT_SESSION_*`, `task.*→TASK_*`, `run.*→WORKFLOW_*`, `approval.*→HUMAN_APPROVAL_*`, `agent.*→AGENT_*`, `llm.*`/`tool.*`/`file.*`/`shell.*`/`git.*→PROVIDER_*` (xem §6), `office.moved/animation` là **transient, không thuộc catalogue durable** (§9) (M-E2).
+DB §5.2 dùng dạng dotted (`task.status_changed`, `run.node_entered`, `approval.requested`...). Hai kiểu đặt tên cùng tồn tại trong tài liệu nguồn; ~~chọn **UPPER_SNAKE** vì FR-117 là yêu cầu của owner~~ **[bị thay thế bởi OWR-2 Q-12/Q-19: DB dùng lowercase.dot; UPPER_SNAKE chỉ là ánh xạ API qua một hàm duy nhất]**. **[OWR-3 A.16/X-4: ĐÃ GIẢI QUYẾT]** Xung đột phân đoạn `_` (`task.status_changed`) được chốt: canonical là dotted lowercase KHÔNG có `_`, tức `task.status.changed`, `run.node.entered`, `agent.status.changed` (quy tắc cơ học: mọi `_` thành `.`); DB §5.2 đã đồng bộ. Quy đổi: `session.*→AGENT_SESSION_*`, `task.*→TASK_*`, `run.*→WORKFLOW_*`, `approval.*→HUMAN_APPROVAL_*`, `agent.*→AGENT_*`, `llm.*`/`tool.*`/`file.*`/`shell.*`/`git.*→PROVIDER_*` (xem §6), `office.moved/animation` là **transient, không thuộc catalogue durable** (§9) (M-E2).
+
+### 5.7 Tên canonical dotted lowercase của event đề xuất (ngoài danh sách gốc, chờ Owner)
+
+**[OWR-3 A.16/X-4; đề xuất ngoài danh sách gốc, chờ Owner]** Quy tắc cơ học duy nhất: viết thường, mọi dấu gạch dưới thành dấu chấm (không phân đoạn nào chứa `_`). Cột trái là tên tương thích (UPPER_SNAKE) đang dùng trong các bảng §5–§6, §9; cột phải là tên canonical. Các tên trùng danh sách gốc (AGENT_CREATED, TASK_CREATED, TASK_COMPLETED, TASK_BLOCKED, HUMAN_APPROVED, HUMAN_REJECTED) xem §0, không lặp lại ở đây. Toàn bộ bảng dưới là **đề xuất, chưa được Owner duyệt**; không xóa mục nào.
+
+| Tên tương thích (UPPER_SNAKE) | Canonical dotted lowercase |
+|---|---|
+| `AGENT_UPDATED` | `agent.updated` |
+| `AGENT_ARCHIVED` | `agent.archived` |
+| `AGENT_STATE_CHANGED` | `agent.state.changed` |
+| `AGENT_SESSION_STARTED` | `agent.session.started` |
+| `AGENT_SESSION_SUSPENDED` | `agent.session.suspended` |
+| `AGENT_SESSION_RESUMED` | `agent.session.resumed` |
+| `AGENT_SESSION_EXITED` | `agent.session.exited` |
+| `AGENT_HEARTBEAT` | `agent.heartbeat` |
+| `AGENT_MESSAGE_SENT` | `agent.message.sent` |
+| `AGENT_MEMORY_PROPOSED` | `agent.memory.proposed` |
+| `AGENT_MEMORY_DECIDED` | `agent.memory.decided` |
+| `TASK_ASSIGNED` | `task.assigned` |
+| `ASSIGNMENT_BLOCKED` | `assignment.blocked` |
+| `TASK_REASSIGNED` | `task.reassigned` |
+| `TASK_HANDOVER` | `task.handover` |
+| `TASK_STARTED` | `task.started` |
+| `TASK_PROGRESS` | `task.progress` |
+| `TASK_STATUS_CHANGED` | `task.status.changed` |
+| `TASK_REVIEW_REQUESTED` | `task.review.requested` |
+| `TASK_EVIDENCE_RECORDED` | `task.evidence.recorded` |
+| `TASK_FAILED` | `task.failed` |
+| `TASK_CANCELLED` | `task.cancelled` |
+| `TASK_REVISION_CREATED` | `task.revision.created` |
+| `WORKFLOW_STARTED` | `workflow.started` |
+| `WORKFLOW_PAUSED` | `workflow.paused` |
+| `WORKFLOW_RESUMED` | `workflow.resumed` |
+| `WORKFLOW_CANCELLED` | `workflow.cancelled` |
+| `WORKFLOW_COMPLETED` | `workflow.completed` |
+| `WORKFLOW_FAILED` | `workflow.failed` |
+| `WORKFLOW_STAGE_STARTED` | `workflow.stage.started` |
+| `WORKFLOW_STAGE_COMPLETED` | `workflow.stage.completed` |
+| `WORKFLOW_NODE_READY` | `workflow.node.ready` |
+| `WORKFLOW_NODE_QUEUED` | `workflow.node.queued` |
+| `WORKFLOW_NODE_STARTED` | `workflow.node.started` |
+| `WORKFLOW_NODE_SUCCEEDED` | `workflow.node.succeeded` |
+| `WORKFLOW_NODE_FAILED` | `workflow.node.failed` |
+| `WORKFLOW_NODE_SKIPPED` | `workflow.node.skipped` |
+| `WORKFLOW_NODE_RETRY_SCHEDULED` | `workflow.node.retry.scheduled` |
+| `WORKFLOW_LOOP_LIMIT_REACHED` | `workflow.loop.limit.reached` |
+| `WORKFLOW_REVISION_STARTED` | `workflow.revision.started` |
+| `WORKFLOW_CHECKPOINT_SAVED` | `workflow.checkpoint.saved` |
+| `HUMAN_APPROVAL_REQUESTED` | `human.approval.requested` |
+| `HUMAN_APPROVAL_EXPIRED` | `human.approval.expired` |
+| `HUMAN_FEEDBACK_SUBMITTED` | `human.feedback.submitted` |
+| `HUMAN_COMMAND` | `human.command` |
+| `EMERGENCY_STOP` | `emergency.stop` |
+| `MEETING_STARTED` | `meeting.started` |
+| `MEETING_ENDED` | `meeting.ended` |
+| `BUG_CREATED` | `bug.created` |
+| `BUILD_STARTED` | `build.started` |
+| `BUILD_COMPLETED` | `build.completed` |
+| `TEST_RESULT` | `test.result` |
+| `PREVIEW_READY` | `preview.ready` |
+| `WORKTREE_CREATED` | `worktree.created` |
+| `WORKTREE_MERGED` | `worktree.merged` |
+| `WORKTREE_CONFLICT` | `worktree.conflict` |
+| `RESOURCE_SEMAPHORE_WAIT` | `resource.semaphore.wait` |
+| `RESOURCE_CONCURRENCY_REDUCED` | `resource.concurrency.reduced` |
+| `PROVIDER_CONNECTED` | `provider.connected` |
+| `PROVIDER_DISCONNECTED` | `provider.disconnected` |
+| `SYSTEM_RECOVERED` | `system.recovered` |
+| `PROVIDER_SESSION_STARTED` | `provider.session.started` |
+| `PROVIDER_SESSION_ENDED` | `provider.session.ended` |
+| `PROVIDER_TURN_STARTED` | `provider.turn.started` |
+| `PROVIDER_TURN_ENDED` | `provider.turn.ended` |
+| `PROVIDER_TOOL_STARTED` | `provider.tool.started` |
+| `PROVIDER_TOOL_COMPLETED` | `provider.tool.completed` |
+| `PROVIDER_TOOL_DENIED` | `provider.tool.denied` |
+| `PROVIDER_PERMISSION_REQUESTED` | `provider.permission.requested` |
+| `PROVIDER_PERMISSION_RESOLVED` | `provider.permission.resolved` |
+| `PROVIDER_MESSAGE` | `provider.message` |
+| `PROVIDER_OUTPUT_DELTA` | `provider.output.delta` |
+| `PROVIDER_USAGE` | `provider.usage` |
+| `PROVIDER_RATE_LIMITED` | `provider.rate.limited` |
+| `PROVIDER_ERROR` | `provider.error` |
+| `PROVIDER_SUBAGENT_STARTED` | `provider.subagent.started` |
+| `PROVIDER_SUBAGENT_ENDED` | `provider.subagent.ended` |
 
 ## 6. Event provider chuẩn hóa
 
 Mục tiêu: một bộ event `PROVIDER_*` bất kể Claude Code, Codex hay OpenHands, để UI, office, usage không phụ thuộc tên tool/provider. Adapter chịu trách nhiệm chuẩn hóa; **webview không hardcode tên tool** (Pixel Agents: `providerCapabilities` mang `readingTools`, `subagentToolNames` xuống UI).
 
 ### 6.1 Danh mục
+
+**[Đề xuất ngoài danh sách gốc, chờ Owner]** Mọi `PROVIDER_*` dưới đây không thuộc 16 event gốc (§0); tên canonical dotted lowercase (`provider.tool.started`, ...) xem §5.7. Codex/OpenHands chỉ là cột mở rộng (D-005/D-006); MVP chỉ Claude (OWR-3 A.8).
 
 | Type | D/T | Payload | Ghi chú |
 |---|---|---|---|
@@ -366,7 +484,7 @@ Nhận xét đối chiếu: Pixel Agents §2.3 ghi "Thinking không có tín hi�
 
 | # | Quyết định | Lý do | Nhãn |
 |---|---|---|---|
-| ES-01 | Tên event UPPER_SNAKE theo tiền tố; envelope tách payload | FR-117 (owner), OpenHands | [Đề xuất] |
+| ES-01 | **[OWR-3 A.16] Canonical = dotted lowercase (không `_`); UPPER_SNAKE chỉ là tương thích ngoài qua một hàm `toLegacyName()`**; envelope tách payload; 16 event gốc ở §0 | OWR-3 A.1/A.16, FR-117 (owner), OpenHands | [Đã Owner xác nhận quy tắc]; ánh xạ P-16 là đề xuất |
 | ES-02 | Một outbox giao dịch ở mọi chế độ; relay một leader | D-014; giữ thứ tự; `agent_events` append-only | [Đề xuất] — [Cần người dùng phê duyệt] |
 | ES-03 | Pub/sub để đẩy; replay để bù; Stream làm đệm/consumer group, không phải nguồn sự thật | Pub/sub không bền | [Đề xuất] |
 | ES-04 | `lastEventId = globalSeq` cho feed tổng; `(sessionId, afterSeq)` cho console | Tránh so sánh timestamp lỗi (OpenHands) | [Đề xuất] |
@@ -388,7 +506,7 @@ Nhận xét đối chiếu: Pixel Agents §2.3 ghi "Thinking không có tín hi�
 | Out-of-order giữa aggregate làm office/timeline sai | Cửa sổ chịu lệch 1-2 s; `causationId`; consumer idempotent |
 | Redaction sót secret | Pattern + danh sách key org + `redactions[]`; test với fixture rò rỉ; không ghi input thô |
 | Outbox leader chết làm trễ phát | Advisory lock failover, cảnh báo backlog, replay bù |
-| Hai chuẩn tên (UPPER vs dotted) gây rối khi triển khai | Bảng quy đổi §5.6; zod schema là nguồn duy nhất |
+| Hai chuẩn tên (UPPER vs dotted) gây rối khi triển khai | Chỉ dotted canonical (OWR-3); bảng quy đổi §5.6–§5.7; zod schema là nguồn duy nhất |
 | Office "tĩnh" khi ít event gây khó hiểu | Chấp nhận (FR rủi ro); badge trạng thái từ snapshot; không giả lập |
 | Thiếu `delivery`/`redactions` ở schema DB | Chốt cách lưu trước migration |
 | Tên event Codex chưa kiểm | Adapter Codex sau khi cài CLI; hợp đồng test bằng fixture ghi lại |
@@ -396,7 +514,7 @@ Nhận xét đối chiếu: Pixel Agents §2.3 ghi "Thinking không có tín hi�
 ## 14. Vấn đề chưa giải quyết
 
 1. [Cần người dùng phê duyệt] Outbox ở mọi chế độ (§7.1) so với đề xuất tách hai chế độ của DB §5.4.
-2. [Cần người dùng phê duyệt] Danh mục event FR-117 (AP-FR-03) và tên chuẩn UPPER_SNAKE.
+2. [Cần người dùng phê duyệt] PENDING_OWNER_CLARIFICATION (P-16): Owner chưa cung cấp bảng ánh xạ 16 event gốc sang dotted (§0 là đề xuất cơ học); quan hệ giữa 10 event gốc chưa có trong danh mục và các event đề xuất (§0 ghi chú); danh mục FR-117 (AP-FR-03). Tên chuẩn UPPER_SNAKE **không còn** là chuẩn (OWR-3 A.16).
 3. [Cần người dùng phê duyệt] Có cho phép chế độ mô phỏng/demo cho office không (FR-160 nói không giả lập).
 4. [Cần người dùng phê duyệt] `event_sequences` cho aggregate ngoài session (DB §5.1 đang chờ duyệt).
 5. UUID v7 (cần hàm app hoặc PG 18) so với `gen_random_uuid()`; hay giữ v4 và dùng `global_seq` để sắp xếp.
@@ -409,7 +527,7 @@ Nhận xét đối chiếu: Pixel Agents §2.3 ghi "Thinking không có tín hi�
 | ID | Mâu thuẫn | Xử lý |
 |---|---|---|
 | M-E1 | `id`: A07 ULID; DB `uuid` | UUID v7 (hoặc v4 + `global_seq`) |
-| M-E2 | Tên event: FR-117, A07 (`NODE_*`, `AGENT_STATUS_CHANGED`), DB dotted lowercase | §5.6 bảng quy đổi, UPPER_SNAKE |
+| M-E2 | Tên event: FR-117, A07 (`NODE_*`, `AGENT_STATUS_CHANGED`), DB dotted lowercase | §5.6–§5.7 bảng quy đổi; canonical dotted lowercase (OWR-3), UPPER_SNAKE chỉ tương thích |
 | M-E3 | Outbox: A07 `EventOutbox.published` + SKIP LOCKED (nhiều relay), replay 7 ngày; DB §5.4 hai chế độ (a)/(b), retention 90/365 ngày | §7.1, §10 |
 | M-E4 | Stream: A07 `events:<workspaceId>`; DB `aiw:evt:session:{id}:buffer` | §7.3 giữ cả hai, đặt tên theo tiền tố `aiw:` |
 | M-E5 | `AGENT_OUTPUT_CHUNK` (A07) vs `llm.stream_chunk` (DB, chỉ debug) | `PROVIDER_OUTPUT_DELTA` transient |

@@ -1,10 +1,11 @@
 # MULTI_AGENT_ORCHESTRATION.md — Điều phối đa agent: phân vai, đồng thời, WBS, giao việc, hồi phục
+> **[OWR-3 A.16, QA3 F3-02]** Tên event dạng UPPER_SNAKE trong tài liệu này là tên tương thích. Tên canonical là dotted lowercase; 16 event gốc và ánh xạ đề xuất nằm ở `docs/EVENT_SYSTEM.md` mục 0 (ánh xạ chờ Owner xác nhận, P-16).
 
 Tác giả: Multi-Agent Architect — Phase 0 (chỉ tài liệu). Ngày: 2026-10-30. Trạng thái: DRAFT chờ owner phê duyệt.
 Tổng hợp từ: `DECISION_LOG.md` (D-003, D-009, D-010, D-014, D-016), `research/ORCHESTRATION_WORKFLOW_RESEARCH.md` (A07), `architecture/AGENT_SCHEDULER.md`, `AGENT_COLLABORATION.md`, `RESOURCE_MANAGEMENT.md`, `AGENT_ORGANIZATION.md` (A13), `DATABASE_DESIGN.md`, `product/FUNCTIONAL_REQUIREMENTS.md` (FR-101..135, FR-231..245).
 Anh em: `AGENT_ARCHITECTURE.md` (lifecycle, session), `WORKFLOW_ENGINE.md` (DAG, node_run), `EVENT_SYSTEM.md` (event). Không lặp lại công thức scoring, Lua semaphore, bảng backoff đã có ở A07/A13; chỉ chốt phân vai, quy tắc và chỗ hai nguồn lệch nhau.
 
-> **[OWR-2 Q-20 / D-003]** Định hướng Conductor (BullMQ + PostgreSQL) **được duyệt, chưa khóa implementation cho tới khi PoC đạt** (crash recovery, idempotency, không chạy lặp node, retry an toàn, approval state bền vững, không giữ worker khi chờ). PoC không đạt: báo Temporal/LangGraph để Owner quyết. **[OWR-2 Q-05]** approval chờ tối đa 540 s rồi `WAITING_HUMAN`, nhắc 24 giờ; production deploy/data deletion/merge main cần approval riêng hết hạn sau 15 phút (chi tiết `WORKFLOW_ENGINE.md` §7). **[OWR-2 Q-04/D-009]** merge vào `integration/*` khi qua gate; merge `main` luôn cần Owner approval, Lead Agent không thay thế. **[OWR-2 Q-08]** không tự failover provider khi hết quota. **[OWR-2 Q-07]** concurrency mặc định 5 không phải xác nhận subscription.
+> **[OWR-2 Q-20 / D-003]** Định hướng Conductor (BullMQ + PostgreSQL) **được duyệt, chưa khóa implementation cho tới khi PoC đạt** (crash recovery, idempotency, không chạy lặp node, retry an toàn, approval state bền vững, không giữ worker khi chờ). PoC không đạt: báo Temporal/LangGraph để Owner quyết. **[OWR-2 Q-05]** approval chờ tối đa 540 s rồi `WAITING_HUMAN`, nhắc 24 giờ; production deploy/data deletion/merge main cần approval riêng hết hạn sau 15 phút (chi tiết `WORKFLOW_ENGINE.md` §7). **[OWR-2 Q-04/D-009]** merge vào `integration/*` khi qua gate; merge `main` luôn cần Owner approval, Lead Agent không thay thế. **[OWR-2 Q-08]** không tự failover provider khi hết quota. **[OWR-2 Q-07]** concurrency mặc định 5 không phải xác nhận subscription. **[OWR-3 A.2/A.12/A.15/D]** 5 là giới hạn scheduler nội bộ, không phải giới hạn provider; `WAITING_APPROVAL` không tính vào 5 active workers nếu worker đã giải phóng và state đã persist (vẫn theo quota provider); `remind_at` (24 giờ) tách khỏi `expires_at` (15 phút, hành động quan trọng).
 
 Nhãn: **[Đã xác minh]** · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**. Các phần 3-11 là nội dung chi tiết; số mục được giữ ổn định vì các tài liệu anh em tham chiếu (§8 = completion rule, §9 = revision, §10 = recovery).
 
@@ -65,8 +66,8 @@ Một biến thể tùy chọn: một "Chief Orchestrator Agent" LLM làm lớp 
 
 ### 4.1 Con số và cách đếm [Đã xác minh nguồn yêu cầu, Đề xuất cách đếm]
 
-- Mặc định **5** agent chạy đồng thời toàn cục, cấu hình tối đa **18** (D-010; FR-231/232 là yêu cầu owner).
-- "Đang chạy" = session `starting`/`active` (và đang dừng); `waiting`, `paused`, `WAITING_HUMAN` **không** chiếm slot nhưng vẫn giữ workspace lock. Đếm theo agent executing, không theo agent đã tạo.
+- Mặc định **5** agent chạy đồng thời toàn cục, cấu hình tối đa **18** (D-010; FR-231/232 là yêu cầu owner). **[OWR-3 A.2/D]** 5 là giới hạn scheduler NỘI BỘ, **không phải** giới hạn được provider bảo đảm hay cho phép (không có căn cứ công khai đủ rõ cho 5/10/18 session song song trên một seat); không tăng lên 10/18 khi chưa xác minh điều khoản và usage thực tế; không chia sẻ credential/seat giữa nhiều người.
+- "Đang chạy" = session `starting`/`active` (và đang dừng); `waiting`, `paused`, `WAITING_HUMAN` **không** chiếm slot nhưng vẫn giữ workspace lock. **[OWR-3 A.15]** `WAITING_APPROVAL` không tính vào giới hạn 5 active workers **nếu** worker đã được giải phóng và trạng thái đã persist; vẫn phải tuân thủ quota provider. Đếm theo agent executing, không theo agent đã tạo.
 - Có thể tạo 18 instance, chỉ `max_concurrent_agents` chạy cùng lúc.
 
 ### 4.2 Các tầng giới hạn (tất cả phải qua mới spawn)
@@ -74,7 +75,7 @@ Một biến thể tùy chọn: một "Chief Orchestrator Agent" LLM làm lớp 
 | Tầng | Nguồn cấu hình | Mặc định | Ghi chú |
 |---|---|---|---|
 | Global | `ResourceConfig.max_concurrent_agents` | 5 (max 18) | Hiệu lực ở tick kế tiếp; giảm không giết session đang chạy |
-| Provider/credential | `provider_configs.max_concurrent` | Xem M-O2 | Tài khoản claude.ai `team` dùng chung → pool chung |
+| Provider/credential | `provider_configs.max_concurrent` | Xem M-O2 | Tài khoản claude.ai `team` dùng chung → pool chung **[OWR-3 D: không chia sẻ credential/seat giữa nhiều người; câu "dùng chung" cần Owner làm rõ, xem DOC_SYNC_LOG_OWR3_B]** |
 | Project | `per_project_defaults.max_concurrent` + weighted fair share | = global | Work-conserving, không chặn cứng nếu project khác rảnh |
 | Agent | `max_concurrent_executions` | 1 | Log/context sạch |
 | Host guard | RAM tự do ≥ 2 048 MB, CPU 1 phút ≤ 90% | — | Giảm `effective_concurrency` tối thiểu 1 |
@@ -321,7 +322,7 @@ Mốc thời gian (heartbeat 30 s, lease 60 s gia hạn 20 s, stale 3 phút, `sp
 | ID | Mâu thuẫn | Xử lý |
 |---|---|---|
 | M-O1 | FR-109: "PM agent chấm điểm"; A07 §6/A13: scoring xác định, PM chỉ can thiệp khi bế tắc | Theo A07/A13 (§3.4) |
-| M-O2 | Global cap: A07 = 10 và per-provider 6; D-010/FR-231 = 5 mặc định, max 18; DB `provider_configs.max_concurrent` = 2; A13 claude 5, codex 3 | D-010 và FR thắng cho global; cap provider do `ResourceConfig`, giá trị theo D-010 APPROVED: Claude 5, Codex 3; DB default đã đổi 2 thành 5 |
+| M-O2 | Global cap: A07 = 10 và per-provider 6; D-010/FR-231 = 5 mặc định, max 18; DB `provider_configs.max_concurrent` = 2; A13 claude 5, codex 3 | D-010 và FR thắng cho global; cap provider do `ResourceConfig`, giá trị theo D-010 APPROVED: Claude 5, Codex 3 **[OWR-3 A.2/D + D-005: Codex hoãn khỏi MVP; 5 là giới hạn scheduler nội bộ, không phải giới hạn provider cho phép; giá trị Codex 3 không được xem là đã xác nhận]**; DB default đã đổi 2 thành 5 |
 | M-O3 | A07 dùng `node_attempts` + `attempt` trong BullMQ, DB `node_runs.attempt` + `agent_sessions`; A07 retry trong node, A13 retry ở task | Một attempt = một `agent_sessions`; `node_runs.attempt` đếm; `tasks.retry_count` phản chiếu |
 | M-O4 | A07: `NodeRun` unique `(runId, nodeId, revision)`; DB: unique `(run, node_key, attempt)`, không có `revision` | Thêm cột `revision` (migration) |
 | M-O5 | A07/A13 dùng Prisma; D-002 chọn Drizzle | Drizzle thắng (D-002 APPROVED, 2026-10-30); mã giả Prisma trong A07 chỉ là minh họa |

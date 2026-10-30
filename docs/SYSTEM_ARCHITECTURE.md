@@ -3,6 +3,8 @@
 > Tác giả: System Architect · Phase 0 (chỉ tài liệu) · Trạng thái: Draft v0.1 · Ngày: 2026-10-30
 > Nhãn: **[Đã xác minh]** = có trong tài liệu nguồn đã đọc (kèm đường dẫn); **[Đề xuất]** = quyết định của System Architect; **[Giả định]** = chưa có bằng chứng; **[Cần người dùng phê duyệt]** = cần Owner chốt.
 > Mọi quyết định `D-xxx` lấy từ `DECISION_LOG.md`. **[OWR-2, 2026-10-30]** Trạng thái "Chờ duyệt" nói chung nay bị ghi đè từng quyết định bởi `PHASE_0_OWNER_DECISION_REGISTER.md` và `owner-responses/OWR-2_*.md` (ví dụ Q-16/D-001 React 19 + Vite APPROVED; D-003 định hướng duyệt, chưa khóa implementation tới khi PoC đạt; D-005 Codex và D-006 OpenHands **hoãn khỏi MVP**). Phase 0 vẫn mở; Phase 1 chưa được cho phép.
+>
+> **[OWR-3, 2026-10-30]** (A.8) **Claude là provider MVP duy nhất**; Codex hoãn, giữ `AgentAdapter`. (A.2/D) concurrency 5 là giới hạn scheduler nội bộ, không phải giới hạn provider cho phép. (A.10) **Xem conflict X-13** (`PHASE_0_OWNER_DECISION_REGISTER.md`, `DECISION_LOG.md` D-007): Agent không chạy arbitrary code trên Windows host; mọi code Agent sinh ra chạy trong sandbox cô lập, sandbox không hoạt động thì fail closed; Tier 2/OpenHands hoãn khỏi MVP; các câu hỏi mở của X-13 chưa được quyết tại đây, các mô tả "CLI trên host"/"Docker chỉ build/test/run" bên dưới là mô hình D-007 cũ đang chờ Owner làm rõ. (A.16) event dùng dotted lowercase (`EVENT_SYSTEM.md` §0).
 > Tài liệu liên quan: `docs/BACKEND_ARCHITECTURE.md`, `docs/FRONTEND_ARCHITECTURE.md`, `docs/API_DOCUMENTATION.md`.
 
 ---
@@ -243,15 +245,15 @@ Quy tắc: module chỉ truy cập bảng do mình sở hữu; truy cập chéo 
 
 ### 3.8 Cross-cutting concerns
 
-1. **Bảo mật:** localhost-only + bearer token, Origin check, rate limit 100 req/10 s, redaction middleware, approval policy engine, audit append-only (`docs/SECURITY.md` §4, §5, §7, §8). Sandbox hai tầng (D-007) là "lớp chính sách, không phải ranh giới bảo mật" cho CLI trên host.
+1. **Bảo mật:** localhost-only + bearer token, Origin check, rate limit 100 req/10 s, redaction middleware, approval policy engine, audit append-only (`docs/SECURITY.md` §4, §5, §7, §8). Sandbox hai tầng (D-007) là "lớp chính sách, không phải ranh giới bảo mật" cho CLI trên host (**[OWR-3 A.10: xem conflict X-13]**).
 2. **Multi-tenancy:** `organization_id` mọi bảng business; `TenantContext` (AsyncLocalStorage); RLS là hàng rào phụ ở server mode (DATABASE_DESIGN §8).
 3. **Event-driven:** mọi thay đổi trạng thái phát domain event trong cùng transaction với outbox (D-014). Event là nguồn duy nhất cho UI và Virtual Office (PRD §5.5).
 4. **Idempotency & recovery:** `jobId = runId`, `(provider_id, request_id)` unique, `aiw:idemp:{requestId}` TTL 24h, stale-run recovery bởi `presence-reaper` (DATABASE_DESIGN §10, ORCHESTRATION §4.4).
 5. **Quan sát:** pino JSON log có `correlationId`; `agent_events` mang `correlation_id`/`causation_id`; metrics/otel tùy chọn (INFRASTRUCTURE_DESIGN §8).
 6. **Cấu hình:** biến môi trường validate bằng Zod lúc boot; secret chỉ là `credential_ref` tới keychain (DATABASE_DESIGN §8).
 7. **Lỗi:** một error envelope duy nhất (xem `API_DOCUMENTATION.md` §3.2).
-8. **Chi phí & giới hạn:** budget check trước mỗi request từ Redis counter; concurrency mặc định 5, tối đa 18 (D-010).
-9. **i18n & thời gian:** UTC `timestamptz`, ID uuid v7 (DATABASE_DESIGN §0), UI mặc định tiếng Anh, VI là locale thứ hai (D-015).
+8. **Chi phí & giới hạn:** budget check trước mỗi request từ Redis counter; concurrency mặc định 5, tối đa 18 (D-010; **[OWR-3 A.2/D]** giới hạn scheduler nội bộ, không phải giới hạn provider bảo đảm).
+9. **i18n & thời gian:** UTC `timestamptz`, ID uuid v7 (DATABASE_DESIGN §0), UI mặc định **tiếng Việt**, tiếng Anh là locale thứ hai (D-015; OWR-3 X-1; thay thế câu "mặc định tiếng Anh" trước đây).
 10. **Giấy phép:** tuân D-012; không sao chép mã My Virtual Office (AGPL).
 
 ## 4. Quyết định & lý do

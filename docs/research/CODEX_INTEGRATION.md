@@ -6,6 +6,8 @@
 ---
 
 > **[Ghi chú 2026-10-30, OWR-2 (D-005, Q-10)]**: Codex HOÃN khỏi MVP; giữ abstraction `AgentAdapter`; không cài Codex CLI (không chạy `npm i -g @openai/codex`) và không live test ở phạm vi hiện tại. Toàn bộ tài liệu này là nghiên cứu tham khảo, chưa kiểm chứng. Không mặc định subscription ChatGPT cho phép nhiều session song song (OWR-2 mục 5.1).
+>
+> **[Ghi chú 2026-10-30, OWR-3 A.8 + A.2/D]**: Owner xác nhận lại D-005: MVP chỉ tích hợp Claude; Codex để sau, giữ `AgentAdapter` để mở rộng. Không cài Codex CLI. Các số concurrency trong tài liệu này (2-3 turn/account, cap Codex 3, global 5) là cấu hình scheduler nội bộ hoặc số nghiên cứu, KHÔNG phải số OpenAI/ChatGPT plan cho phép. Owner nói đã kiểm tra tài liệu chính thức OpenAI và không thấy căn cứ công khai đủ rõ cho số session song song mỗi plan (Owner statement, chưa xác minh độc lập). Không chia sẻ credential/seat.
 
 ## 0. Trạng thái máy hiện tại (QUAN TRỌNG)
 
@@ -530,7 +532,7 @@ Ghi chú:
 - **Chiến lược cho platform:**
   1. Đọc `account/rateLimits/read` (hoặc notification `account/rateLimits/updated`) → hiển thị gauge, **throttle scheduler** khi `usedPercent > 80`.
   2. Gán model rẻ (`gpt-6-luna`) cho employee "junior"/task lặp, model mạnh cho architect/reviewer.
-  3. Queue task với concurrency cap cấu hình (mặc định 2–3 turn song song/account trong nghiên cứu; giá trị áp dụng: cap provider Codex 3, global 5, theo D-010 APPROVED), backoff + jitter khi `-32001` hoặc rate-limit error.
+  3. Queue task với concurrency cap cấu hình (mặc định 2–3 turn song song/account trong nghiên cứu; giá trị cấu hình nội bộ dự kiến, KHÔNG phải số OpenAI cho phép (OWR-3 A.2/D): cap Codex 3, global 5, theo D-010 APPROVED; Codex hoãn sau MVP), backoff + jitter khi `-32001` hoặc rate-limit error.
   4. Cho phép employee cụ thể chạy bằng `CODEX_API_KEY` (billing API) khi quota plan cạn.
   5. ToS: ChatGPT plan là cho cá nhân; chạy "công ty AI" nhiều agent trên 1 tài khoản Plus có rủi ro fair-use – nên cân nhắc Business/Enterprise hoặc API key cho production.
 

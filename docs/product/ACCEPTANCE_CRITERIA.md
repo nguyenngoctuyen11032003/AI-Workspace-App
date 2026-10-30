@@ -1,4 +1,5 @@
 # ACCEPTANCE CRITERIA (MVP) — AI WORKSPACE
+> **[OWR-3 A.16, QA3 F3-02]** Tên event dạng UPPER_SNAKE trong tài liệu này là tên tương thích. Tên canonical là dotted lowercase; 16 event gốc và ánh xạ đề xuất nằm ở `docs/EVENT_SYSTEM.md` mục 0 (ánh xạ chờ Owner xác nhận, P-16).
 
 **Phiên bản:** 0.1 (Phase 0) · **Tác giả:** Agent 12 — BA · **Trạng thái:** Draft · **Ngày:** 2026-10-30
 
@@ -199,6 +200,10 @@ Chỉ MVP (Phase 1). Các FR phase P2 không có AC ở đây.
 ---
 
 > **Ghi chú OWR-2 (2026-10-30), chỉ bổ sung, không sửa AC đã có:**
-> - **AC-022 (Codex, nhóm B) XUNG ĐỘT với OWR-2 D-005:** Codex bị hoãn khỏi MVP và Codex CLI chưa cài (Q-10), nên GP-1 ("Codex CLI đã cài và login") và AC-022 không thực hiện được trong MVP. Giữ nguyên văn AC; cần Owner xác nhận điều chỉnh nhóm B (PENDING_OWNER_CLARIFICATION). FR-077 đã được đánh dấu hoãn.
+> - **AC-022 (Codex, nhóm B) XUNG ĐỘT với OWR-2 D-005:** Codex bị hoãn khỏi MVP và Codex CLI chưa cài (Q-10), nên GP-1 ("Codex CLI đã cài và login") và AC-022 không thực hiện được trong MVP. Giữ nguyên văn AC; cần Owner xác nhận điều chỉnh nhóm B (PENDING_OWNER_CLARIFICATION). FR-077 đã được đánh dấu hoãn. **[QA3 F3-08, thống nhất với FR-077: OWR-3 A.8 xác nhận MVP chỉ Claude; AC-022 chưa được Owner nêu riêng nên chờ Owner xác nhận chuyển phase sau]**
 > - **AC-055 (FR-109):** theo OWR-2 Q-09, điểm AUTO assignment tính bằng công thức deterministic, không dùng LLM chỉ để chấm điểm, PM agent chỉ can thiệp khi task mắc kẹt. Then "lý do (điểm theo ...) được ghi lại" giữ nguyên; công thức cụ thể chưa có (PENDING).
 > - **FR-122, 181, 182, 183:** AC đề xuất AC-601..AC-614 (PROPOSED) nằm ở `traceability_parts/AC_ADDENDUM_PART4_OWR2.md`. OWN-AC-1..3 (D-021) là AC-621..AC-623 trong cùng file. Chưa AC nào được Owner duyệt.
+>
+> **Ghi chú OWR-3 (2026-10-30), chỉ bổ sung, không sửa AC đã có:**
+> - **AC-022 (Codex, nhóm B):** OWR-3 A.8 xác nhận MVP chỉ tích hợp Claude và Codex để sau (D-005). Việc AC-022 và GP-1 không áp dụng cho MVP được ghi nhận Owner-acknowledged (lưu ý OWR-3 không nêu riêng AC-022). Văn bản AC giữ nguyên; FR-081 (AgentAdapter) giữ để mở rộng.
+> - **AC mới theo OWR-3:** AC-601..AC-614 được cập nhật theo A.3 đến A.6; AC-631..AC-657 (FR-006, 009, 038, 088, 098, 153, 186, 200, 283, 284, 292) nằm ở `traceability_parts/AC_ADDENDUM_PART4_OWR2.md`. Tất cả vẫn là PROPOSED (Owner xác nhận quyết định, agent viết câu chữ); không AC nào APPROVED. FR-078 là WONT_MVP, không có AC.

@@ -4,6 +4,8 @@
 > Mở rộng [`../SECURITY.md`](../SECURITY.md) §2, §3.5, §6; hợp nhất với `docs/architecture/INFRASTRUCTURE_DESIGN.md` §6 (Sandbox Executor). Không lặp lại lập luận Windows-vs-WSL2 đã có ở SECURITY §2.2.
 > Nhãn: **[Đã xác minh]** · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**.
 >
+> **[OWR-3 A.10, 2026-10-30 — CHỈ THỊ SANDBOX CHẶT HƠN, XUNG ĐỘT X-13 VỚI D-007]** Owner yêu cầu: không cho Agent chạy arbitrary code trên Windows host; MỌI code do Agent sinh ra phải thực thi trong sandbox cô lập; Docker chỉ cho build/test/run KHÔNG đủ nếu Agent vẫn có quyền thực thi trên host; sandbox không hoạt động thì **fail closed**; OpenHands hoãn khỏi MVP, Tier 2 không thuộc MVP. Hệ quả cho tài liệu này: (1) shell/Bash tích hợp của agent **không được bật trên host**; thực thi code chỉ qua **sandbox execution tool** chạy trong container (§4 là nơi định nghĩa container, nhưng cơ chế "hook rewrite lệnh Bash của agent trên host" ở §4.7 bị thay thế bởi: agent không có Bash host, gọi thẳng tool `sandbox.exec`); (2) §4 mô tả Tier 1 theo D-007 (CLI/agent trên host với chính sách và hook, Docker cho build/test/run) là thiết kế đã duyệt trước đó, **mâu thuẫn** với chỉ thị này, giữ làm lịch sử cho đến khi Owner chốt (X-13); (3) §5 Tier 2 hoãn khỏi MVP. **PENDING_OWNER_CLARIFICATION (không tự quyết định):** (i) thao tác file Edit/Write phía host trong worktree riêng của task có được phép không; (ii) tiến trình agent runtime (Claude Agent SDK trên host, giữ login) có tính là thực thi trên host không; (iii) runtime sandbox nào cô lập khi OpenHands hoãn (hàm ý executor Docker tự xây, nên Docker là điều kiện tiên quyết cứng cho mọi thực thi agent thật, trong khi Docker chưa được cho phép khởi động, OWR-3 mục E; `poc/POC_DOCKER_SANDBOX.md` BLOCKED / NOT AUTHORIZED). Chưa có thông số nào VERIFIED. Xem `../SECURITY.md` §0.6.
+>
 > **Lưu ý quan trọng:** Docker daemon **không chạy** lúc khảo sát (named pipe `dockerDesktopLinuxEngine` không tồn tại; Docker client 29.8.1, Compose 5.5.1) [Đã xác minh]. Mọi thông số về cgroup v2, seccomp profile mặc định, kernel WSL2, hành vi `--read-only`/`--tmpfs`, hiệu năng bind mount, ECI đều là **[Giả định]** cho đến khi chạy `docker info`, `docker inspect` thật (xem §11 checklist).
 
 ## 1. Mục đích
@@ -140,7 +142,7 @@ Hạn chế đã biết: proxy theo hostname không chặn **domain fronting** h
 
 ### 4.5 Volume mount
 
-> [D-008, OWR-2 mục 8 (2026-10-30)]: không mount bất kỳ thư mục credential nào của Owner/host (`%USERPROFILE%\.claude`, `.codex`, `.ssh`, `.aws`...) và không mount Docker socket/named pipe vào Agent sandbox; sandbox không hoạt động thì fail closed. Docker cần cho sandbox validation (Q-10); Owner tự khởi động Docker Desktop và kiểm tra tài nguyên theo OWR-2 mục 5.3.
+> [D-008, OWR-2 mục 8 (2026-10-30)]: không mount bất kỳ thư mục credential nào của Owner/host (`%USERPROFILE%\.claude`, `.codex`, `.ssh`, `.aws`...) và không mount Docker socket/named pipe vào Agent sandbox; sandbox không hoạt động thì fail closed. Docker cần cho sandbox validation (Q-10); [OWR-3 mục E thay thế câu "Owner tự khởi động Docker Desktop": Owner CHƯA cho phép mở Docker Desktop hoặc chạy VAL-DOCKER-01..09; chờ Owner cho phép.]
 
 | Mount | Nguồn | Đích | Chế độ | Ghi chú |
 | --- | --- | --- | --- | --- |
@@ -199,6 +201,8 @@ Quy tắc rewrite:
 Giới hạn đã biết: hook chỉ thấy lệnh Bash/PowerShell; **không** thấy hành vi bên trong `Edit/Write` (đã có path check) hay MCP server chạy trên host (R8, SECURITY §2.3). MCP: chỉ `--strict-mcp-config` với server do app cung cấp.
 
 ## 5. Tier 2 — Agent container (opt-in cho `trust_level = untrusted`)
+
+> [OWR-3 A.10: OpenHands hoãn khỏi MVP; Tier 2 KHÔNG thuộc MVP. Mục này là tham khảo sau MVP, không phải kế hoạch MVP. Câu hỏi runtime sandbox thay thế: PENDING_OWNER_CLARIFICATION (iii), X-13.]
 
 | Hạng mục | Thiết kế |
 | --- | --- |
@@ -261,7 +265,7 @@ Emergency stop không gọi bất kỳ đường nào có thể bị agent chặ
 
 ## 9. Fail-closed & trạng thái Docker
 
-- Docker daemon không chạy ⇒ lệnh `executes-code` bị `deny` với thông báo "Start Docker Desktop"; agent vẫn đọc/ghi tài liệu được (SECURITY R5, INFRA §13).
+- Docker daemon không chạy ⇒ lệnh `executes-code` bị `deny` với thông báo "Start Docker Desktop" (OWR-3 A.10: **fail closed**, không có đường lui chạy trên host, task `BLOCKED`); agent vẫn đọc/ghi tài liệu được [PENDING_OWNER_CLARIFICATION (i): chưa rõ host Edit/Write trong worktree có được phép không; nếu không, cả ghi file cũng bị chặn khi sandbox tắt] (SECURITY R5, INFRA §13).
 - `inspect` không khớp `assertSafeSpec` ⇒ không `exec`, ghi audit `policy_deny`, cảnh báo UI.
 - Image digest không có trong policy ⇒ từ chối tạo container.
 - Container label `aiw=1` lạ (không do app tạo) ⇒ cảnh báo, không `exec`.

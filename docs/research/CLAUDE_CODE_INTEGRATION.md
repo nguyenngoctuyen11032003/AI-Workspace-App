@@ -8,6 +8,8 @@
 > Tất cả output bên dưới là output thật (đã redact thông tin nhạy cảm / cắt ngắn mảng dài).
 >
 > **[Ghi chú 2026-10-30, OWR-2 (Q-17/D-004, Q-07, Q-08, Q-05)]**: tài liệu nghiên cứu, giữ nguyên làm lịch sử. Claude Agent SDK là adapter chính; raw CLI chỉ cho tác vụ phụ trợ/PoC. Phải phân biệt subscription authentication, API authentication và usage limits; SDK không đồng nghĩa được chạy số session không giới hạn. "Tới 10 session song song" là mục tiêu nghiên cứu cũ, không phải xác nhận ToS: mặc định ứng dụng 5, không tự tăng lên 10/18. Không tự động failover provider khi hết quota. Chờ approval tối đa 540 s rồi `WAITING_HUMAN` (giá trị 30 phút của `canUseTool` trong research bị thay thế).
+>
+> **[Ghi chú 2026-10-30, OWR-3 (A.2/D, A.10)]**: 5 là giới hạn scheduler nội bộ, không phải số session Anthropic cho phép; Owner nói đã kiểm tra tài liệu chính thức và không thấy căn cứ công khai rõ cho số session song song mỗi seat (Owner statement, chưa xác minh độc lập); không chia sẻ credential/seat. MVP chỉ tích hợp Claude (A.8). OWR-3 A.10 / X-13: các thí nghiệm trong tài liệu này cho agent chạy tool Bash trên host là lịch sử nghiên cứu; thiết kế sản phẩm không bật shell tích hợp trên host, code chỉ chạy qua sandbox execution tool (xem `SECURITY.md` §0.6); không chạy lại các thí nghiệm này với agent thật khi chưa được Owner cho phép (OWR-3 mục E).
 
 ---
 
@@ -485,7 +487,7 @@ EXIT=0    ANTHROPIC_API_KEY set? no
 - **Đã verify**: 5 process song song, cùng OAuth login, không lỗi. Không có lock toàn cục; mỗi process có `session_id` + transcript riêng.
 - **Giới hạn thật sự = quota subscription**, không phải số process: `rate_limit_event.unifiedWindows.five_hour.utilization` / `seven_day.utilization` (test: 0.15 / 0.74, status `allowed_warning` khi vượt ngưỡng 0.75). Team plan: "per-seat allowance that resets on a rolling five-hour window and a weekly window", chia sẻ với Claude chat. Khi hết: lỗi "You've hit your session limit"/"weekly limit", `system/api_retry` với `error: "rate_limit"`, `overageStatus: "rejected"` (org đã tắt overage).
 - Docs: "Agent teams use approximately 7x more tokens"; mỗi instance có context window riêng => 10 agent ≈ 10 lần token. Dùng `haiku`/`sonnet` cho worker, `opus`/`fable` cho lead; `effort: low|medium` cho task đơn giản; `maxBudgetUsd` + `maxTurns` per task.
-- Scheduler nên: (1) đọc `rate_limit_event` từ mọi session, giữ `maxUtilization` chung; (2) pause queue khi `seven_day.utilization > 0.9` hoặc `status != allowed`; (3) retry sau `resetsAt`; (4) giới hạn `MAX_PARALLEL_AGENTS` (mặc định 10 trong nghiên cứu; thay bằng mặc định 5, trần 18 theo D-010 APPROVED) + semaphore.
+- Scheduler nên: (1) đọc `rate_limit_event` từ mọi session, giữ `maxUtilization` chung; (2) pause queue khi `seven_day.utilization > 0.9` hoặc `status != allowed`; (3) retry sau `resetsAt`; (4) giới hạn `MAX_PARALLEL_AGENTS` (mặc định 10 trong nghiên cứu; thay bằng mặc định 5, trần 18 theo D-010 APPROVED; OWR-3 A.2/D: 5 là giới hạn scheduler nội bộ, không phải số Anthropic cho phép, không tăng lên 10/18) + semaphore.
 - **Isolation cwd**: mỗi agent 1 `git worktree` (`git worktree add ../wt/<agent>-<task> -b agent/<task>`), truyền `cwd` + `additionalDirectories` (chỉ các dir được phép). CLI có `--worktree` nhưng ta nên tự quản lý để kiểm soát lifecycle/cleanup. Transcript được lưu theo slug của cwd => mỗi worktree là 1 "project" riêng trong `~/.claude/projects/`.
 - Startup cost ~3–5s/process (settings + claude.ai MCP connectors). Giảm bằng `strictMcpConfig`, `settingSources: ['user']`, tắt plugin, hoặc giữ process sống lâu (streaming input) thay vì spawn mỗi task.
 - Windows: path dài, `\\` trong JSON; `spawn` với `shell: false`; `claude` là shim trong `~/.local/bin` — SDK bundled binary tránh vấn đề PATH. Lưu ý Bash heredoc/argv rất dài trên Windows có thể lỗi `ENAMETOOLONG` => truyền prompt dài qua stdin (stream-json) chứ không qua argv.
@@ -511,7 +513,7 @@ canUseTool: async (toolName, input, { signal, toolUseID }) => {
   if (policy.autoAllow(agent.role, toolName, input)) return { behavior: 'allow' };
   const req = await approvals.create({ agentId, sessionId, toolName, input, toolUseID });
   events.emit('approval.requested', req);
-  const decision = await approvals.waitFor(req.id, { signal, timeoutMs: 30 * 60_000 });
+  const decision = await approvals.waitFor(req.id, { signal, timeoutMs: 30 * 60_000 }); // [QA3 F3-18: 30 phút chỉ là ví dụ trong nghiên cứu; giá trị chuẩn là 540 s theo OWR-3 X-7]
   return decision.approved
     ? { behavior: 'allow', updatedInput: decision.updatedInput ?? input }
     : { behavior: 'deny', message: decision.reason ?? 'Rejected by human reviewer' };

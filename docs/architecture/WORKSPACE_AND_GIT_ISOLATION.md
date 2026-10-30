@@ -108,6 +108,8 @@ Mỗi task mang một manifest (JSON) do PM agent hoặc người dùng tạo, p
 
 > **[CẦN QUYẾT ĐỊNH, CF-014/Q-17/D-004 (OWR-2 2026-10-30)]**: thiết kế dưới đây (`acceptEdits`, `.claude/settings.json` trong worktree, hook `command`, `claude -p` spawn) mâu thuẫn với hướng đã chốt: Claude Agent SDK là adapter chính, mode mặc định `default` + whitelist, `canUseTool` + PreToolUse policy in-process (SECURITY.md §5.1), settings không ghi file trong worktree. Giữ nguyên nội dung gốc làm biến thể fallback/raw CLI cho đến khi tác giả doc viết lại; xem DOC_SYNC_LOG_OWR2_A.md. Không mount thư mục credential hoặc Docker socket vào Agent; fail closed nếu sandbox không hoạt động.
 
+> **[OWR-3 A.10 / X-13 — XUNG ĐỘT VỚI D-007, PENDING_OWNER_CLARIFICATION]**: khối JSON bên dưới cho phép `Bash(pnpm test:*)`, `Bash(git ...)` và hook `Bash` chạy trên host, tức là agent có shell trên host (mô hình Tier 1 của D-007: CLI/agent trên host + chính sách/hook). OWR-3 A.10 chặt hơn: agent không chạy arbitrary code trên Windows host; shell tích hợp của agent KHÔNG được bật trên host; mọi code do agent sinh ra (kể cả `pnpm test`, build, run) chỉ chạy qua **sandbox execution tool** trong container cô lập; sandbox hỏng thì fail closed. Do đó các mục `Bash(...)` trong `allow` và matcher `Bash` bên dưới chỉ còn là thiết kế lịch sử; chúng **không được dùng** cho đến khi Owner quyết định. Ba câu hỏi chờ Owner (không tự quyết định): (i) thao tác `Edit/Write` phía host trong worktree riêng của task có được phép không; (ii) tiến trình runtime agent (Claude Agent SDK trên host, giữ login) có tính là thực thi trên host không; (iii) runtime sandbox nào cô lập khi OpenHands đã hoãn (hàm ý executor Docker tự xây, nên Docker là điều kiện tiên quyết cứng cho mọi thực thi agent thật trong khi Docker chưa được cho phép khởi động). Các thao tác git (`add/commit/diff`) cũng cần Owner chốt chúng chạy ở đâu (host orchestrator hay trong sandbox) vì `git` cũng là thực thi tiến trình. Xem `../SECURITY.md` §0.6, `../security/SANDBOX_DESIGN.md`.
+
 **Claude Code** (platform sinh `<worktree>/.claude/settings.json` trước khi spawn):
 
 ```json
@@ -135,6 +137,7 @@ Mỗi task mang một manifest (JSON) do PM agent hoặc người dùng tạo, p
 
 ### 7.2 Lớp 2 – hệ điều hành / container
 
+- [OWR-3 A.10/X-13: "chế độ MVP (local)" ngay dưới là mô hình agent trên host theo D-007, mâu thuẫn với chỉ thị chặn thực thi arbitrary code trên host; chờ Owner trả lời (i)-(iii) ở §7.1. Dòng "mount `~/.claude` read-only" ở chế độ hardened cũng trái D-008 (không mount thư mục credential), không dùng.]
 - Chế độ MVP (local): tiến trình agent chạy với `cwd = worktree`, biến môi trường bị lọc (chỉ pass `PATH`, `HOME`/`USERPROFILE`, `TEMP`, và biến CLI cần); không có biện pháp OS-level ACL ở MVP. [Đề xuất]
 - Chế độ hardened (sau MVP): chạy agent CLI trong container với bind mount chỉ worktree (INFRASTRUCTURE_DESIGN §6.6). Ràng buộc: login của CLI phải có trong container (mount `~/.claude` read-only) – xem DEPLOYMENT.md §4.
 

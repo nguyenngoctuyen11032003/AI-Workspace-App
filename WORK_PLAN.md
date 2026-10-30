@@ -1,6 +1,6 @@
 # WORK_PLAN.md — AI WORKSPACE
 
-Cập nhật: 2026-10-30 (Phase 0 nội dung hoàn tất, chờ chủ sở hữu duyệt. Nguồn trạng thái chính: TASK_BACKLOG.md)
+Cập nhật: 2026-10-30 (Phase 0 MỞ, chờ Owner; nguồn trạng thái chính: TASK_BACKLOG.md và PROJECT_STATUS.md)
 Orchestrator: Chief Orchestrator / AI Technical Director (Claude Code session chính)
 Giới hạn đồng thời: tối đa 10 agent (Claude Code subagents) — thực thi song song thật qua Agent tool.
 

@@ -107,6 +107,8 @@ Tóm tắt cờ: **thiếu bằng chứng nghiêm trọng** ở TE-04, TE-09, TE
 
 ### TE-04 — Tích hợp Codex
 
+> **[OWR-3 A.8 / OWR-2 D-005]** Codex **hoãn khỏi MVP**; MVP chỉ tích hợp Claude, giữ `AgentAdapter` để mở rộng. Không cài Codex CLI và không chạy live test Codex trong Phase 0 (OWR-3 mục E). Mọi nội dung TE-04 bên dưới là phân tích cho phase sau, giữ nguyên trạng thái [Giả định]/chưa có bằng chứng.
+
 | Phương án | Ưu | Nhược |
 |---|---|---|
 | **`codex app-server`** (JSON-RPC stdio) | Nhiều thread trên một process; approval tương tác; delta token; interrupt/steer; đọc rate limit/account/model | Đánh dấu **[experimental]**; binding sinh theo version; phức tạp hơn |

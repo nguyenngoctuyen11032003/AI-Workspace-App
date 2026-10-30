@@ -1,4 +1,5 @@
 # SRS — Software Requirements Specification: AI WORKSPACE
+> **[OWR-3 A.16, QA3 F3-02]** Tên event dạng UPPER_SNAKE trong tài liệu này là tên tương thích. Tên canonical là dotted lowercase; 16 event gốc và ánh xạ đề xuất nằm ở `docs/EVENT_SYSTEM.md` mục 0 (ánh xạ chờ Owner xác nhận, P-16).
 
 **Phiên bản:** 0.1 (Phase 0) · **Tác giả:** Agent 12 — BA · **Trạng thái:** Draft · **Ngày:** 2026-10-30
 **Cấu trúc tham khảo:** IEEE 830 / ISO 29148 (rút gọn)
@@ -76,7 +77,7 @@ Xem `USER_ROLES_AND_PERMISSIONS.md`. MVP: 1 Owner. Tương lai: Project Owner, V
 
 ### 2.4 Môi trường vận hành
 - Windows 11 (Owner); [Giả định] macOS/Linux ở phase sau.
-- Yêu cầu: Claude Code CLI / Codex CLI đã login; Docker Desktop; Git.
+- Yêu cầu: Claude Code CLI đã login (**MVP chỉ Claude, OWR-3 A.8**; Codex CLI hoãn, chưa cài); Docker Desktop; Git.
 - [Chưa chốt] Shell ứng dụng: Tauri / Electron / web local (OI-03).
 
 ### 2.5 Ràng buộc thiết kế
@@ -221,7 +222,7 @@ Xem `NON_FUNCTIONAL_REQUIREMENTS.md` (NFR-001 …).
 - Dữ liệu người dùng lưu local; không gửi telemetry nếu không bật [Đề xuất].
 
 ## 8. Dependencies
-Claude Code CLI, Codex CLI, Docker Desktop, Git, OS Credential Manager; quyết định kiến trúc shell, DB, event bus; asset pixel-art.
+Claude Code CLI (provider MVP duy nhất, OWR-3 A.8), Codex CLI (hoãn), Docker Desktop, Git, OS Credential Manager; quyết định kiến trúc shell, DB, event bus; asset pixel-art.
 
 ## 9. Rủi ro
 - CLI không headless/không parse được → adapter mong manh.
@@ -233,7 +234,7 @@ Claude Code CLI, Codex CLI, Docker Desktop, Git, OS Credential Manager; quyết 
 
 | ID | Vấn đề |
 |---|---|
-| OI-SRS-01 | **Host vs sandbox:** CLI provider chạy ở host (nơi có login) hay trong container? Nếu ở host, phần "thực thi code" của agent (chạy test, build) ở sandbox — nhưng chính CLI (Claude Code/Codex) tự chạy lệnh/sửa file; làm sao chặn CLI chạy lệnh ngoài sandbox? [Cần kiến trúc: hooks/permission mode của CLI, hoặc chạy CLI trong container với credential mount tạm thời — cả hai đều có đánh đổi bảo mật]. |
+| OI-SRS-01 | **Host vs sandbox:** CLI provider chạy ở host (nơi có login) hay trong container? Nếu ở host, phần "thực thi code" của agent (chạy test, build) ở sandbox — nhưng chính CLI (Claude Code/Codex) tự chạy lệnh/sửa file; làm sao chặn CLI chạy lệnh ngoài sandbox? **[OWR-3 A.10: xem conflict X-13 — không arbitrary code trên host, sandbox bắt buộc và fail closed; câu hỏi mở chưa quyết]** [Cần kiến trúc: hooks/permission mode của CLI, hoặc chạy CLI trong container với credential mount tạm thời — cả hai đều có đánh đổi bảo mật]. |
 | OI-SRS-02 | **18 agent vs rate limit:** cần chính sách khi RATE_LIMITED. |
 | OI-SRS-03 | **Tauri vs web:** quyết định ảnh hưởng IPC, credential manager, Docker control. |
 | OI-SRS-04 | Idle vs Available; Completed/Failed cho agent. |

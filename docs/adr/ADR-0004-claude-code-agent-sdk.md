@@ -113,3 +113,14 @@ Nguồn: OWR-2 §1 Q-17, §5.1, §2 Q-07, §8 trong `docs/owner-responses/OWR-2_
 - Điều kiện: phải phân biệt subscription authentication, API authentication và usage limits; **không mặc định** rằng dùng Agent SDK nghĩa là được chạy số session không giới hạn. Điều khoản dịch vụ cho tự động hóa gói Team **chưa xác nhận** (Q-07, PENDING_OWNER_CLARIFICATION).
 - Phase 2 chỉ được xây provider adapter ở mock/sandbox mode nếu security gate chưa đạt (OWR-2 §8); không giả lập Agent hoạt động khi thiếu execution evidence.
 - **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (A.8, A.2, D, C-FR-098, E). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED**: Claude Agent SDK là adapter chính; MVP chỉ tích hợp Claude (A.8).
+- Kết quả D (điều khoản provider): Owner nói đã kiểm tra tài liệu chính thức của Anthropic và OpenAI và không thấy căn cứ công khai đủ rõ cho 5, 10 hay 18 session song song trên một seat Claude Team hoặc ChatGPT plan. Đây là lời Owner; **agent chưa kiểm chứng độc lập**. Hệ quả: không tuyên bố đó là giới hạn được provider cho phép; không chia sẻ credential hoặc seat; không tăng concurrency khi chưa xác minh điều khoản và usage thực tế.
+- FR-098: không có API key fallback trong MVP.
+- OWR-3 E: không test Agent thật qua SDK lúc này (NOT RUN).
+- A.11: Phase 2 chỉ build adapter ở mock hoặc sandbox khi security gate chưa đạt; không production-capable execution.
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

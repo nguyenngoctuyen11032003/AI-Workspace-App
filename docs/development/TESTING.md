@@ -8,7 +8,7 @@ Liên quan: `CI_CD.md`, `DEVELOPMENT_GUIDE.md`, `CODING_STANDARDS.md`, `../produ
 
 ## 1. Mục đích
 
-Định nghĩa cách chứng minh rằng AI WORKSPACE hoạt động thật: tầng kiểm thử, công cụ, quy tắc dùng CLI thật so với mock trong CI, bộ test chứng minh 18 agent đồng thời (T1-T7), test bảo mật, và mục tiêu coverage. Gắn mọi test với Acceptance Criteria (AC-001…AC-130) để truy vết.
+Định nghĩa cách chứng minh rằng AI WORKSPACE hoạt động thật: tầng kiểm thử, công cụ, quy tắc dùng CLI thật so với mock trong CI, bộ test chứng minh 18 agent đồng thời (T1-T7), test bảo mật, và mục tiêu coverage. Gắn mọi test với Acceptance Criteria (AC-001…AC-130 (có khoảng trống đánh số) cộng AC-201…AC-657 trạng thái PROPOSED trong PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md) để truy vết.
 
 ## 2. Phạm vi
 
@@ -78,14 +78,14 @@ Ghi chú: tỷ trọng là hướng dẫn số lượng test, không phải KPI.
 
 ### 3.5 Provider tests: CLI thật và mock trong CI [Đề xuất]
 
-Hiện trạng [Đã xác minh]: Claude Code CLI 2.1.312 đã cài và đăng nhập (claude.ai OAuth, gói team); **Codex CLI chưa cài**; Docker Desktop đã cài nhưng daemon chưa chạy lúc kiểm tra.
+Hiện trạng [Đã xác minh]: Claude Code CLI 2.1.312 đã cài và đăng nhập (claude.ai OAuth, gói team); **Codex CLI chưa cài**; Docker Desktop đã cài nhưng daemon chưa chạy lúc kiểm tra. [OWR-3 mục E + A.10: Owner chưa cho phép mở Docker Desktop, chạy VAL-DOCKER-01..09, 27 runbook, PoC Conductor hay test Agent thật qua SDK. Các test cần thực thi agent thật (P-C, E2E thật) bị chặn cho đến khi có sandbox cô lập hoạt động; test sandbox fail-closed (sandbox tắt thì từ chối thực thi) là test bắt buộc nhưng chưa chạy. Mọi mục vẫn UNVERIFIED.]
 
 | Lớp | Mô tả | Chạy ở | Nhãn bằng chứng |
 |---|---|---|---|
 | P-A Adapter conformance (fake) | Bộ test chung cho 13 operation của `ProviderAdapter` (FR-081) chạy với **FakeProvider** phát stream-json ghi sẵn | CI mọi PR | VERIFIED-MOCK |
 | P-B Parser/mapper | Parse stream-json/JSON-RPC ghi từ CLI thật (fixture "golden" có nguồn gốc: ghi lại bằng lệnh thật, kèm version CLI + ngày) | CI mọi PR | VERIFIED-MOCK (golden từ thật) |
 | P-C Claude real smoke | `claude -p` qua adapter: Connect, ListModels, SendMessage, StreamEvents, CancelTask ≤ 5 s (AC-026), ResumeSession, thông báo rate-limit thật | máy dev có login; nightly self-hosted runner nếu Owner chấp thuận | VERIFIED-REAL |
-| P-D Codex real smoke | tương tự P-C qua `codex app-server`, dự phòng `codex exec --json` (D-005) | **HOÃN khỏi MVP (D-005/OWR-2); không cài Codex CLI, không live test ở phạm vi hiện tại** | UNVERIFIED cho đến khi Codex được đưa vào sau MVP |
+| P-D Codex real smoke | tương tự P-C qua `codex app-server`, dự phòng `codex exec --json` (D-005) | **HOÃN khỏi MVP (D-005/OWR-2; OWR-3 A.8: MVP chỉ Claude, Codex để sau, giữ AgentAdapter); không cài Codex CLI, không live test ở phạm vi hiện tại** | UNVERIFIED cho đến khi Codex được đưa vào sau MVP |
 | P-E Provider lifecycle | CLI chưa cài / chưa login / session hết hạn / kill giữa chừng (AC-023, 024, 028, 124, 130) bằng cách chạy adapter với binary giả có exit code tương ứng | CI | VERIFIED-MOCK |
 
 **Quy tắc: mock không bao giờ thay thế luồng sản phẩm** [Đề xuất — Cần người dùng phê duyệt]:
@@ -123,7 +123,7 @@ Tiêu chí đạt (trích `MULTI_AGENT_SCALABILITY.md` §14):
 - T4: `duration_api_ms` trung bình N=18 ≤ 2× N=1.
 - T5: 18 `task.id` ↔ 18 `execution.id` ↔ 18 `providerSessionId` khớp giữa DB và log.
 - T6: sau chaos, `COUNT(RUNNING)` = giá trị semaphore; task bị kill được cấp lại với `attempt+1`.
-- Bất kỳ tiêu chí nào fail: max hiệu dụng = N lớn nhất đã pass, ghi vào `RESOURCE_MANAGEMENT.md` §10 (D-010: chỉ nâng 5 → 10 → 18 khi có bằng chứng).
+- Bất kỳ tiêu chí nào fail: max hiệu dụng = N lớn nhất đã pass, ghi vào `RESOURCE_MANAGEMENT.md` §10 (D-010: chỉ nâng 5 → 10 → 18 khi có bằng chứng). **[OWR-3 A.2 và D: mặc định 5 là giới hạn scheduler nội bộ, không phải giới hạn provider bảo đảm; 10 và 18 chỉ là trần cấu hình, KHÔNG bật; chỉ nâng khi Owner cho phép sau khi xác minh điều khoản và usage thực tế]**
 
 Dự toán: T1-T4 ≈ 89 spawn nhẹ ≈ 33 USD list ở spawn tax hiện tại (≈ 11 USD nếu tối giản) [Đề xuất, trích nguồn]. Chạy đầu cửa sổ quota; dừng ngay khi thấy `RATE_LIMIT`.
 

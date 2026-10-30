@@ -199,7 +199,7 @@ Nguồn: PRD §5.4 (danh sách thao tác chuẩn). **[Đã xác minh]** luật: 
 | Method | Path | Mục đích | Auth |
 |---|---|---|---|
 | GET | `/scheduler/queue` | task ready/đang chờ, lý do chờ (`SEMAPHORE_WAIT`) | B |
-| GET | `/scheduler/limits` ; PATCH | concurrency global/provider (mặc định 5, tối đa 18; D-010) | B / B:A |
+| GET | `/scheduler/limits` ; PATCH | concurrency global/provider (mặc định 5, tối đa 18; D-010; **[OWR-3 A.2/D]** là giới hạn scheduler nội bộ, không phải giới hạn provider bảo đảm; không tăng khi chưa xác minh điều khoản và usage) | B / B:A |
 | GET | `/scheduler/assignments/preview?taskId=` | điểm gán agent (role, skill, workload...) | B |
 
 ### 4.11 `sessions`
@@ -239,7 +239,7 @@ Nguồn: PRD §5.4 (danh sách thao tác chuẩn). **[Đã xác minh]** luật: 
 | Method | Path | Mục đích | Auth |
 |---|---|---|---|
 | GET | `/approvals` | Approval Center (`?status=pending&projectId=`) | B |
-| GET | `/approvals/:id` | chi tiết: diff/lệnh (redacted), `riskTags`, `inputHash` | B |
+| GET | `/approvals/:id` | chi tiết: diff/lệnh (redacted), `riskTags`, `inputHash`; **[OWR-3 A.12, đề xuất]** trả riêng `remindAt` (nhắc Owner sau 24 giờ) và `expiresAt` (15 phút, chỉ approval hành động quan trọng: production deploy, data deletion, merge main; `null` nếu không hết hạn) | B |
 | POST | `/approvals/:id/approve` | `{scope: once\|task, note}` | B:W |
 | POST | `/approvals/:id/reject` | `{reason, rejectItems[]}` | B:W |
 | POST | `/approvals/:id/request-changes` | yêu cầu sửa | B:W |
@@ -323,7 +323,7 @@ Hợp nhất ORCHESTRATION §7.1 (`WorkspaceEvent`) và DATABASE_DESIGN §5.1 (c
 ```ts
 interface EventEnvelope<T extends string = string, P = unknown> {
   id: string;                 // uuid v7/ulid: cursor replay toàn cục (map từ global_seq khi cần)
-  type: T;                    // 'session.started' | 'task.status_changed' | ... (dotted lowercase)
+  type: T;                    // 'session.started' | 'task.status.changed' | ... (dotted lowercase, không `_`; OWR-3 A.16)
   v: 1;                       // schemaVersion của payload
   occurredAt: string;         // ISO UTC
   organizationId: string;     // thay cho `workspaceId` trong ORCHESTRATION
@@ -340,13 +340,13 @@ Quy tắc: `sequence` tăng liên tục theo aggregate (client phát hiện gap)
 
 ### 6.2 Danh mục event
 
-**[Đã xác minh]** bộ tên từ DATABASE_DESIGN §5.2: `session.*`, `llm.*`, `tool.*`, `file.*`, `shell.exec`, `git.commit/push`, `task.*`, `run.*`, `approval.requested/decided/expired`, `agent.status_changed/message_sent/memory_proposed`, `office.moved/animation`. Bổ sung từ ORCHESTRATION §7.2 **[Đề xuất]** (đổi sang dotted lowercase): `agent.created/updated/deleted`, `agent.heartbeat`, `task.reassigned`, `assignment.blocked`, `workflow.started/paused/resumed/cancelled/completed/failed`, `workflow.stage_changed`, `node.ready/queued/started/succeeded/failed/skipped/retry_scheduled`, `human.approved/rejected` (tương đương `approval.decided` kèm `decision`), `revision.created`, `checkpoint.saved`, `semaphore.wait`, `worktree.created/merged/conflict`, `test.result`, `deployment.result`, `provider.status`, `cost.threshold`, `notification.created`, `entity.updated`.
+**[Đã xác minh]** bộ tên từ DATABASE_DESIGN §5.2: `session.*`, `llm.*`, `tool.*`, `file.*`, `shell.exec`, `git.commit/push`, `task.*`, `run.*`, `approval.requested/decided/expired`, `agent.status.changed/message.sent/memory.proposed` [OWR-3: không dùng `_` trong phân đoạn], `office.moved/animation`. Bổ sung từ ORCHESTRATION §7.2 **[Đề xuất]** (đổi sang dotted lowercase): `agent.created/updated/deleted`, `agent.heartbeat`, `task.reassigned`, `assignment.blocked`, `workflow.started/paused/resumed/cancelled/completed/failed`, `workflow.stage.changed` (**event gốc của Owner**, `EVENT_SYSTEM.md` §0), `node.ready/queued/started/succeeded/failed/skipped/retry.scheduled`, `human.approved/rejected` (tương đương `approval.decided` kèm `decision`), `revision.created`, `checkpoint.saved`, `semaphore.wait`, `worktree.created/merged/conflict`, `test.result`, `deployment.result`, `provider.status`, `cost.threshold`, `notification.created`, `entity.updated`.
 
 ### 6.3 Đối chiếu tên
 
-**[OWR-2 Q-19 / D-014: ĐÃ DUYỆT quy ước dotted lowercase trong DB; UPPER_SNAKE chỉ là ánh xạ API qua MỘT hàm; replay bằng `lastEventId`; PENDING_OWNER_CLARIFICATION: Owner cần cung cấp/xác nhận mười sáu tên event gốc.]** Đặc tả "Prompt 1 mục 8.4" mà D-014 tham chiếu **không có trong thư mục `docs/`** nên không đối chiếu được (**Giả định**: tên UPPERCASE như `AGENT_CREATED ... HUMAN_REJECTED` ở PRD §5.5). Quy ước đề xuất: `type` trong envelope là dotted lowercase; tài liệu/UX gọi theo tên UPPERCASE bằng hàm map `toLegacyName()` một chiều. **[Cần người dùng phê duyệt]**.
+**[OWR-2 Q-19 / D-014: ĐÃ DUYỆT quy ước dotted lowercase trong DB; UPPER_SNAKE chỉ là ánh xạ API qua MỘT hàm; replay bằng `lastEventId`; OWR-3 A.1/A.16/X-4: Owner xác nhận 16 event trong Prompt 1 mục 8.4 là danh sách gốc (nguyên văn + ánh xạ dotted ở `EVENT_SYSTEM.md` §0); canonical chỉ dotted lowercase, không dùng underscore làm chuẩn.]** **PENDING_OWNER_CLARIFICATION (P-16):** Owner chưa cung cấp bảng ánh xạ; ánh xạ ở §0 là đề xuất theo quy tắc cơ học (viết thường, mọi `_` thành `.`). Mọi event khác trong §6.3 là **đề xuất ngoài danh sách gốc, chờ Owner**. `type` trong envelope là dotted lowercase; tên UPPER_SNAKE chỉ là tương thích ngoài qua đúng một hàm `toLegacyName()`.
 
-Phép chiếu notification (NAV §10): `approval.requested` → category `approval.requested`; `agent.status_changed (blocked)` → `agent.blocked`; `workflow.*` → `workflow.run.*`; `provider.status`, `cost.threshold`, `system`.
+Phép chiếu notification (NAV §10): `approval.requested` → category `approval.requested`; `agent.status.changed (blocked)` → category `agent.blocked` (category thông báo, **không phải event gốc**); `workflow.*` → `workflow.run.*`; `provider.status`, `cost.threshold`, `system`.
 
 ### 6.4 Replay và thứ tự
 
@@ -407,7 +407,7 @@ Phép chiếu notification (NAV §10): `approval.requested` → category `approv
 | A-5 | Không có endpoint ghi vị trí office | chuyển động chỉ từ event thật (D-011/PRD §5.6) | [Đã xác minh] |
 | A-6 | Không có endpoint merge vào `main` | D-009 | [Đã xác minh] |
 | A-7 | Zod là nguồn sinh OpenAPI + event schema | một schema cho BE/FE | [Đề xuất] |
-| A-8 | Dotted lowercase cho `type` event; UPPER_SNAKE chỉ qua một hàm ánh xạ `toLegacyName()` | khớp DATABASE_DESIGN; OWR-2 Q-12/Q-19/D-014 | **Đã duyệt (OWR-2 Q-19)**; danh sách event vẫn là đề xuất, PENDING_OWNER_CLARIFICATION (mục 8.4 gốc thiếu) |
+| A-8 | Dotted lowercase cho `type` event; UPPER_SNAKE chỉ qua một hàm ánh xạ `toLegacyName()` | khớp DATABASE_DESIGN; OWR-2 Q-12/Q-19/D-014 | **Đã duyệt (OWR-2 Q-19; OWR-3 A.16)**; 16 event gốc đã xác nhận (OWR-3 A.1), ánh xạ dotted PENDING_OWNER_CLARIFICATION (P-16); event khác là đề xuất ngoài danh sách gốc, chờ Owner |
 | A-9 | Contract-first, freeze trước parallel | giảm vỡ tích hợp | [Đề xuất] |
 
 ## 12. Dependencies
@@ -430,7 +430,7 @@ Phép chiếu notification (NAV §10): `approval.requested` → category `approv
 
 ## 14. Vấn đề chưa giải quyết
 
-1. Chọn hệ tên event cuối cùng (dotted lowercase vs UPPERCASE) và tìm lại "Prompt 1 mục 8.4" (không có trong `docs/`).
+1. ~~Chọn hệ tên event cuối cùng và tìm lại "Prompt 1 mục 8.4"~~ **[OWR-3: đã giải quyết — dotted lowercase; 16 event gốc ở `EVENT_SYSTEM.md` §0]**. Còn lại: PENDING_OWNER_CLARIFICATION (P-16) bảng ánh xạ Owner.
 2. Vai trò/quyền chi tiết (Viewer thấy Cost/Providers?) cần đối chiếu `USER_ROLES_AND_PERMISSIONS.md`.
 3. Một `/counts` gộp hay nhiều endpoint count cho sidebar badge?
 4. Dùng AsyncAPI hay chỉ JSON Schema cho event?

@@ -113,3 +113,12 @@ Nguồn: OWR-2 §2 Q-07, Q-08, §5.1, §8 trong `docs/owner-responses/OWR-2_2026
 - Q-08: không tự động failover provider khi hết quota; thông báo Owner và chờ quyết định.
 - Không tuyên bố giới hạn concurrency cụ thể của subscription và không tuyên bố 18 Agent concurrent đã được kiểm thử (OWR-2 §5.1, §8). Cap Codex 3 trong ADR chỉ còn mang tính tham khảo vì Codex hoãn khỏi MVP (D-005).
 - **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (A.2, A.15, D). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED**: mặc định 5. Không tăng lên 10 hoặc 18.
+- A.2/D: 5 là **giới hạn scheduler nội bộ của ứng dụng, KHÔNG phải điều provider bảo đảm hay cho phép**. Owner nói đã kiểm tra điều khoản chính thức và không thấy căn cứ công khai đủ rõ cho 5, 10 hay 18 session song song (lời Owner, agent chưa kiểm chứng độc lập). Không chia sẻ credential hoặc seat giữa nhiều người; không tăng khi chưa xác minh điều khoản và usage thực tế. Bảng ngoại suy 5/10/18 trong ADR chỉ là tham khảo, chưa kiểm chứng.
+- A.15 (quy tắc slot): `WAITING_APPROVAL` **không tính** vào 5 active workers nếu worker đã được giải phóng và trạng thái đã persist; nếu worker chưa được giải phóng (ví dụ approval mức tool giữ process) thì vẫn chiếm slot. Quota provider vẫn áp dụng. Xung đột CF-048 theo hướng này; đồng bộ do agent khác thực hiện.
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

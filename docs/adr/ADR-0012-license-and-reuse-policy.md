@@ -116,3 +116,12 @@ Nguồn: OWR-2 §3 D-012, §2 Q-15 trong `docs/owner-responses/OWR-2_2026-10-30_
 - Asset theo Q-15: chỉ CC0 mặc định; font OFL được phép nếu lưu đầy đủ license/NOTICE; CC-BY chỉ khi Owner phê duyệt từng package.
 - **Xung đột:** danh sách asset trong ADR này (CC0/MIT/OFL) và `research/LICENSE_AND_REUSE.md:134` (CC0 hoặc MIT/CC-BY) rộng hơn Q-15. OWR-2 không nhắc MIT cho asset: coi là chưa được duyệt (register P-9, X-5). Giấy phép sprite JIK-A-4 vẫn chưa có bằng chứng lưu (CF-025).
 - **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (A.9). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED**; điểm asset MIT là **APPROVED_CONDITIONAL**.
+- A.9 (Q-15): asset MIT chỉ được dùng nếu xác minh được nguồn gốc, license và ghi attribution vào NOTICE; **không rõ nguồn gốc thì không dùng**; CC0 vẫn là mặc định. Đóng P-9 và X-5.
+- Hệ quả: sprite JIK-A-4 (CF-025) chưa có bằng chứng license/nguồn gốc thì không được dùng cho đến khi có. Danh sách CC0/MIT/OFL ở các mục trên được hiểu theo quy tắc này.
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

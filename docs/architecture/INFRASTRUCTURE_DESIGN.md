@@ -52,7 +52,7 @@ Backend chạy **native trên Windows** chứ không trong container, vì nó ph
 
 - 1 VM Ubuntu 24.04 (4 vCPU / 16 GB), Docker Engine + Compose.
 - `docker compose -f compose.yml -f compose.staging.yml up -d`: `api`, `web` (nginx static), `worker`, `postgres`, `redis`, `caddy` (TLS).
-- Agent CLI chạy trong container `worker` với volume `claude-home` đã login bằng `claude login` một lần (xem DEPLOYMENT.md).
+- Agent CLI chạy trong container `worker` với volume `claude-home` đã login bằng `claude login` một lần (xem DEPLOYMENT.md). [OWR-3: staging là tùy chọn ngoài MVP; mô hình này đặt credential trong volume mà agent có thể chạm, trái D-008 (không mount credential vào Agent sandbox) và chưa phân biệt worker với sandbox thực thi code (A.10, X-13); PENDING_OWNER_CLARIFICATION, không dùng cho đến khi Owner chốt.]
 - Sandbox: backend dùng Docker socket **chỉ từ `worker`**, qua **docker-socket-proxy** (Tecnativa) giới hạn API (`CONTAINERS=1 IMAGES=1 EXEC=1`, cấm `volumes`, `networks` create, `system`). [Đề xuất]
 
 ### 4.3 Prod (self-hosted, multi-user)
@@ -93,7 +93,7 @@ Ghi chú: bind port vào `127.0.0.1` để không lộ ra LAN; `noeviction` vì 
 
 ### 6.1 Vai trò
 
-Chạy các job `build`, `test`, `lint`, `typecheck`, `preview` cho project sinh ra, theo yêu cầu của Orchestrator hoặc của Worktree Manager (validate trước merge). Mỗi job là một **ephemeral container**, không bao giờ reuse container giữa các task. [Ngoại lệ theo D-007/CF-016 (APPROVED): container warm per project cho dev/build/test (xem SANDBOX_DESIGN §2); job preview/custom vẫn ephemeral.]
+Chạy các job `build`, `test`, `lint`, `typecheck`, `preview` cho project sinh ra, theo yêu cầu của Orchestrator hoặc của Worktree Manager (validate trước merge). [OWR-3 A.10 / X-13 — PENDING_OWNER_CLARIFICATION: Sandbox Executor này nay là **đường duy nhất** để chạy code do agent sinh ra (sandbox execution tool); agent không có shell/Bash tích hợp trên host. Điều này mâu thuẫn với mô hình Tier 1 D-007 đã duyệt (agent trên host với chính sách/hook, Docker chỉ cho build/test/run), vì Docker chỉ cho build/test/run là không đủ nếu agent còn quyền thực thi trên host. Sandbox hoặc Docker không sẵn sàng thì fail closed (từ chối, không chạy trên host). OpenHands hoãn khỏi MVP; runtime sandbox thay thế là một executor dựa trên Docker do dự án tự xây (hàm ý, Owner chưa xác nhận); Docker là điều kiện tiên quyết cứng cho mọi thực thi agent thật và Docker chưa được cho phép khởi động (OWR-3 mục E). Xem `../SECURITY.md` §0.6.] Mỗi job là một **ephemeral container**, không bao giờ reuse container giữa các task. [Ngoại lệ theo D-007/CF-016 (APPROVED): container warm per project cho dev/build/test (xem SANDBOX_DESIGN §2); job preview/custom vẫn ephemeral.]
 
 ### 6.2 Lifecycle
 
@@ -184,7 +184,7 @@ Timeout: worker gọi `container.stop({ t: 10 })` rồi `kill`; ghi `timedOut=tr
 - **Logs:** pino (NestJS `nestjs-pino`), JSON, trường bắt buộc: `ts, level, service, reqId, taskId, agentSlug, jobId`. Dev: `pino-pretty`. Redaction paths: `req.headers.authorization`, `*.apiKey`, `*.token`, `env.*_KEY`.
 - **Audit log** riêng (bảng `audit_logs` – A08): spawn agent, hook deny, diff validation fail/override, merge, preview start/stop, secret access. Retention: xem DEVSECOPS_GUIDE §9.
 - **Metrics:** `@opentelemetry/sdk-node` tuỳ chọn (`OTEL_ENABLED=false` mặc định); exporter OTLP → `otel-collector` → Prometheus/Grafana trong profile `observability` của compose. Metrics tối thiểu: queue depth BullMQ, job duration theo kind, sandbox OOM/timeout count, worktree count, disk usage.
-- **Health:** `GET /health` (liveness), `GET /ready` (Postgres, Redis, Docker daemon reachable, `WORKSPACE_ROOT` writable, `claude --version`).
+- **Health:** `GET /health` (liveness), `GET /ready` (Postgres, Redis, Docker daemon reachable, `WORKSPACE_ROOT` writable, `claude --version`). [OWR-3 A.10: Docker không reachable = sandbox không hoạt động = fail closed cho mọi thực thi agent.]
 - **BullMQ dashboard:** `@bull-board` ở `/admin/queues` chỉ dev/self-hosted với auth.
 
 ## 9. Backup & restore Postgres

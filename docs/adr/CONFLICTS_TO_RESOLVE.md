@@ -533,3 +533,41 @@ Trạng thái dùng ở mục này: `RESOLVED_BY_OWNER_DECISION` = Owner đã qu
 | CF-062 | FR-122, FR-181, FR-182, FR-183: OWR-2 §4 chỉ là đề xuất Acceptance Criteria, chưa APPROVED; phải đối chiếu FR gốc trước khi cập nhật | STILL_OPEN (PENDING_OWNER_CLARIFICATION) |
 
 Ghi chú: các CF còn lại (không liệt kê ở trên) không bị OWR-2 tác động; trạng thái của chúng theo "Cập nhật 2026-10-30 sau phản hồi của Owner" ở trên. Việc đóng CF ở mục này nghĩa là Owner đã quyết định, **không** có nghĩa tài liệu đã được sửa hay đã được kiểm chứng.
+
+
+---
+
+## Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3), đối chiếu `PHASE_0_OWNER_DECISION_REGISTER.md` mục 13. Các bảng ở trên (kể cả "Cập nhật OWR-2") là lịch sử; khi khác nhau thì mục này là hiện hành. **Phase 0 vẫn mở, Phase 1 chưa được cho phép. Không dòng nào là VERIFIED.**
+
+Về đồng bộ tài liệu: việc đồng bộ do agent khác thực hiện, xem log (`docs/DOC_SYNC_LOG_OWR3_A.md`, `docs/DOC_SYNC_LOG_OWR3_B.md`). Mục này không khẳng định tài liệu đã được sửa; chỉ ghi quyết định của Owner. "RESOLVED_BY_OWNER_DECISION" nghĩa là Owner đã quyết định.
+
+| CF | Nguồn OWR-3 | Trạng thái hiện hành | Ghi chú |
+|---|---|---|---|
+| CF-003 | A.1, A.16, B (X-4) | RESOLVED_BY_OWNER_DECISION (đồng bộ do agent khác thực hiện, xem log) | Chỉ dotted lowercase canonical. Bảng ánh xạ 16 event **không tồn tại**: xem CF-064 |
+| CF-005 | không nêu | Không đổi | OWR-3 không nhắc tên bảng audit; trạng thái theo cập nhật trước |
+| CF-006 | B (X-8) | RESOLVED_BY_OWNER_DECISION (đồng bộ do agent khác thực hiện, xem log) | Audit online 365 ngày, export 2 năm (Q-06) |
+| CF-007 | A.12, B (X-7) | RESOLVED_BY_OWNER_DECISION (đồng bộ do agent khác thực hiện, xem log) | 540 s; `remind_at` 24 giờ tách `expires_at` 15 phút cho approval quan trọng |
+| CF-008 | A.13, B (X-3) | RESOLVED_BY_OWNER_DECISION cho việc bỏ `full` (đồng bộ do agent khác thực hiện, xem log); phần ý nghĩa L5: PENDING_OWNER_CLARIFICATION (P-17) | L0..L5 vẫn qua `permission_level` + `permission_profile`; AGENT_ORGANIZATION.md ghi L0..L4 |
+| CF-011 | không nêu | Không đổi | Theo Q-13 (OWR-2) |
+| CF-019 | A.7 | RESOLVED_BY_OWNER_DECISION cho tile 16 px hiển thị x2; benchmark D-011 chưa chạy (đồng bộ do agent khác thực hiện, xem log) | Chuyển từ STILL_OPEN (OWR-2). Giá trị 32 ở DATABASE_DESIGN.md và SCREEN_SPECIFICATION.md cần đồng bộ |
+| CF-022 | không nêu | Không đổi | Theo Q-14 (OWR-2) |
+| CF-025 | A.9 | STILL_OPEN | JIK-A-4 chưa có bằng chứng nguồn gốc/license; theo A.9 không rõ nguồn gốc thì không dùng |
+| CF-026, CF-059 | A.9 | RESOLVED_BY_OWNER_DECISION; điểm MIT là APPROVED_CONDITIONAL (xác minh nguồn gốc, license, NOTICE từng asset) | Chuyển từ STILL_OPEN (CF-059); đóng P-9, X-5; CC0 mặc định |
+| CF-029 | A.14 | RESOLVED_BY_OWNER_DECISION cho 9 UI node types (đồng bộ do agent khác thực hiện, xem log) | Engine kinds tách riêng; OWR-3 không nêu lại số (tài liệu ghi 11), không coi là đã quyết lại |
+| CF-044 | A.2, D, A.15 | RESOLVED_BY_OWNER_DECISION cho mặc định 5 (giới hạn scheduler nội bộ, không phải provider bảo đảm). Xác minh điều khoản: lời Owner, agent chưa kiểm chứng độc lập, không VERIFIED | Không tăng 10 hoặc 18 khi chưa xác minh điều khoản và usage thực tế; không chia sẻ credential hoặc seat |
+| CF-048 | A.15 | RESOLVED_BY_OWNER_DECISION (đồng bộ do agent khác thực hiện, xem log) | WAITING_APPROVAL không chiếm slot nếu worker đã giải phóng và state persist; quota provider vẫn áp dụng |
+| CF-056 | A.1 | Danh sách 16 event gốc: RESOLVED_BY_OWNER_DECISION. Phần ánh xạ: PENDING_OWNER_CLARIFICATION (CF-064) | Danh sách ở Phụ lục OWR-3 |
+| CF-057 | A.8 | RESOLVED_BY_OWNER_DECISION (Owner xác nhận biết thay đổi nhóm MVP B) | FR/AC gốc do agent khác đồng bộ, xem log |
+| CF-058 | B (X-1) | RESOLVED_BY_OWNER_DECISION (đồng bộ do agent khác thực hiện, xem log) | |
+| CF-060 | A.10 | RESOLVED_BY_OWNER_DECISION cho phạm vi (OpenHands hoãn, Tier 2 không có trong MVP); runtime sandbox thay thế: STILL_OPEN trong CF-063 | |
+| CF-061 | A.11 | RESOLVED_BY_OWNER_DECISION (đồng bộ roadmap do agent khác thực hiện, xem log) | Phase 2 chỉ mock hoặc sandbox khi security gate chưa đạt |
+| CF-062 | A.3 đến A.6, C | RESOLVED_BY_OWNER_DECISION (Owner chấp thuận đề xuất AC; AC do agent khác viết, chưa kiểm thử) | |
+| CF-043 | A.10 | STILL_OPEN | Q-01 chỉ xác nhận có điều kiện; thêm điều kiện chặt hơn A.10, xem CF-063 |
+| CF-063 (MỚI, mã tạm = X-13) | A.10 | STILL_OPEN (PENDING_OWNER_CLARIFICATION), OWNER_DECISION | OWR-3 A.10 chặt hơn Tier 1 của D-007/ADR-0007. D-007 giữ APPROVED_CONDITIONAL kèm điều kiện chặt hơn. Câu hỏi: (i) Edit/Write file host trong worktree có được tính là cho phép không; (ii) tiến trình runtime Agent (SDK/CLI trên host, giữ phiên đăng nhập) có bị coi là thực thi trên host không; (iii) runtime sandbox nào khi OpenHands hoãn (executor Docker tự xây là đường suy ra, nhưng Docker chưa được cho phép mở); (iv) Docker thành điều kiện bắt buộc cho mọi thực thi Agent thật |
+| CF-064 (MỚI, mã tạm = X-14, P-16) | A.1 | STILL_OPEN (PENDING_OWNER_CLARIFICATION) | Bảng ánh xạ dotted lowercase Owner nhắc không tồn tại; `task.started`, `agent.blocked` không nằm trong 16 event gốc. Agent không tự soạn bảng |
+
+Kiểm tra log đồng bộ: xem ghi chú xác minh ngay bên dưới (nếu có) về việc `docs/DOC_SYNC_LOG_OWR3_A.md` và `_B.md` có tồn tại lúc kết thúc phiên hay không.
+
+Ghi chú xác minh (2026-10-30, lúc kết thúc phiên của Decision Records agent): `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md` **chưa tồn tại**, nên chưa có xác nhận nào rằng tài liệu đã được đồng bộ. Mọi cụm "đồng bộ do agent khác thực hiện, xem log" vẫn là chưa xác minh; cần grep lại khi log có mặt.

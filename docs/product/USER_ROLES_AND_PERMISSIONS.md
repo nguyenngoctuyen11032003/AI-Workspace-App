@@ -59,7 +59,7 @@ Owner chưa nêu chi tiết; BA đề xuất ba vai trò để thiết kế data
 
 ### 4.2 Các cấp permission — [Đề xuất] (Owner chưa định nghĩa số cấp)
 
-> **[OWR-2 Q-03]** Owner chấp thuận số cấp **L0..L5** dùng `permission_level` + `permission_profile` (DATABASE_DESIGN); **không hỗ trợ quyền `full`**. Bảng dưới (tên/ngữ nghĩa từng cấp) vẫn là đề xuất và **xung đột** với `architecture/AGENT_ORGANIZATION.md` §6 (L0..L4); chưa chốt bảng chuẩn, xem DOC_SYNC_LOG_OWR2_B. Merge `main` luôn cần Owner approval; Lead Agent không thay thế Owner (Q-04).
+> **[OWR-2 Q-03]** Owner chấp thuận số cấp **L0..L5** dùng `permission_level` + `permission_profile` (DATABASE_DESIGN); **không hỗ trợ quyền `full`**. Bảng dưới (tên/ngữ nghĩa từng cấp) vẫn là đề xuất và **xung đột ngữ nghĩa** với `architecture/AGENT_ORGANIZATION.md` §6 (nay đã mở rộng thành L0..L5 theo **OWR-3 A.13**, nhưng L5 ở đó là PENDING_OWNER_CLARIFICATION P-17); chưa chốt bảng chuẩn, xem DOC_SYNC_LOG_OWR2_B và DOC_SYNC_LOG_OWR3_B. Merge `main` luôn cần Owner approval; Lead Agent không thay thế Owner (Q-04).
 
 | Level | Tên | Được phép | Không được phép |
 |---|---|---|---|
@@ -125,8 +125,8 @@ Mỗi policy gồm: `trigger` (stage hoàn thành / hành động cụ thể / n
 - Bắt buộc feedback (văn bản; tùy chọn screenshot markup) [bắt buộc feedback là Đề xuất].
 - Hệ thống tạo revision task targeted; tăng version; không chạy lại toàn bộ.
 
-### 5.5 Approval timeout — [Đề xuất]
-Không timeout mặc định; nhắc nhở sau 24 giờ (P2).
+### 5.5 Approval timeout — [Đề xuất; cập nhật OWR-2 Q-05 / OWR-3 A.12]
+Không timeout mặc định với approval thường; nhắc nhở sau 24 giờ (P2). **[OWR-3 A.12]** TÁCH hai thời điểm: `remind_at` = nhắc Owner sau 24 giờ (không làm approval hết hạn); `expires_at` = 15 phút, **chỉ** với approval của hành động quan trọng (production deploy, data deletion, merge `main`). Xem DATABASE_DESIGN §approvals và WORKFLOW_ENGINE §7.
 
 ## 6. Quan hệ vai trò ↔ phòng ban ↔ cấp quản lý
 
@@ -145,7 +145,7 @@ Không timeout mặc định; nhắc nhở sau 24 giờ (P2).
 ## 9. Vấn đề chưa giải quyết / mâu thuẫn
 | ID | Vấn đề |
 |---|---|
-| OI-ROLE-01 | Số cấp permission và tên gọi (L0–L5 là Đề xuất). |
+| OI-ROLE-01 | Số cấp permission và tên gọi (**số cấp L0–L5 đã được Owner chuẩn hóa ở OWR-3 A.13**; tên/ngữ nghĩa từng cấp, đặc biệt L5 (P-17), vẫn là đề xuất). |
 | OI-ROLE-02 | PM có được chạy code không? (Đề xuất: không) |
 | OI-ROLE-03 | Lead agent (L3) có được "approve" thay con người ở POL-11 (merge) không — Owner nói "no editing others' code without permission" nhưng không nói ai cấp permission. |
 | OI-ROLE-04 | Multi-user: có cần ngay data model `role` trong MVP? |

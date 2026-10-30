@@ -171,7 +171,7 @@ export const agentStatus = pgEnum('agent_status', [
 export const permissionLevel = pgEnum('permission_level', ['read_only', 'standard', 'elevated']);
 export const providerKind = pgEnum('provider_kind', [
   // Sửa sau QA-001 (P0-2): thêm codex, openhands, generic_cli, mock theo PROVIDER_INTEGRATION.md mục adapter.
-  // 'mock' chỉ dùng trong CI/test, bị chặn ở môi trường sản phẩm. Các kind API (anthropic_api...) giữ cho phương án API key.
+  // 'mock' chỉ dùng trong CI/test, bị chặn ở môi trường sản phẩm. Các kind API (anthropic_api...) giữ cho phương án API key. // [OWR-3 C, FR-098: các kind API là dự phòng, KHÔNG bật trong MVP (không có API key fallback)]
   'claude_code', 'codex', 'openhands', 'generic_cli', 'mock',
   'anthropic_api', 'openai', 'gemini', 'ollama', 'openrouter', 'custom',
 ]);
@@ -318,7 +318,7 @@ export const providerConfigs = pgTable('provider_configs', {
   kind: e.providerKind('kind').notNull(),
   name: text('name').notNull(),                          // "Claude Code (local CLI)"
   baseUrl: text('base_url'),
-  credentialRef: text('credential_ref'),                 // key trong OS credential store (DPAPI/keyring), KHÔNG lưu secret
+  credentialRef: text('credential_ref'),                 // key trong OS credential store (DPAPI/keyring), KHÔNG lưu secret // [OWR-3 C, FR-088: app không lưu hoặc tự đọc credential provider; secret khác chờ Q-21]
   defaultModel: text('default_model'),
   availableModels: jsonb('available_models').$type<string[]>().notNull().default([]),
   pricing: jsonb('pricing').$type<ProviderPricing>().notNull().default({}), // {model:{inputPerM,outputPerM,cacheReadPerM,cacheWritePerM}}
@@ -768,7 +768,7 @@ export const agentEvents = pgTable('agent_events', {
   aggregateType: text('aggregate_type').notNull(),                        // 'session' | 'task' | 'run' | 'agent'
   aggregateId: uuid('aggregate_id').notNull(),
   sequence: bigint('sequence', { mode: 'number' }).notNull(),             // per aggregate, bắt đầu 1
-  type: text('type').notNull(),                                           // 'session.started' | 'tool.called' | 'task.status_changed' ...
+  type: text('type').notNull(),                                           // 'session.started' | 'tool.called' | 'task.status.changed' ... (dotted lowercase, không `_`; OWR-3 A.16)
   payload: jsonb('payload').$type<Record<string, unknown>>().notNull().default({}),
   agentId: uuid('agent_id'),
   taskId: uuid('task_id'),
@@ -833,6 +833,9 @@ export const approvalPolicies = pgTable('approval_policies', {
   appliesTo: text('applies_to').notNull(),               // 'tool_call' | 'git_push' | 'deploy' | 'spend' | 'task_completion' | 'memory_write'
   rules: jsonb('rules').$type<ApprovalRules>().notNull().default({}),
   // rules = { autoApprove?: {maxCostUsd?, allowedTools?[], pathGlobs?[]}, requireRoles?: ['owner','admin'], minApprovers?: 1 }
+  // [OWR-3 A.12] remind_after_sec / expires_after_sec là ĐỀ XUẤT thay ngữ nghĩa 'timeout' một nghĩa của timeout_sec (giữ timeout_sec tới khi Architect chốt migration). Nhắc Owner sau 24 giờ; hết hạn 15 phút CHỈ cho approval hành động quan trọng (production deploy, data deletion, merge main). **[OWR-3 X-7]** Thời gian chờ trong tiến trình 540 s thuộc WORKFLOW_ENGINE §7 (hết 540 s: lưu state, `WAITING_HUMAN`, không giữ worker), không phải `timeout_sec` (3600 là giá trị mặc định cũ, [cờ phán đoán] cần Architect xác nhận có giữ hay bỏ).
+  remindAfterSec: integer('remind_after_sec').notNull().default(86400),     // 24 giờ [OWR-3 A.12; cột đề xuất]
+  expiresAfterSec: integer('expires_after_sec'),                              // null = không hết hạn; 900 (15 phút) cho hành động quan trọng [OWR-3 A.12; cột đề xuất]
   timeoutSec: integer('timeout_sec').notNull().default(3600),
   onTimeout: text('on_timeout').notNull().default('reject'),   // 'reject' | 'approve' | 'escalate'
   isEnabled: boolean('is_enabled').notNull().default(true),
@@ -858,10 +861,13 @@ export const approvals = pgTable('approvals', {
   decision: text('decision'),                            // 'approve' | 'reject' | 'approve_once' | 'approve_always'
   decisionNote: text('decision_note'),
   decidedAt: timestamp('decided_at', { withTimezone: true }),
-  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  // [OWR-3 A.12] TÁCH hai cột (trước đây một cột expires_at hai nghĩa):
+  remindAt: timestamp('remind_at', { withTimezone: true }),                 // nhắc Owner sau 24 giờ; KHÔNG làm approval hết hạn
+  expiresAt: timestamp('expires_at', { withTimezone: true }),               // 15 phút cho approval hành động quan trọng (production deploy, data deletion, merge main); null = không hết hạn [đề xuất: nullable, chờ Owner/Architect xác nhận]
   ...timestamps,
 }, (t) => [
   index('approvals_pending_idx').on(t.organizationId, t.expiresAt).where(sql`${t.status} = 'pending'`),
+  index('approvals_remind_idx').on(t.organizationId, t.remindAt).where(sql`${t.status} = 'pending'`),   // [OWR-3 A.12, đề xuất]
   index('approvals_task_idx').on(t.taskId),
 ]);
 ```
@@ -998,7 +1004,7 @@ export const auditLogs = pgTable('audit_logs', {
   organizationId: uuid('organization_id').notNull(),
   actorUserId: uuid('actor_user_id'),
   actorAgentId: uuid('actor_agent_id'),
-  action: text('action').notNull(),                      // 'agent.create' | 'task.status_change' | 'approval.decide' | 'settings.update'
+  action: text('action').notNull(),                      // 'agent.create' | 'task.status.change' | 'approval.decide' | 'settings.update'
   entityType: text('entity_type').notNull(),
   entityId: uuid('entity_id'),
   severity: e.auditSeverity('severity').notNull().default('info'),
@@ -1026,7 +1032,8 @@ export const officeLayouts = pgTable('office_layouts', {
   isActive: boolean('is_active').notNull().default(false),
   widthTiles: integer('width_tiles').notNull().default(40),
   heightTiles: integer('height_tiles').notNull().default(24),
-  tileSize: integer('tile_size').notNull().default(32),
+  tileSize: integer('tile_size').notNull().default(16),     // [OWR-3 A.7] art 16 px (benchmark sau)
+  displayScale: integer('display_scale').notNull().default(2),   // [OWR-3 A.7, ĐỀ XUẤT cột, chờ Architect/Owner] phóng 2x => hiệu dụng 32 px
   tileset: text('tileset').notNull().default('default'),
   groundLayer: jsonb('ground_layer').$type<number[][]>().notNull().default([]),   // tile ids (Tiled-compatible)
   collisionLayer: jsonb('collision_layer').$type<number[][]>().notNull().default([]),
@@ -1193,17 +1200,17 @@ CREATE TRIGGER trg_audit_logs_ro BEFORE UPDATE OR DELETE ON audit_logs FOR EACH 
 
 ### 5.2 Event types (tiền tố theo aggregate)
 
-> **[OWR-2 Q-12/Q-19/D-014]** Tên event trong DB là `lowercase.dot.notation` (danh sách dưới đây). `UPPER_SNAKE_CASE` chỉ là ánh xạ API/compat qua MỘT hàm xác định (`EVENT_SYSTEM.md` đầu tài liệu); không có hệ thống đặt tên thứ hai. Danh sách dưới là **đề xuất, chưa phải danh sách gốc của Owner** (mục 8.4 gốc chưa có trong repo: PENDING_OWNER_CLARIFICATION, xem `EVENT_SYSTEM.md`). Cần chốt: phân đoạn có `_` (`status_changed`) hay tách chấm (`status.changed`).
+> **[OWR-2 Q-12/Q-19/D-014]** Tên event trong DB là `lowercase.dot.notation` (danh sách dưới đây). `UPPER_SNAKE_CASE` chỉ là ánh xạ API/compat qua MỘT hàm xác định (`EVENT_SYSTEM.md` đầu tài liệu); không có hệ thống đặt tên thứ hai. **[OWR-3 A.1/A.16/X-4]** 16 event gốc của Owner (đã xác nhận) nằm ở `EVENT_SYSTEM.md` §0 (nguyên văn + ánh xạ dotted đề xuất theo quy tắc cơ học, PENDING_OWNER_CLARIFICATION P-16: Owner chưa cung cấp bảng ánh xạ). Danh sách dưới đây là **đề xuất ngoài danh sách gốc, chờ Owner**, canonical dotted lowercase KHÔNG có phân đoạn chứa `_` (đã đổi `status_changed` thành `status.changed`, v.v.; không xóa mục nào).
 
 ```
 session.started | session.heartbeat | session.suspended | session.resumed | session.exited | session.crashed
-llm.request | llm.response | llm.stream_chunk (chỉ khi bật debug) | llm.error
+llm.request | llm.response | llm.stream.chunk (chỉ khi bật debug) | llm.error
 tool.called | tool.result | tool.denied
 file.read | file.written | shell.exec | git.commit | git.push
-task.created | task.status_changed | task.assigned | task.blocked | task.completed | task.failed
-run.started | run.node_entered | run.node_finished | run.paused | run.finished
+task.created | task.status.changed | task.assigned | task.blocked | task.completed | task.failed
+run.started | run.node.entered | run.node.finished | run.paused | run.finished
 approval.requested | approval.decided | approval.expired
-agent.status_changed | agent.message_sent | agent.memory_proposed
+agent.status.changed | agent.message.sent | agent.memory.proposed
 office.moved | office.animation (ephemeral, KHÔNG ghi DB — chỉ Redis pub/sub)
 ```
 
@@ -1293,7 +1300,7 @@ export const eventOutbox = pgTable('event_outbox', {
 - Mọi bảng business có `organization_id NOT NULL`; bảng con (skill_documents, workflow_nodes, node_runs, desks...) suy ra qua parent, không lặp cột để tránh drift — trừ bảng ledger (`agent_events`, `usage_records`, `audit_logs`) denormalize `organization_id` để partition/query nhanh.
 - Scoping ở app: `TenantContext` (AsyncLocalStorage) set từ JWT/session ở server mode (desktop mode dùng bearer per-launch; D-001/CF-041); repository base class tự thêm `where organization_id = ctx.orgId`. Thêm **PostgreSQL RLS** làm hàng rào thứ hai cho server mode: policy `USING (organization_id = current_setting('app.org_id', true)::uuid)`; Drizzle `db.transaction` chạy `SET LOCAL app.org_id = ...` đầu tx. **[CẦN DUYỆT]**: bật RLS từ v1 hay để v2.
 - **Desktop mode** (`APP_MODE=desktop`): seed tạo org `local` (`is_default = true`) và user `local@localhost` (`is_local = true`, không password). Auth middleware tự inject user/org này, không màn hình login. Mọi query vẫn đi qua tenant scoping nên chuyển sang server mode không đổi code. Postgres chạy bằng Docker Desktop hoặc embedded Postgres (`embedded-postgres` npm) — **[CẦN DUYỆT]**: Docker bắt buộc hay bundle embedded Postgres cho bản desktop.
-- Secrets (API key, git token) **không** vào DB: `credential_ref` là key trong Windows Credential Manager (qua `@napi-rs/keyring` / `keytar`); server mode map sang Vault/env.
+- Secrets (API key, git token) **không** vào DB: `credential_ref` là key trong Windows Credential Manager (qua `@napi-rs/keyring` / `keytar`); server mode map sang Vault/env. **[OWR-3 C: phạm vi lưu secret không phải credential provider chờ Q-21]**
 
 ---
 
@@ -1342,7 +1349,7 @@ export default defineConfig({
    `start → pm.requirements (agent_task) → approval.prd (approval) → techlead.design → parallel[backend.impl, frontend.impl] → join → qa.test → condition(testsPassed) → [true] devops.release → approval.deploy → end ; [false] → backend.fix → qa.test`. Mỗi node `data.roleSelector = { jobTitle: 'Backend Developer', departmentSlug: 'engineering' }` để bind agent lúc run; `position` xếp theo lưới 260x140 để mở React Flow là đẹp ngay.
 5. **Default approval policies**: `git-push` (require admin), `shell-destructive` (reject by default), `spend-over-5usd`, `deploy`.
 6. **Default office layout**: 40x24 tiles, 1 room mỗi department (grid 2x3), 4 desks/room, lobby + meeting room, furniture cơ bản; `character_positions` tạo cho mỗi agent seeded, gán desk theo department.
-7. **system_settings** mặc định & `resource_limits` org-level (`max_concurrent_agents = 5` theo D-010 / OWR-2 Q-07, trần cấu hình 18; `max_cost_usd_per_day = 20`). **Comment seed: "không phải xác nhận subscription"** (5 là giới hạn mặc định của ứng dụng, không phải xác nhận subscription cho phép 5 session đồng thời; không tự tăng lên 10/18 khi chưa xác minh điều khoản provider). Seed `provider_configs.max_concurrent`: `claude_code` 5; ~~`codex` 3~~ **[OWR-2 D-005: Codex hoãn khỏi MVP, không seed `codex` trong MVP; giá trị 3 chỉ còn là gợi ý cho tương lai, chưa xác nhận]**. **[OWR-2 D-016]** 18 agent role là **seed data, không hardcode**; Agent Identity, Provider Identity, User Identity là ba khái niệm tách biệt (không dùng chung khóa/bảng).
+7. **system_settings** mặc định & `resource_limits` org-level (`max_concurrent_agents = 5` theo D-010 / OWR-2 Q-07, trần cấu hình 18; `max_cost_usd_per_day = 20`). **Comment seed: "không phải xác nhận subscription"** (5 là giới hạn mặc định của ứng dụng, không phải xác nhận subscription cho phép 5 session đồng thời; không tự tăng lên 10/18 khi chưa xác minh điều khoản provider) **[OWR-3 A.2/D: đây là giới hạn scheduler nội bộ, không phải giới hạn được provider bảo đảm; không chia sẻ credential/seat giữa nhiều người; không tăng nếu chưa xác minh điều khoản và usage thực tế]**. Seed `provider_configs.max_concurrent`: `claude_code` 5; ~~`codex` 3~~ **[OWR-2 D-005: Codex hoãn khỏi MVP, không seed `codex` trong MVP; giá trị 3 chỉ còn là gợi ý cho tương lai, chưa xác nhận]**. **[OWR-2 D-016]** 18 agent role là **seed data, không hardcode**; Agent Identity, Provider Identity, User Identity là ba khái niệm tách biệt (không dùng chung khóa/bảng).
 
 Dev fixtures (demo project, vài task, event mẫu) nằm ở `seeds/dev/` chỉ chạy với `pnpm db:seed --dev`.
 
@@ -1390,7 +1397,8 @@ workflow-engine      job = {workflowRunId, nodeKey}
 usage-rollup         repeat every 5m
 partition-maintainer repeat daily 02:00
 event-retention      repeat daily 03:00
-approval-expiry      delayed job per approval (expires_at)
+approval-remind      delayed job per approval (remind_at = 24 giờ; chỉ nhắc, không hết hạn) [OWR-3 A.12]
+approval-expiry      delayed job per approval (expires_at = 15 phút; chỉ hành động quan trọng; null thì không tạo job) [OWR-3 A.12]
 presence-reaper      repeat every 30s — dọn session mất heartbeat, release semaphore
 office-tick          repeat 100ms (chỉ khi có client đang xem office)
 

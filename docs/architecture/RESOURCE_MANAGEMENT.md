@@ -45,14 +45,14 @@ Nhận xét quan trọng:
 ### 4.1 Thứ tự kiểm (tất cả phải pass mới spawn)
 
 ```
-global.max_concurrent_agents (default 5, max 18)   # Q-07/OWR-2: 5 là giới hạn mặc định của ứng dụng, KHÔNG xác nhận subscription cho phép song song (chưa xác minh ToS); không tự tăng lên 10/18 khi chưa xác minh điều khoản provider
-  └─ provider_pool[credentialId].max_concurrent (default: claude-code 5, codex 3; D-010 APPROVED 2026-10-30)
+global.max_concurrent_agents (default 5, max 18)   # Q-07/OWR-3 A.2+D: 5 là giới hạn scheduler NỘI BỘ mặc định, KHÔNG phải giới hạn được provider bảo đảm/cho phép. Owner nói đã kiểm tra tài liệu chính thức Anthropic/OpenAI và không thấy căn cứ công khai đủ rõ về số session song song mỗi seat (Owner statement, chưa xác minh độc lập). Không chia sẻ credential/seat; không tự tăng lên 10 hoặc 18
+  └─ provider_pool[credentialId].max_concurrent (default nội bộ: claude-code 5; codex 3 chỉ khi Codex được tích hợp sau MVP; D-010 APPROVED 2026-10-30. OWR-3 A.2/D: 5 và 3 là giá trị cấu hình scheduler nội bộ, KHÔNG phải số provider cho phép; MVP chỉ Claude, A.8)
        └─ project.max_concurrent (default = global; fair share xem AGENT_SCHEDULER §9)
             └─ agent.max_concurrent_executions (default 1)
                  └─ host guard: free RAM ≥ min_free_ram_mb (2048), CPU 1-min avg ≤ 90%
 ```
 
-"Đang executing" = `AgentExecution.state ∈ {SPAWNING, RUNNING, STOPPING}`. `PAUSED` và `WAITING_APPROVAL` **không** chiếm slot (process đã dừng) nhưng vẫn chiếm workspace lock. [CẦN QUYẾT ĐỊNH, CF-048/Q-05: OWR-2 chỉ quy định hết 540 s thì chuyển `WAITING_HUMAN` và không giữ worker; chưa nêu approval mức tool trong 540 s có chiếm slot hay không. Giữ nguyên câu trên cho đến khi Owner/Architect chốt; xem DOC_SYNC_LOG_OWR2_A.md.]
+"Đang executing" = `AgentExecution.state ∈ {SPAWNING, RUNNING, STOPPING}`. `PAUSED` và `WAITING_APPROVAL` **không** chiếm slot (process đã dừng) nhưng vẫn chiếm workspace lock. [OWR-3 A.15 giải quyết CF-048: `WAITING_APPROVAL` KHÔNG tính vào giới hạn 5 active workers khi worker đã được giải phóng và trạng thái đã được persist. Điều kiện: worker/slot phải thực sự được giải phóng và state persist trước khi thôi tính slot; nếu approval mức tool còn giữ process sống (PROVIDER_INTEGRATION §17) thì execution đó vẫn là executing và chiếm slot. Quota provider vẫn áp dụng đầy đủ. Chưa VERIFIED, chưa có PoC.]
 
 ### 4.2 Semaphore trong Redis (rebuild được từ Postgres)
 
@@ -101,7 +101,7 @@ Lưu ý: vì subscription `team` không tính tiền theo token, **budget USD l�
 | `task_timeout` | theo complexity: 15/30/60/120/240 phút | hard kill, retry nếu attempt < maxRetries |
 | `silence_timeout` (stale hard) | 20 phút | không có stdout event/file change — xem `AGENT_SCHEDULER.md` §10 |
 | `graceful_stop_timeout` | 10 s | sau SIGTERM trước khi taskkill /F |
-| `approval_wait_timeout` | 540 s | Q-05/OWR-2: hết 540 s lưu approval `pending`, task → `WAITING_HUMAN`, không giữ worker/slot; nhắc Owner sau 24 h (không phải hạn chót). `prod_deploy`/`data_deletion`/`merge_main`: approval riêng, hết hiệu lực sau 15 phút. Thay giá trị cũ "24 h → QUEUED" |
+| `approval_wait_timeout` | 540 s | Q-05/OWR-2: hết 540 s lưu approval `pending`, task → `WAITING_HUMAN`, không giữ worker/slot; nhắc Owner sau 24 h (không phải hạn chót). OWR-3 A.12 tách hai trường: `remind_at` = nhắc Owner sau 24 giờ; `expires_at` = hết hiệu lực sau 15 phút, chỉ cho approval hành động quan trọng (`prod_deploy`, `data_deletion`, `merge_main`). Hạn tối đa approval thường: PENDING_OWNER_CLARIFICATION (X-3 OWR-2). X-7: 540 s. Thay giá trị cũ "24 h → QUEUED" |
 | `tool_command_timeout` | 10 phút | truyền vào CLI (A05: cấu hình Bash timeout qua settings) |
 
 ## 8. Quota và rate-limit của provider
@@ -149,7 +149,7 @@ Lý do không auto-switch: hai provider khác model, khác thói quen tool → k
 ```ts
 // config/resources.schema.ts (zod) — giá trị mặc định
 export const ResourceConfig = z.object({
-  max_concurrent_agents: z.number().int().min(1).max(18).default(5),   // đếm executing, không đếm created
+  max_concurrent_agents: z.number().int().min(1).max(18).default(5),   // đếm executing, không đếm created; 5 = giới hạn scheduler nội bộ, không phải số provider cho phép (OWR-3 A.2)
   max_concurrent_tasks: z.number().int().min(1).default(5),             // ≤ max_concurrent_agents × max agent.executions
   max_retries: z.number().int().min(0).max(10).default(3),
   task_timeout_minutes: z.record(z.enum(['1','2','3','4','5']), z.number()).default({1:15,2:30,3:60,4:120,5:240}),
@@ -187,7 +187,7 @@ Giả định (ghi rõ để owner kiểm): (A1) mỗi process ổn định ở 
 | 10 | 2.3 / 9 GB | 10 build/test đồng thời sẽ chậm ×2–3 | 10–30 / 20–50 USD | Có với free RAM ≥ 10 GB (hiện chỉ 6.4 GB free → phải đóng app khác); quota là chặn thực tế |
 | 18 | 4.1 / 16 GB | bão hòa CPU; latency tool call tăng mạnh | 18–54 / 36–90 USD | **Nhẹ: có; nặng: không** trên 16 GB RAM. Cần ≥ 32 GB hoặc chia agent sang máy/container khác; quota gần như chắc chắn cạn trước |
 
-> [Q-07/OWR-2: bảng 5/10/18 chỉ là ngoại suy tài nguyên máy, không phải xác nhận ToS/quota subscription và không có nghĩa 18 agent đã được kiểm thử; không tăng concurrency lên 10/18 khi chưa xác minh điều khoản provider.]
+> [Q-07/OWR-2 + OWR-3 A.2/D: bảng 5/10/18 chỉ là ngoại suy tài nguyên máy, không phải số provider cho phép, không phải xác nhận ToS/quota subscription và không có nghĩa 18 agent đã được kiểm thử; không chia sẻ credential/seat; không tăng concurrency lên 10/18 khi chưa xác minh điều khoản provider.]
 
 Kết luận: về OS/process, 18 CLI đồng thời **khả thi** (18 × 230 MB ≈ 4 GB); nút thắt thật là (1) quota subscription dùng chung, (2) RAM khi task nặng, (3) chất lượng (xung đột workspace, review không kịp). Chi tiết: `docs/research/MULTI_AGENT_SCALABILITY.md`.
 

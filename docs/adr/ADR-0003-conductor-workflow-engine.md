@@ -117,3 +117,13 @@ Nguồn: OWR-2 §3 D-003, §1 Q-20, §2 Q-05, Q-11 trong `docs/owner-responses/O
 - Q-05: approval wait tối đa 540 giây rồi lưu trạng thái và chuyển `WAITING_HUMAN`, không giữ worker (khớp tiêu chí 5 và 6). Q-11: 9 UI node types, 11 engine kinds.
 - PoC chưa chạy; điều kiện chưa đạt.
 - **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (A.15, A.3, E). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED_CONDITIONAL** (PoC Q-20).
+- A.15: trạng thái `WAITING_APPROVAL` **không giữ worker** và không tính vào giới hạn 5 active workers, với điều kiện worker đã được giải phóng và trạng thái đã được persist. Quota provider vẫn áp dụng. Quy tắc này chưa được kiểm chứng: nó phụ thuộc đúng tiêu chí PoC (5) và (6).
+- OWR-3 E: **chưa cho phép** chạy PoC Conductor lúc này. PoC vẫn **NOT RUN** và không được ủy quyền ở thời điểm này; điều kiện D-003 chưa đạt.
+- A.12: `remind_at` (nhắc sau 24 giờ) tách khỏi `expires_at` (15 phút cho approval hành động quan trọng). A.14: 9 UI node types chỉ là loại node trên giao diện; engine kinds tách riêng và OWR-3 không nêu lại số lượng (tài liệu ghi 11, không coi là quyết định mới).
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

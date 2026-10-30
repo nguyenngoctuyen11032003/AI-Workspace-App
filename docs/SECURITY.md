@@ -1,7 +1,7 @@
 # AI WORKSPACE — Security Architecture & Threat Model
 
 > Agent 09 (Cybersecurity Engineer) · 2026-10-30 · Trạng thái: PROPOSAL v1
-> Phạm vi: nền tảng chạy nhiều AI employee đồng thời (mặc định ứng dụng 5, Q-07/OWR-2: giới hạn của ứng dụng, **không** xác nhận subscription cho phép song song; chưa xác minh ToS; không tự tăng lên 10/18), mỗi employee là một phiên Claude (adapter chính: Claude Agent SDK theo Q-17/D-004/OWR-2; raw CLI 2.1.312 chỉ cho tác vụ phụ trợ/PoC) hoặc Codex CLI (**hoãn khỏi MVP, D-005/OWR-2; chưa cài, Q-10**), backend NestJS
+> Phạm vi: nền tảng chạy nhiều AI employee đồng thời (mặc định 5 là giới hạn scheduler NỘI BỘ của ứng dụng, **không phải** giới hạn được provider bảo đảm hay cho phép, Q-07/OWR-3 A.2+D; không tăng lên 10 hoặc 18; không chia sẻ credential/seat), mỗi employee là một phiên Claude (adapter chính: Claude Agent SDK theo Q-17/D-004/OWR-2; raw CLI 2.1.312 chỉ cho tác vụ phụ trợ/PoC) hoặc Codex CLI (**hoãn khỏi MVP, D-005/OWR-2; chưa cài, Q-10**), backend NestJS
 > trên Windows 11 Pro (build 26300), Docker Desktop 29 (WSL2 backend), desktop shell Tauri 2 (kế hoạch).
 
 ## 0. Tóm tắt điều hành
@@ -13,7 +13,8 @@
    không chặn được read path và network isolation yếu. Vì vậy **permission system + hooks
    của CLI là lớp policy (policy layer), không phải security boundary**. Boundary thật sự
    phải do Docker container (WSL2 VM) cung cấp.
-2. Mô hình đề xuất: **Tier 1 (mặc định)** — CLI agent chạy trên host dưới user thường,
+2. **[OWR-3 A.10 / X-13 — MÂU THUẪN VỚI D-007, chưa quyết định; xem §0.6]** Đoạn 2 này mô tả thiết kế Tier 1 đã duyệt trước đó (D-007). OWR-3 A.10 chặt hơn: agent không chạy arbitrary code trên Windows host, shell tích hợp của agent không được bật trên host, mọi code do agent sinh ra chỉ chạy trong sandbox cô lập, sandbox hỏng thì fail closed; Tier 2/OpenHands hoãn khỏi MVP và không thuộc MVP. Đọc đoạn 2 cùng §0.6; phần nào mâu thuẫn thì §0.6 (OWR-3) thắng cho đến khi Owner trả lời.
+   Mô hình đề xuất (bản D-007 cũ): **Tier 1 (mặc định)** — CLI agent chạy trên host dưới user thường,
    bị ràng buộc bởi permission rules + PreToolUse hook của app; **mọi lệnh build/test/run
    của code sinh ra** được chuyển hướng (bằng hook `updatedInput` hoặc wrapper script) vào
    container Docker per-project. **Tier 2 (opt-in)** — toàn bộ agent runtime chạy trong
@@ -22,7 +23,25 @@
    Secret của chính app đi qua OS keychain (Windows Credential Manager). Postgres chỉ lưu
    ciphertext hoặc reference. Mọi event/log/transcript đi qua redaction middleware.
 4. 5 rủi ro còn lại cần user chấp nhận bằng văn bản: xem §10 (R1, R2, R3, R5, R6).
-5. **Security gates (OWR-2 mục 8, D-008, D-019)**: (a) không cho Agent thực thi arbitrary code trên Windows host khi chưa có sandbox đạt chuẩn; (b) không mount thư mục credential của host hoặc Docker socket vào Agent; **không mount bất kỳ thư mục credential nào vào Agent sandbox** (D-008); (c) sandbox không hoạt động thì fail closed; (d) không đưa production-capable Agent execution vào trước khi authentication, authorization, permission model, credential isolation, audit, sandbox và emergency stop hoàn thành; (e) Phase 2 chỉ được xây provider adapter ở mock/sandbox mode khi các gate chưa đạt; (f) không tuyên bố 18 Agent concurrent đã được kiểm thử; (g) Agent CLI/API chỉ triển khai ở Phase 3 sau Security Review, token ngắn hạn least-privilege, có redaction, chặn nested execution trái phép (D-019). Docker cần cho sandbox validation (Q-10). Phase 0 còn mở; Phase 1 chưa được cho phép (OWR-2). Phần thiết kế CLI-hook/`--permission-mode manual` ở §2.2, §2.3, §5 là biến thể **fallback** sau khi Q-17/D-004 chọn Agent SDK (xem §5.1).
+5. **Security gates (OWR-2 mục 8, D-008, D-019)**: (a) không cho Agent thực thi arbitrary code trên Windows host khi chưa có sandbox đạt chuẩn; (b) không mount thư mục credential của host hoặc Docker socket vào Agent; **không mount bất kỳ thư mục credential nào vào Agent sandbox** (D-008); (c) sandbox không hoạt động thì fail closed; (d) không đưa production-capable Agent execution vào trước khi authentication, authorization, permission model, credential isolation, audit, sandbox và emergency stop hoàn thành; (e) Phase 2 chỉ được xây provider adapter ở mock/sandbox mode khi các gate chưa đạt; (f) không tuyên bố 18 Agent concurrent đã được kiểm thử; (g) Agent CLI/API chỉ triển khai ở Phase 3 sau Security Review, token ngắn hạn least-privilege, có redaction, chặn nested execution trái phép (D-019). Docker cần cho sandbox validation (Q-10). Phase 0 còn mở; Phase 1 chưa được cho phép (OWR-2, OWR-3). Phần thiết kế CLI-hook/`--permission-mode manual` ở §2.2, §2.3, §5 là biến thể **fallback** sau khi Q-17/D-004 chọn Agent SDK (xem §5.1).
+
+### 0.6 Chỉ thị sandbox chặt hơn (OWR-3 A.10, 2026-10-30) — XUNG ĐỘT X-13 với D-007
+
+**Nội dung Owner (A.10):** OpenHands hoãn khỏi MVP; không cho Agent chạy arbitrary code trên Windows host; mọi Agent-generated code phải thực thi trong sandbox được cô lập; Docker chỉ chạy build/test/run là KHÔNG đủ nếu Agent vẫn có quyền thực thi trên host; sandbox không hoạt động thì fail closed. Tier 2 không thuộc MVP.
+
+**Quy tắc thiết kế mới (viết lại theo A.10, chưa VERIFIED, chưa có PoC):**
+1. Công cụ shell/Bash/PowerShell tích hợp sẵn của agent **không được bật trên host**. Cấu hình SDK phải loại các tool này khỏi tập tool khả dụng (không chỉ "hỏi duyệt").
+2. Mọi thực thi code (build, test, run, script, package install) đi **chỉ** qua một **sandbox execution tool** của ứng dụng, chạy trong container cô lập (§2.3 mục container: không root, `cap-drop ALL`, rootfs read-only, không docker.sock, không mount credential, mạng `none`/allowlist).
+3. Docker chỉ cho build/test/run mà agent vẫn có shell trên host = **không đạt** yêu cầu A.10.
+4. Sandbox không sẵn sàng (Docker tắt, `docker inspect` không khớp `assertSafeSpec`) -> **fail closed**: tool thực thi bị từ chối, task chuyển `BLOCKED`; không có đường lui về host.
+5. Docker Desktop **chưa được Owner cho phép khởi động** (OWR-3 mục E; VAL-DOCKER-01..09 chưa chạy). Vì vậy **chưa có agent thật nào được chạy** cho đến khi có sandbox cô lập hoạt động đã kiểm chứng; Phase 2 chỉ mock/sandbox mode (A.11).
+
+**Xung đột X-13 với D-007 (Tier 1: CLI/agent chạy trên host với chính sách và hook; Docker chỉ cho build/test/run):** đoạn 2 mục 0, §2.2 đến §2.4, §3, §5, R1, R4 mô tả D-007 và giữ nguyên làm lịch sử thiết kế; chúng bị chặn bởi quy tắc 1 đến 4 ở trên cho đến khi Owner chốt. Không tự quyết định.
+
+**Ba câu hỏi PENDING_OWNER_CLARIFICATION (không tự quyết định):**
+- **(i) [PENDING_OWNER_CLARIFICATION]** Thao tác file Edit/Write phía host bên trong worktree riêng của từng task có được phép không? (Nếu không, cả file edit phải đi qua sandbox; nếu có, giữ `Edit/Write` host trong worktree với deny ngoài worktree.)
+- **(ii) [PENDING_OWNER_CLARIFICATION]** Bản thân tiến trình agent runtime (Claude Agent SDK trên host, giữ login subscription của Owner) có được tính là "thực thi trên host" không? Nếu có thì mô hình CLI-sở-hữu-credential (D-008) xung đột với A.10 và cần phương án khác.
+- **(iii) [PENDING_OWNER_CLARIFICATION]** Runtime sandbox nào cung cấp cô lập khi OpenHands đã hoãn? Hàm ý: một executor dựa trên Docker do dự án tự xây. Hệ quả: **Docker trở thành điều kiện tiên quyết cứng cho BẤT KỲ thực thi agent thật nào**, trong khi Docker chưa được cho phép khởi động.
 
 ---
 
@@ -75,6 +94,7 @@ Trust boundaries:
 ## 2. Dilemma kiến trúc & mô hình sandbox phân tầng
 
 ### 2.1 Vấn đề
+> [OWR-3 A.10 / X-13: toàn bộ §2.1 đến §2.3 là thiết kế Tier 1 theo D-007 (agent trên host + chính sách/hook; Docker cho build/test/run). OWR-3 yêu cầu chặt hơn (§0.6): shell tích hợp không bật trên host, code chỉ chạy qua sandbox execution tool. Mâu thuẫn, PENDING_OWNER_CLARIFICATION; không tự quyết định. Ký hiệu 10 agent trong các ví dụ bên dưới không phải đề xuất concurrency.]
 Claude Code / Codex CLI **phải chạy trên host** vì chúng sở hữu OAuth login của user
 (file cred trong `%USERPROFILE%`); đưa cred đó vào container là tự làm lộ nó cho code
 không tin cậy. Nhưng spec yêu cầu "không chạy AI-generated code trực tiếp trên host với
@@ -179,6 +199,7 @@ Trade-off Tier 1:
   `--strict-mcp-config` và chỉ load server do app cung cấp.
 
 ### 2.4 Tier 2 — Fully containerized agent runtime (opt-in cho project untrusted)
+> [OWR-3 A.10: OpenHands hoãn khỏi MVP; Tier 2 KHÔNG thuộc MVP. Mục này chỉ là tham khảo sau MVP. Cần Owner trả lời §0.6 (iii) về runtime sandbox thay thế. X-13.]
 
 Mô hình OpenHands (xem `OpenHands/docker/Dockerfile`, `entrypoint.sh`, README.windows.md): toàn bộ
 agent-server + workspace nằm trong 1 container, giao tiếp qua `X-Session-API-Key`; confirmation
@@ -400,7 +421,7 @@ approvals(id, task_id, agent_id, source{claude_sdk|claude_hook[fallback]|claude_
           input_redacted jsonb, risk_tags[], rule_id, status{pending|approved|denied|expired|revoked},
           decided_by, decided_at, expires_at, scope, resolution_note, created_at)
 ```
-- Thời gian chờ approval tối đa **540 giây** (Q-05/OWR-2; thống nhất với PERMISSION_MODEL §6.4). Hết 540 s: lưu approval ở trạng thái `pending` (bền vững), task chuyển `WAITING_HUMAN`, **không giữ worker**; có thể nhắc Owner sau 24 giờ (nhắc, không tự hết hạn). `prod_deploy`, `data_deletion`, `merge_main` cần approval riêng, hết hiệu lực sau **15 phút**, `scope=once`. Giá trị cũ "deny + task `blocked`" bị thay thế. [Điểm lệch còn lại: `expires_at` 7 ngày ở PERMISSION_MODEL §6.4, xem DOC_SYNC_LOG_OWR2_A.md]
+- Thời gian chờ approval tối đa **540 giây** (Q-05/OWR-2; thống nhất với PERMISSION_MODEL §6.4). Hết 540 s: lưu approval ở trạng thái `pending` (bền vững), task chuyển `WAITING_HUMAN`, **không giữ worker**; có thể nhắc Owner sau 24 giờ (nhắc, không tự hết hạn). OWR-3 A.12 tách hai trường: `remind_at` (nhắc Owner sau 24 giờ) và `expires_at` (15 phút, chỉ cho approval hành động quan trọng). `prod_deploy`, `data_deletion`, `merge_main` cần approval riêng, `expires_at` = 15 phút, `scope=once`. `WAITING_APPROVAL`/`WAITING_HUMAN` không tính vào 5 active workers khi worker đã giải phóng và state đã persist (OWR-3 A.15; quota provider vẫn áp dụng). Giá trị cũ "deny + task `blocked`" bị thay thế. [Điểm lệch còn lại: `expires_at` 7 ngày ở PERMISSION_MODEL §6.4, xem DOC_SYNC_LOG_OWR2_A.md]
 - Approve với `scope: task` tạo **cached decision** keyed by `(agent, tool, normalizedCommandPrefix)`
   hết hạn khi task kết thúc hoặc TTL; không bao giờ persist thành `permissions.allow` trong settings file
   của user.
@@ -533,7 +554,7 @@ owner security; coverage ≥ 90 % cho các module đó.
 
 | # | Rủi ro | Vì sao không loại bỏ được | Giảm nhẹ hiện có | Yêu cầu user |
 | --- | --- | --- | --- | --- |
-| R1 | **Tier 1 không có OS-level sandbox cho CLI**: Claude Code trên native Windows chạy lệnh unsandboxed; file tools chạy quyền user. Một lệnh vượt qua denylist/hook (obfuscation chưa biết, bug parser) chạy với toàn quyền user TUYEN trên `C:\` và `D:\` | Anthropic chưa hỗ trợ sandbox native Windows; không thể tách cred OAuth khỏi user | Denylist + hook + rewrite interpreter vào container; `blockReadsOutsideWorkingDirectories`; audit | Chấp nhận, hoặc chọn Tier 2 (API key, mất subscription) hoặc chạy toàn bộ app trong WSL2 (bật được `sandbox.enabled`) |
+| R1 | [OWR-3 A.10/X-13: R1 là hệ quả của D-007; chỉ thị mới (§0.6) cấm bật shell tích hợp trên host, nên R1 chỉ còn nếu Owner trả lời (i)/(ii) cho phép Edit/Write hoặc runtime SDK trên host — PENDING_OWNER_CLARIFICATION] **Tier 1 không có OS-level sandbox cho CLI**: Claude Code trên native Windows chạy lệnh unsandboxed; file tools chạy quyền user. Một lệnh vượt qua denylist/hook (obfuscation chưa biết, bug parser) chạy với toàn quyền user TUYEN trên `C:\` và `D:\` | Anthropic chưa hỗ trợ sandbox native Windows; không thể tách cred OAuth khỏi user | Denylist + hook + rewrite interpreter vào container; `blockReadsOutsideWorkingDirectories`; audit | Chấp nhận, hoặc chọn Tier 2 (API key, mất subscription) hoặc chạy toàn bộ app trong WSL2 (bật được `sandbox.enabled`) |
 | R2 | **Credential OAuth nằm trên FS dạng file (file người dùng đọc được bởi tiến trình cùng user, kiểm soát bằng ACL)** (`.credentials.json`) do CLI quản lý; mọi process cùng user (kể cả code chạy trên host lọt qua R1, malware, extension) đọc được | Thiết kế của CLI; app không được can thiệp | Read deny rules + denylist path; không mount home vào container; khuyến nghị user bật BitLocker, không cài extension lạ | Chấp nhận; cân nhắc `claude setup-token` scoped cho app nếu Anthropic cho phép |
 | R3 | **Prompt injection không thể chặn triệt để**: agent đọc content untrusted; policy chỉ chặn *hành động* nguy hiểm đã biết, không chặn hành động "hợp lệ nhưng sai" (ví dụ sửa logic auth trong file thuộc `writable`, commit backdoor tinh vi) | Bản chất LLM | Manifest + diff validation + review trước merge; untrusted project ⇒ Tier 2 + network none | Chấp nhận; cam kết **human review mọi merge vào protected branch** |
 | R4 | **Cách ly giữa agent chỉ ở mức logical** (cùng user OS): agent A có thể chạm worktree B qua Bash path tuyệt đối nếu lọt qua R1 | Không có per-agent OS user vì OAuth gắn user chính | Worktree riêng, manifest, hook path check, diff validation | Chấp nhận |
@@ -575,6 +596,6 @@ Top 5 cần ký xác nhận: **R1, R2, R3, R5, R6**.
   `workspace-write` network off mặc định, `.git/.codex/.agents/.aws` read-only, `untrusted` policy đã retired.
 - OpenHands (`D:\Code\Tuyen\Agent management\OpenHands`): `src/api/agent-server-adapter.ts` confirmation policy
   & security analyzers; `docker/entrypoint.sh` session API key model; `README.windows.md` multi-sandbox chỉ trong WSL2.
-- Máy khảo sát: `~/.claude/.credentials.json` (644), `~/.claude/settings.json` có `skipDangerousModePermissionPrompt: true`
+- Máy khảo sát: `~/.claude/.credentials.json` (file người dùng đọc được bởi tiến trình cùng user, kiểm soát bằng ACL), `~/.claude/settings.json` có `skipDangerousModePermissionPrompt: true`
   và `autoMode` (phải không ảnh hưởng tới agent của app); `~/.codex/config.toml` `sandbox="elevated"`, trust `d:\code\tuyen`;
   Docker 29.8.1 client có, daemon chưa chạy.

@@ -148,7 +148,7 @@ Tie-break: ít execution gần nhất (LRU) → chi phí ước tính thấp hơ
 ## 6. Queue và backpressure [Đề xuất]
 
 - Hàng đợi logic = ready-set đã sắp xếp; không cần queue riêng vì Postgres `SKIP LOCKED` đủ cho ≤ vài nghìn task. Nếu A07 chọn BullMQ thì scheduler là consumer của queue `task.ready` với concurrency = 1 worker/tick (quyết định cuối: A07).
-- Backpressure theo thứ tự kiểm: `global.max_concurrent_agents` → `provider[credential].max_concurrent` → `project.max_concurrent` → `agent.maxConcurrentExecutions`. Hết slot → task giữ `QUEUED`, ghi `queuedReason`, hiển thị trên dashboard ("chờ slot global (5/5)").
+- Backpressure theo thứ tự kiểm: `global.max_concurrent_agents` → `provider[credential].max_concurrent` → `project.max_concurrent` → `agent.maxConcurrentExecutions`. Hết slot → task giữ `QUEUED`, ghi `queuedReason`, hiển thị trên dashboard ("chờ slot global (5/5)"). [OWR-3 A.2/D: 5 là giới hạn scheduler NỘI BỘ, không phải số session provider cho phép; không tăng lên 10 hoặc 18; Owner nói đã kiểm tra tài liệu chính thức và không thấy căn cứ công khai rõ về số session song song mỗi seat (Owner statement, chưa xác minh độc lập); không chia sẻ credential/seat. Quota provider vẫn áp dụng ngoài giới hạn nội bộ.]
 - Admission control: khi `queueDepth > 3 × max_concurrent_agents` trong > 10 phút → cảnh báo operator; không tự tăng limit.
 - Không spawn khi RAM free < `min_free_ram_mb` (default 2048) hoặc CPU load trung bình 1 phút > 90% (số đo thực nghiệm: mỗi process ~230 MB RSS, spawn 3 cùng lúc đẩy CPU lên 79% trên i5-11400H — [Đã xác minh], xem `MULTI_AGENT_SCALABILITY.md`).
 
@@ -158,7 +158,7 @@ Tie-break: ít execution gần nhất (LRU) → chi phí ước tính thấp hơ
 QUEUED --assign--> ASSIGNED --spawn ok--> RUNNING --exit 0 + output ok--> REVIEW/DONE
                                   |--spawn fail--> FAILED(retry?)
 RUNNING --pause--> PAUSED --resume--> RUNNING       (Claude: resume bằng `--resume <session_id>`; A05 xác nhận)
-RUNNING --approval needed--> WAITING_APPROVAL --approve--> RUNNING
+RUNNING --approval needed--> WAITING_APPROVAL --approve--> RUNNING   # OWR-3 A.15 (giải quyết CF-048): WAITING_APPROVAL KHÔNG tính vào 5 active workers khi worker đã giải phóng và state đã persist; quota provider vẫn áp dụng; hết 540 s (X-7) -> WAITING_HUMAN; remind_at 24 h, expires_at 15 phút chỉ cho prod deploy/data deletion/merge main (A.12)
 RUNNING --cancel--> STOPPING --(SIGTERM, 10s, then taskkill /T /F)--> CANCELLED
 RUNNING --heartbeat stale--> LOST --> reallocation (§8)
 ```

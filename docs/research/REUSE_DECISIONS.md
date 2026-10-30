@@ -3,7 +3,7 @@
 > Tác giả: Technical Research Lead (tổng hợp Phase 0). Ngày: 2026-10-30.
 > Nguồn: các bảng "Tổng hợp" của `CHATDEV_ANALYSIS.md` §12, `PIXEL_AGENTS_ANALYSIS.md` §9, `MY_VIRTUAL_OFFICE_ANALYSIS.md` §11.3, `OPENHANDS_ANALYSIS.md` §12; `LICENSE_AND_REUSE.md` §3–4; `DECISION_LOG.md` (D-001…D-016).
 > Đây là tài liệu kỹ thuật, không phải tư vấn pháp lý.
-> **[OWR-2 Q-15 / D-012]** Asset mặc định chỉ CC0; font OFL được phép nếu lưu license/NOTICE; CC-BY chỉ khi Owner phê duyệt từng package; asset MIT nguồn gốc không rõ (ví dụ Pixel Agents furniture/tile, RD-033) không bundle mặc định, chặt hơn các dòng "ALLOW-COND/Dùng tạm" bên dưới. Tái dùng code Apache-2.0/MIT sau khi xác minh license và attribution không đổi. My Virtual Office (AGPL) chỉ tham khảo ý tưởng; không sao chép code, prompt, layout, asset.
+> **[OWR-2 Q-15 / D-012]** Asset mặc định chỉ CC0; font OFL được phép nếu lưu license/NOTICE; CC-BY chỉ khi Owner phê duyệt từng package; asset MIT nguồn gốc không rõ (ví dụ Pixel Agents furniture/tile, RD-033) không bundle mặc định, chặt hơn các dòng "ALLOW-COND/Dùng tạm" bên dưới. Tái dùng code Apache-2.0/MIT sau khi xác minh license và attribution không đổi. **[OWR-3 A.9 làm rõ Q-15]** Asset MIT chỉ được dùng nếu xác minh được nguồn gốc VÀ license VÀ ghi attribution vào `NOTICE`; nguồn gốc không rõ thì KHÔNG dùng; CC0 vẫn là mặc định; font OFL cho phép kèm license/NOTICE; CC-BY theo từng package khi Owner phê duyệt. Furniture/tile Pixel Agents (nguồn gốc không rõ) tiếp tục bị loại. My Virtual Office (AGPL) chỉ tham khảo ý tưởng; không sao chép code, prompt, layout, asset.
 
 ---
 

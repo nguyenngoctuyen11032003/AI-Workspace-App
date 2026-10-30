@@ -69,6 +69,8 @@ Nguồn chi tiết: `docs/design/SCREEN_SPECIFICATION.md` §3.1…§3.22. Test E
 
 ## 5. Cần Owner làm rõ
 
+**Cập nhật OWR-3 (2026-10-30):** Q-01 (FR-200, N = 24 giờ, operational alert; remind_at/expires_at), Q-02 (FR-283, checklist 10 tiêu chí), Q-03 (FR-284, tiếng Việt mặc định, hỗ trợ tiếng Anh), Q-04 (FR-292, chỉ hướng dẫn PostgreSQL dump) đã được Owner quyết định ở OWR-3 mục C; AC-649..AC-657 trong `AC_ADDENDUM_PART4_OWR2.md` (PROPOSED). Q-06 (số loại node): 9 UI node type theo OWR-3 A.14. Bảng gốc giữ bên dưới để truy vết.
+
 | ID | FR | Câu hỏi cụ thể | Lý do chưa viết AC |
 |---|---|---|---|
 | Q-01 | FR-200 | "N giờ" là bao nhiêu (giá trị mặc định, có cấu hình theo approval/policy không)? Nhắc nhở gửi tới ai, qua kênh nào (in-app/OS notification), lặp lại mấy lần, và "escalation" nghĩa là gì (chuyển người duyệt khác hay tự reject/hủy)? | Không có ngưỡng, người nhận và hành động leo thang để đo kết quả |

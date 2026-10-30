@@ -165,7 +165,7 @@ jobs:
 
 Composite action `setup-node-pnpm`: `actions/setup-node@v4` (`node-version-file: .nvmrc`), `corepack enable`, `actions/cache` cho pnpm store (`key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}`), `pnpm install --frozen-lockfile`. Turborepo cache: `actions/cache` cho `.turbo/` (key theo `github.sha`, restore-keys theo branch) – đủ cho MVP, Vercel remote cache tuỳ chọn sau.
 
-[D-005/OWR-2: Codex hoãn khỏi MVP; CI không cài và không chạy Codex CLI. Adapter chính của Claude là Agent SDK (Q-17); `AGENT_MODE=mock` chỉ dành cho CI, không thay luồng sản phẩm.]
+[OWR-3 A.8: MVP chỉ tích hợp Claude; Codex để sau, giữ AgentAdapter; CI không có job Codex. OWR-3 A.10: CI không cho agent thực thi code trên host runner; thực thi agent thật chỉ qua sandbox cô lập, chưa có.] [D-005/OWR-2: Codex hoãn khỏi MVP; CI không cài và không chạy Codex CLI. Adapter chính của Claude là Agent SDK (Q-17); `AGENT_MODE=mock` chỉ dành cho CI, không thay luồng sản phẩm.]
 
 Agent CLI trong CI: **không** chạy `claude`/`codex` thật (không có login, tốn tiền). `AGENT_MODE=mock` dùng adapter giả lập stream-json. Test tích hợp thật với CLI chạy thủ công trên máy dev (`pnpm test:agent-live`, cần phê duyệt).
 

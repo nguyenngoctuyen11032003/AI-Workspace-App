@@ -2,6 +2,8 @@
 
 **Phiên bản:** 0.1 (Phase 0) · **Tác giả:** Agent 12 — BA · **Trạng thái:** Draft · **Ngày:** 2026-10-30
 
+> **[OWR-3 A.16/A.15]** Tên event trong các flow dưới (UPPER_SNAKE như `APPROVAL_REQUESTED`, `HUMAN_APPROVED`) là tên tương thích/hiển thị; canonical là dotted lowercase (`EVENT_SYSTEM.md` §0, §5.7). Chỉ 16 tên ở §0 là event gốc của Owner; tên khác là đề xuất, chờ Owner. Task ở `WAITING_APPROVAL` không tính vào 5 active workers nếu worker đã được giải phóng và trạng thái đã persist (vẫn theo quota provider).
+>
 > Quy ước: [Owner] = yêu cầu gốc; [Giả định]/[Đề xuất] = BA. Mỗi flow ghi: Actor, Tiền điều kiện, Các bước (Actor → Hệ thống), Event phát sinh (FR-117), Kết quả, Ngoại lệ, FR liên quan.
 
 ## 1. Mục đích

@@ -1,4 +1,5 @@
 # ORCHESTRATION & WORKFLOW ENGINE — Research & Design Recommendation
+> **[OWR-3 A.16, QA3 F3-02]** Tên event dạng UPPER_SNAKE trong tài liệu này là tên tương thích. Tên canonical là dotted lowercase; 16 event gốc và ánh xạ đề xuất nằm ở `docs/EVENT_SYSTEM.md` mục 0 (ánh xạ chờ Owner xác nhận, P-16).
 
 **Agent 07 — Multi-Agent Orchestration & Workflow Engine Architect**
 **Ngày:** 2026-10-30 · **Stack mục tiêu:** NestJS + TypeScript + PostgreSQL (Prisma) + Redis + BullMQ · **Platform:** Windows 11

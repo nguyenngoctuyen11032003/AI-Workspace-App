@@ -2,11 +2,11 @@
 
 **Trạng thái:** Draft Phase 0, chưa được Owner duyệt. Nguồn: `FUNCTIONAL_REQUIREMENTS.md`, `ACCEPTANCE_CRITERIA.md`, `AC_ADDENDUM_PART3.md`.
 Ghi chú: file FR định nghĩa 61 FR có id >= 200 (không tồn tại FR-202…205, 219…230, 246…260, 285); bảng liệt kê đủ 61 FR, mỗi FR đúng 1 lần.
-Status: AC_DEFINED = đã có AC trong ACCEPTANCE_CRITERIA.md; AC_ADDED_PHASE0 = AC bổ sung ở PART3 (AC-401…433); NEEDS_OWNER_CLARIFICATION = cần Owner làm rõ (xem Q-xx trong AC_ADDENDUM_PART3.md).
+Status: AC_DEFINED = đã có AC trong ACCEPTANCE_CRITERIA.md; AC_ADDED_PHASE0 = AC bổ sung ở PART3 (AC-401…433); NEEDS_OWNER_CLARIFICATION = cần Owner làm rõ (xem Q-xx trong AC_ADDENDUM_PART3.md); **`AC_PROPOSED_OWNER_DECIDED` (giá trị mới, OWR-3) = có AC PROPOSED (agent viết câu chữ), Owner đã xác nhận quyết định ở OWR-3 nên không còn câu hỏi chặn; AC vẫn là PROPOSED, không phải APPROVED, vì agent không được tự chuyển PROPOSED thành APPROVED; `WONT_MVP` (giá trị mới, OWR-3) = FR bị Owner loại khỏi MVP (WON'T DO IN MVP), giữ hàng truy vết và không viết AC.** `AC_PROPOSED_PENDING_CLARIFICATION` (OWR-2) nay không còn FR nào. Cập nhật OWR-3: FR-200, 283, 284, 292 đã được Owner quyết định; AC-649..AC-657 (PROPOSED).
 
 | FR ID | Priority | Acceptance Criteria ID(s) | Test Scenario | Expected Result | Verification Status |
 |---|---|---|---|---|---|
-| FR-200 | C | — (Q-01) | Approval chờ quá N giờ | Chưa xác định: thiếu N, người nhận, hành động escalation | NEEDS_OWNER_CLARIFICATION |
+| FR-200 | C | AC-649, AC-650, AC-651 | Approval chờ 24 giờ; alert vs incident; approval hành động quan trọng 15 phút | remind_at = 24 giờ phát đúng 1 operational alert (không phải incident); expires_at = 15 phút là trường riêng **[Nguồn: OWR-3 C, A.12]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-201 | S | AC-401 | Mở lịch sử 3 approval đã quyết định | Đủ người, thời điểm, quyết định, feedback; khớp DB | AC_ADDED_PHASE0 |
 | FR-206 | M | AC-107 | Agent project A truy cập workspace project B | Thất bại | AC_DEFINED |
 | FR-207 | M | AC-101 | Agent chạy lệnh | Lệnh chạy trong Docker container, không chạy trên host | AC_DEFINED |
@@ -58,15 +58,15 @@ Status: AC_DEFINED = đã có AC trong ACCEPTANCE_CRITERIA.md; AC_ADDED_PHASE0 =
 | FR-280 | M | AC-431 | Click và Dismiss finding | Mở đúng dòng; Dismiss cần lý do; metric thật | AC_ADDED_PHASE0 |
 | FR-281 | S | AC-432 | Xem cost với 7 ngày dữ liệu | Tooltip nguồn/giá; forecast chỉ khi ≥ 7 ngày | AC_ADDED_PHASE0 |
 | FR-282 | M | AC-433 | Đổi setting, Export diagnostics | Áp dụng đúng thời điểm; 0 secret | AC_ADDED_PHASE0 |
-| FR-283 | S | — (Q-02) | Kiểm giao diện "premium" | Chưa xác định: thiếu tiêu chí đo | NEEDS_OWNER_CLARIFICATION |
-| FR-284 | C | — (Q-03) | Chuyển ngôn ngữ Việt/Anh | Chưa xác định: OI-07 chưa chốt | NEEDS_OWNER_CLARIFICATION |
+| FR-283 | S | AC-652, AC-653 | Kiểm 1 màn hình theo checklist 10 tiêu chí; thử xóa/hạ mục P0 không bằng chứng | Mỗi tiêu chí Pass/Fail/N/A kèm bằng chứng; P0 không được xóa khi chưa có bằng chứng QA **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
+| FR-284 | C | AC-654, AC-655 | Cài mới; đổi sang tiếng Anh | Mặc định tiếng Việt; hỗ trợ tiếng Anh, lưu qua restart, catalog đủ khóa **[Nguồn: OWR-3 C; B X-1]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-286 | M | AC-121, AC-125, AC-126 | Kill app rồi mở lại | Dashboard, approval, hội thoại, message còn nguyên | AC_DEFINED |
 | FR-287 | M | AC-121, AC-122 | Kill app, chọn Tiếp tục | Resume từ checkpoint, không chạy lại bước xong | AC_DEFINED |
 | FR-288 | M | AC-123 | Provider timeout tạm thời | Retry theo max retry/backoff, hiển thị retry count | AC_DEFINED |
 | FR-289 | M | AC-122 | Resume sau restart | Resume từ checkpoint gần nhất, không tạo trùng | AC_DEFINED |
 | FR-290 | M | AC-124 | Kill tiến trình CLI từ ngoài | Phát hiện ≤ 60 s; task FAILED hoặc retry | AC_DEFINED |
 | FR-291 | S | AC-122 | Resume step đã hoàn tất | Artifact không bị tạo trùng | AC_DEFINED |
-| FR-292 | C | — (Q-04) | Sao lưu/xuất dữ liệu workspace | Chưa xác định: thiếu phạm vi và định dạng | NEEDS_OWNER_CLARIFICATION |
+| FR-292 | C | AC-656, AC-657 | Rà soát tài liệu; thực hiện dump rồi khôi phục | MVP chỉ có hướng dẫn PostgreSQL dump (đã kiểm khôi phục); không có export workspace **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
 
 ## Tổng kết
 
@@ -74,5 +74,6 @@ Status: AC_DEFINED = đã có AC trong ACCEPTANCE_CRITERIA.md; AC_ADDED_PHASE0 =
 |---|---|
 | AC_DEFINED | 24 |
 | AC_ADDED_PHASE0 | 33 |
-| NEEDS_OWNER_CLARIFICATION | 4 |
+| AC_PROPOSED_OWNER_DECIDED (OWR-3: FR-200, 283, 284, 292) | 4 |
+| NEEDS_OWNER_CLARIFICATION | 0 |
 | **Tổng** | **61** |

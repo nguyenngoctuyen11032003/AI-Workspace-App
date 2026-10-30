@@ -481,7 +481,7 @@ export interface EmergencyStopButtonProps extends BaseProps {
 
 - [ ] Mọi component trong 3.1-3.3 có file, test render từng variant/state, và `axe` không vi phạm nghiêm trọng (WCAG 2.2 AA mục tiêu).
 - [ ] `toTone()` có test phủ toàn bộ trạng thái FR-024 và FR-108 (không trạng thái nào chưa map).
-- [ ] `TaskCard` drop không đổi tone cục bộ; test: sau drop, tone chỉ đổi khi nhận event mô phỏng `TASK_STATE_CHANGED` (hỗ trợ AC-059, AC-060).
+- [ ] `TaskCard` drop không đổi tone cục bộ; test: sau drop, tone chỉ đổi khi nhận event mô phỏng `TASK_STATE_CHANGED` (**[OWR-3 A.16]** tên tương thích; canonical dotted `task.state.changed`, đề xuất ngoài danh sách event gốc, chờ Owner) (hỗ trợ AC-059, AC-060).
 - [ ] `ApprovalCard` không cho gửi Reject khi `feedback` rỗng (AC-046); risk `high` yêu cầu `confirmText`.
 - [ ] `LogViewer` render ≥ 50.000 dòng đã nạp (cắt còn 5000) với thao tác cuộn không rớt dưới 30 FPS trên máy tham chiếu; không render HTML thô (test XSS payload).
 - [ ] `OfficeHUD` + `AgentListFallback`: khi canvas lỗi, danh sách text hiển thị và đủ hành động; không timer nào tạo hoạt động khi không có event (AC-091).

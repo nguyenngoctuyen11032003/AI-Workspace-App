@@ -23,3 +23,7 @@ Cập nhật: 2026-10-30.
 | 17 | Docker daemon vẫn tắt (kiểm tra 13:39); RAM trống 4,04 GB trên 15,77 GB | VAL-DOCKER-01..09 BLOCKED | Chờ Owner tự mở Docker, theo `docs/poc/POC_DOCKER_SANDBOX.md` |
 | 18 | D-005 hoãn Codex làm đổi nhóm chấp nhận MVP B của yêu cầu gốc; D-007 Tier 2 dựa OpenHands bị hoãn sau Phase 4 | Xung đột phạm vi | Chờ Owner xác nhận |
 | 19 | Danh sách event gốc (Prompt 1 mục 8.4) chưa nằm trong repo | Không đóng băng event schema | PENDING_OWNER_CLARIFICATION |
+| 20 | Chỉ thị A.10 (không chạy mã tùy ý trên host, sandbox bắt buộc, fail closed) chặt hơn D-007 Tier 1 đã duyệt. Thân SECURITY mục 2 đến 5 chưa viết lại | Không có thực thi agent thật cho tới khi có sandbox cô lập; Docker là điều kiện cứng nhưng chưa được phép bật | Chờ Owner trả lời X-13, Q-23, Q-26 |
+| 21 | Bảng ánh xạ event dotted chưa có. 16 event gốc đã chép; ví dụ `task.started`, `agent.blocked` không thuộc 16 event gốc | Không đóng băng event schema | Chờ Owner (P-16, X-14) |
+| 22 | Tài liệu còn mô tả lưu secret bằng OS keychain và kind API trong enum, so với FR-088 và FR-098 | QA ba P1 F3-01 | Banner đã thêm; chờ Q-21 |
+| 23 | Provider terms: Owner nói không có căn cứ công khai cho số phiên song song; agent không xác minh độc lập | Không tăng concurrency | Giữ 5, không tuyên bố |

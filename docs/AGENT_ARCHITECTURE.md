@@ -1,10 +1,13 @@
 # AGENT_ARCHITECTURE.md — Mô hình Agent: template, instance, lifecycle, session và một lượt chạy end-to-end
+> **[OWR-3 A.16, QA3 F3-02]** Tên event dạng UPPER_SNAKE trong tài liệu này là tên tương thích. Tên canonical là dotted lowercase; 16 event gốc và ánh xạ đề xuất nằm ở `docs/EVENT_SYSTEM.md` mục 0 (ánh xạ chờ Owner xác nhận, P-16).
 
 Tác giả: Multi-Agent Architect — Phase 0 (chỉ tài liệu, không có mã ứng dụng). Ngày: 2026-10-30. Trạng thái: DRAFT chờ owner phê duyệt.
 Tổng hợp từ: `DECISION_LOG.md` (D-001..D-016), `architecture/AGENT_ORGANIZATION.md`, `architecture/AGENT_SCHEDULER.md`, `architecture/AGENT_COLLABORATION.md`, `architecture/RESOURCE_MANAGEMENT.md`, `architecture/SKILL_SYSTEM.md`, `DATABASE_DESIGN.md` (§3, §4.2, §4.4, §4.7-4.9, §5), `research/ORCHESTRATION_WORKFLOW_RESEARCH.md`, `product/FUNCTIONAL_REQUIREMENTS.md`.
 Tài liệu anh em: `MULTI_AGENT_ORCHESTRATION.md`, `WORKFLOW_ENGINE.md`, `EVENT_SYSTEM.md`. Tài liệu này **không lặp lại** danh mục 18 role, bảng ownership glob và scoring (xem `AGENT_ORGANIZATION.md`, `AGENT_SCHEDULER.md`); chỉ chốt mô hình khái niệm, state machine và luồng chạy.
 
 Nhãn: **[Đã xác minh]** (đo/đọc từ nguồn trong repo hoặc thực nghiệm đã ghi trong tài liệu nguồn) · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**.
+
+> **[OWR-3 2026-10-30 — Phase 0 vẫn mở]** (A.8) Claude là provider MVP DUY NHẤT; Codex hoãn, giữ `AgentAdapter` để mở rộng; mọi chỗ nhắc Codex/OpenHands dưới đây là mở rộng sau MVP. (A.13) permission chuẩn hóa **L0..L5** (giữ Q-03: `permission_level` + `permission_profile`, không có `full`). (A.15) `WAITING_APPROVAL` không tính vào giới hạn 5 active workers nếu worker đã được giải phóng và trạng thái đã persist; vẫn theo quota provider; 5 là giới hạn scheduler nội bộ, không phải giới hạn provider cho phép (A.2/D). (A.10) **Xem conflict X-13** (`PHASE_0_OWNER_DECISION_REGISTER.md`): Agent không chạy arbitrary code trên Windows host; mọi code Agent sinh ra chạy trong sandbox cô lập, sandbox không hoạt động thì fail closed; Tier 2/OpenHands hoãn khỏi MVP; các câu hỏi mở của X-13 chưa được quyết ở tài liệu này.
 
 ---
 
@@ -145,16 +148,16 @@ Skill theo chuẩn Agent Skills, nạp qua `--add-dir` (Claude) hoặc junction 
 
 ### 3.6 Permission [Đề xuất] — [Cần người dùng phê duyệt]
 
-Hai nguồn chưa khớp (xem §8): `AGENT_ORGANIZATION.md` có 5 mức L0..L4; `DATABASE_DESIGN.md` enum `permission_level` có 3 giá trị (`read_only, standard, elevated`; giá trị `full` đã bị xóa theo OWR-2 Q-03). Đề xuất ánh xạ:
+Hai nguồn chưa khớp (xem §8): `AGENT_ORGANIZATION.md` ghi 5 mức L0..L4 (**[OWR-3 A.13] nay chuẩn hóa L0..L5**, banner ở AGENT_ORGANIZATION §6); `DATABASE_DESIGN.md` enum `permission_level` có 3 giá trị (`read_only, standard, elevated`; giá trị `full` đã bị xóa theo OWR-2 Q-03). Đề xuất ánh xạ:
 
 | DB enum | Mức A13 | Quyền | Cơ chế thực thi (D-004, D-007, D-009) |
 |---|---|---|---|
 | read_only | L0 | Đọc workspace | `--permission-mode plan`/allowlist Read/Grep/Glob |
 | standard | L1-L2 | Ghi file khớp ownership manifest; ghi code trong worktree riêng | PreToolUse hook kiểm glob; `canUseTool` từ chối ngoài manifest |
 | elevated | L3 | Chạy test/build trong Docker | Bash allowlist theo lệnh; timeout per command |
-| ~~full~~ (đã xóa) | L4 | Lệnh infra, git push/tag, deploy | **[OWR-2 Q-03: KHÔNG hỗ trợ quyền `full`; enum `permission_level` chỉ có `read_only, standard, elevated`]** L4 (và L5) đi qua `elevated` + `permission_profile` (cột mới ở DATABASE_DESIGN §4 agents); **mỗi lệnh L4 tạo approval** |
+| ~~full~~ (đã xóa) | L4 | Lệnh infra, git push/tag, deploy | **[OWR-2 Q-03: KHÔNG hỗ trợ quyền `full`; enum `permission_level` chỉ có `read_only, standard, elevated`]** L4 và L5 đi qua `elevated` + `permission_profile` (ý nghĩa L5 khi không có `full`: PENDING_OWNER_CLARIFICATION P-17) (cột mới ở DATABASE_DESIGN §4 agents); **mỗi lệnh L4 tạo approval** |
 
-**[OWR-2 Q-03]** Owner chấp thuận permission level **L0 đến L5**, dùng `permission_level` + `permission_profile`. Xung đột định nghĩa còn mở (ghi ở DOC_SYNC_LOG_OWR2_B): `AGENT_ORGANIZATION.md` §6 định nghĩa L0..L4 (L1 = ghi docs, L2 = ghi code, L3 = chạy test/build, L4 = infra), còn `product/USER_ROLES_AND_PERMISSIONS.md` §4.2 định nghĩa L0..L5 (L1 = write-own, L2 = Developer, L3 = Lead/Reviewer, L4 = Operator, L5 = PM/Orchestrator). Chưa chọn bên nào là chuẩn; cần Owner/Architect chốt bảng L0..L5 duy nhất. Bảng ánh xạ enum ở trên là tạm thời.
+**[OWR-2 Q-03]** Owner chấp thuận permission level **L0 đến L5**, dùng `permission_level` + `permission_profile`. Xung đột định nghĩa còn mở (ghi ở DOC_SYNC_LOG_OWR2_B): `AGENT_ORGANIZATION.md` §6 định nghĩa L0..L4 (L1 = ghi docs, L2 = ghi code, L3 = chạy test/build, L4 = infra), còn `product/USER_ROLES_AND_PERMISSIONS.md` §4.2 định nghĩa L0..L5 (L1 = write-own, L2 = Developer, L3 = Lead/Reviewer, L4 = Operator, L5 = PM/Orchestrator). Chưa chọn bên nào là chuẩn; cần Owner/Architect chốt bảng L0..L5 duy nhất. Bảng ánh xạ enum ở trên là tạm thời. **[OWR-3 A.13]** Owner chuẩn hóa L0..L5 (không đổi Q-03); định nghĩa chi tiết từng cấp vẫn chờ Owner/Architect.
 
 Nguyên tắc: instance không vượt template; user hạ được per-instance/per-task; production deploy luôn cần approval không tắt được (FR-199). Hook là lớp **chính sách**, không phải ranh giới bảo mật; lệnh build/test/run chạy trong Docker (D-007). Docker daemon chưa chạy lúc kiểm tra nên mọi giả định về cgroup/ECI là [Giả định].
 
@@ -213,7 +216,7 @@ Giả định đầu vào: một `node_run` kiểu agent đã `READY` (xem `WORK
 | 3 | AgentStateService | `available → assigned`; tạo `agent_sessions(starting)` và `task_assignments` | `AGENT_STATE_CHANGED` |
 | 4 | Git Service | Tạo worktree + branch `agent/<slug>/<task-id>` (D-009), ghi manifest ownership theo glob của task | `WORKTREE_CREATED` |
 | 5 | Skill/Context Builder | Materialize skill vào workspace; dựng context (task, acceptance criteria, files kèm lý do, decisions, outputs upstream, inbox liên quan, memory digest) trong `context_budget_tokens` (mặc định 8 000); lưu `task_context_snapshot` | — |
-| 6 | Provider Adapter | `start()` qua `@anthropic-ai/claude-agent-sdk` (D-004) hoặc `codex app-server` (D-005); cài `canUseTool` + PreToolUse hook | `AGENT_SESSION_STARTED`, `PROVIDER_SESSION_STARTED` |
+| 6 | Provider Adapter | `start()` qua `@anthropic-ai/claude-agent-sdk` (D-004) hoặc `codex app-server` (D-005; **[OWR-3 A.8] Codex hoãn, MVP chỉ Claude**); cài `canUseTool` + PreToolUse hook | `AGENT_SESSION_STARTED`, `PROVIDER_SESSION_STARTED` |
 | 7 | AgentStateService | Nhận event đầu tiên trong 60 s: `assigned → running`, `TASK_STARTED`; nếu không: spawn fail → T08/T09 | `AGENT_STATE_CHANGED`, `TASK_STARTED` |
 | 8 | Adapter + Event pipeline | Stream event đã chuẩn hóa; mỗi tool call kiểm quyền; heartbeat cập nhật; usage ghi vào ledger; kiểm budget từng event (hard stop ở cấp task) | `PROVIDER_TOOL_STARTED/COMPLETED`, `PROVIDER_USAGE`, `AGENT_HEARTBEAT`, `TASK_PROGRESS` |
 | 9 | Approval gate (nếu cần) | Lệnh L4 hoặc hành động theo policy: tạo `approvals`, `running → waiting`, nhả slot, chờ human | `HUMAN_APPROVAL_REQUESTED`; sau đó `HUMAN_APPROVED/REJECTED` |
@@ -235,7 +238,7 @@ Giả định đầu vào: một `node_run` kiểu agent đã `READY` (xem `WORK
 | AD-03 | `waiting` (tự tiếp tục) khác `blocked` (cần can thiệp) | UI và scheduler cần xử lý khác nhau (slot, thông báo) | [Đề xuất] |
 | AD-04 | `completed` chỉ đạt khi EvidenceService xác nhận | Yêu cầu owner; chặn "agent tự báo xong" | [Đề xuất] — [Cần người dùng phê duyệt] |
 | AD-05 | Một khái niệm `agent_sessions`; 1 session = 1 attempt = 1 worktree | Retry sạch, log/context không trộn | [Đề xuất] |
-| AD-06 | Permission 5 mức A13 ánh xạ vào 4 enum DB | Tránh đổi enum, giữ hook mức lệnh cho L4 | [Đề xuất] — [Cần người dùng phê duyệt] |
+| AD-06 | Permission L0..L5 (OWR-3 A.13; trước đây 5 mức A13) ánh xạ vào 3 enum DB (`read_only, standard, elevated`) + `permission_profile` | Tránh đổi enum, giữ hook mức lệnh cho L4 | [Đề xuất] — [Cần người dùng phê duyệt] |
 | AD-07 | Memory chỉ inject khi đã duyệt; không tự lưu từ hội thoại | D-013, `SKILL_SYSTEM.md` | [Đã xác minh] nguyên tắc nguồn |
 | AD-08 | Provider fallback chỉ qua approval | `RESOURCE_MANAGEMENT.md` §9: tiền và nhất quán là quyết định owner | [Đề xuất] |
 | AD-09 | Credential do CLI quản lý; app chỉ gọi `verifyAuth` | D-008 | [Đã xác minh] quyết định log |
@@ -257,13 +260,13 @@ Giả định đầu vào: một `node_run` kiểu agent đã `READY` (xem `WORK
 | Resume (`--resume` với `-p`) không hoạt động | Pause/approval phải cancel + chạy lại, mất tiến độ | Đo ở Phase 1 spike; `capabilities().resume=false` thì pause = cancel + retry có context snapshot |
 | Spawn tax ~48k token/lần (đo được) | Chi phí và quota | Config tối giản (`RESOURCE_MANAGEMENT.md` §4.3), gom task nhỏ |
 | Schema thiếu bảng template/evidence | Phase 1 chặn | Chốt §3.1.1 trước khi viết migration |
-| Hook là lớp chính sách, không phải sandbox | Agent vượt quyền nếu chỉ dựa hook | D-007: build/test/run trong Docker; diff gate sau cùng |
+| Hook là lớp chính sách, không phải sandbox | Agent vượt quyền nếu chỉ dựa hook | D-007: build/test/run trong Docker; diff gate sau cùng. **[OWR-3 A.10: xem conflict X-13 — Docker chỉ build/test/run không đủ nếu Agent còn quyền thực thi trên host; sandbox bắt buộc, fail closed]** |
 | 18 agent trên cùng quota subscription | Quota cạn | Ngân sách + semaphore theo provider; default 5 (D-010) |
 
 ## 7. Vấn đề chưa giải quyết
 
 1. [Cần người dùng phê duyệt] Cách lưu template (§3.1.1).
-2. [Cần người dùng phê duyệt] Ánh xạ permission 5→4 (§3.6) và việc có cho template L4 do user tạo hay chỉ seed.
+2. [Cần người dùng phê duyệt] Ánh xạ permission L0..L5 → enum + `permission_profile` (§3.6; OWR-3 A.13) và việc có cho template L4 do user tạo hay chỉ seed.
 3. `completed` và `failed` là state "ngắn": owner có muốn chúng hiện ở UI/Office thời gian cố định (ví dụ 3 s) hay chỉ là transient trong event? [Đề xuất: chỉ transient trong DB, UI tự giữ hiệu ứng].
 4. Cơ chế pause/resume thật của CLI trên Windows chưa kiểm [Giả định].
 5. `agent_status` ghi ở `agents.status` (có `statusChangedAt`) và `agents.currentTaskId`: cần chốt thứ tự cập nhật với `tasks.status` để tránh hai nguồn sự thật (đề xuất: `tasks` là nguồn, `agents.currentTaskId` là cache cập nhật trong cùng transaction).
@@ -275,11 +278,11 @@ Giả định đầu vào: một `node_run` kiểu agent đã `READY` (xem `WORK
 |---|---|---|
 | M-01 | A07 định nghĩa agent status 5 giá trị (`idle/working/waiting/error/offline`); DB có 12 | Dùng 12 của DB; A07 hết hiệu lực ở điểm này |
 | M-02 | A13 `AgentTemplate` có version; DB chỉ có `agents.is_template` | §3.1.1 |
-| M-03 | A13 permission L0..L4 (5) vs DB `permission_level` (4) | §3.6 ánh xạ |
+| M-03 | A13 permission L0..L4 (5) vs DB `permission_level` (3 sau Q-03) — **[OWR-3 A.13] chuẩn L0..L5** | §3.6 ánh xạ + `permission_profile` |
 | M-04 | A13 `AgentExecution` (8 state) vs DB `agent_sessions` (6 state) | §3.8 hợp nhất |
 | M-05 | A07 stale 3 phút (heartbeat process) vs A13 stale 5/20 phút (tiến triển) | Giữ hai lớp, khác ý nghĩa |
 | M-06 | DB cho `agent_provider_connections.priority` fallback vs A13 "không auto-failover" | AD-08 |
-| M-07 | Mặc định `provider_configs.max_concurrent=2` (DB) vs A13 claude 5, codex 3 | Cấu hình `ResourceConfig` thắng (D-010 APPROVED: Claude 5, Codex 3); DB default `max_concurrent` đã đổi từ 2 thành 5 |
+| M-07 | Mặc định `provider_configs.max_concurrent=2` (DB) vs A13 claude 5, codex 3 | Cấu hình `ResourceConfig` thắng (D-010 APPROVED: Claude 5, Codex 3) **[OWR-3 A.2/A.8/D: Codex hoãn; 5 là giới hạn scheduler nội bộ, không phải giới hạn provider cho phép; Codex 3 chưa xác nhận]**; DB default `max_concurrent` đã đổi từ 2 thành 5 |
 | M-08 | A13 `maxRetries=3`, A07 `maxAttempts=3`, DB `agents.max_retry=2` / `tasks.max_retry=2` | Giá trị cuối lấy từ task (`tasks.max_retry`), mặc định cấu hình chung; cần owner chốt 2 hay 3 |
 
 ## 9. Acceptance Criteria (cho Phase 1)

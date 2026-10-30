@@ -12,7 +12,7 @@
 
 ## 2. Phạm vi
 
-- Trong: backend NestJS, frontend (webview/browser), CLI subprocess (Claude Code 2.1.312, Codex chưa cài), hook endpoint, Docker sandbox, worktree/Git, Postgres/Redis, OS keychain, audit/event pipeline, tối đa 18 agent đồng thời (D-010: mặc định 5, trần 18).
+- Trong: backend NestJS, frontend (webview/browser), CLI subprocess (Claude Code 2.1.312, Codex chưa cài), hook endpoint, Docker sandbox, worktree/Git, Postgres/Redis, OS keychain, audit/event pipeline, tối đa 18 agent đồng thời (D-010: mặc định 5, trần 18; OWR-3 A.2/D: 5 là giới hạn scheduler nội bộ, không phải số provider cho phép, không tuyên bố 18 đã kiểm thử). [OWR-3 A.10/X-13: mô hình đe dọa này giả định Tier 1 (D-007, agent trên host); chỉ thị chặt hơn (không shell host, code chỉ chạy trong sandbox cô lập, fail closed) thay đổi ranh giới TB2/TB4; chưa viết lại, PENDING_OWNER_CLARIFICATION, xem `../SECURITY.md` §0.6.]
 - Ngoài: attacker có admin trên máy, tấn công vật lý, lỗ hổng backend Anthropic/OpenAI, bảo mật nghiệp vụ của project sinh ra, multi-user/network exposure (MVP là single-user localhost).
 
 ## 3. Nội dung chi tiết

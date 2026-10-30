@@ -159,7 +159,7 @@ CODEX_BIN=codex
 AGENT_MAX_TURNS=50
 AGENT_SESSION_TIMEOUT_SEC=3600
 # KHÔNG đặt ANTHROPIC_API_KEY / OPENAI_API_KEY ở đây: CLI dùng login riêng của người dùng.
-# Nếu bắt buộc dùng API key, lưu vào OS keychain qua lệnh `pnpm aiw secrets set` (xem DEVSECOPS_GUIDE).
+# Nếu bắt buộc dùng API key, lưu vào OS keychain qua lệnh `pnpm aiw secrets set` (xem DEVSECOPS_GUIDE). **[OWR-3 C (FR-088, FR-098): MVP không có API key fallback; ứng dụng không lưu hoặc tự đọc credential của provider (D-008). Việc lưu secret KHÔNG phải credential provider (token git, secret của dự án sinh ra) bằng OS keychain chờ Owner làm rõ Q-21; các kind API là dự phòng, không bật trong MVP]**
 
 # ---- Security ----
 SESSION_SECRET=change-me-dev-only
@@ -206,6 +206,7 @@ Lưu ý: login lưu ở `%USERPROFILE%\.claude` (và Credential Manager trên Wi
 
 ## 6. Codex CLI
 
+> **[OWR-3 A.8 + mục E (2026-10-30): MVP chỉ tích hợp Claude; Codex để sau, giữ AgentAdapter. Owner CHƯA cho phép mở Docker Desktop và chạy VAL-DOCKER-01..09; không cài Codex CLI; không test Agent thật qua SDK. Thay các bước "Owner tự mở Docker" ở tài liệu này bằng "chờ Owner cho phép". OWR-3 A.10: không có thực thi agent thật nào cho đến khi có sandbox cô lập hoạt động đã kiểm chứng; Docker là điều kiện tiên quyết cứng và chưa được cho phép.]**
 > **[D-005, Q-10, OWR-2 2026-10-30: TÙY CHỌN / HOÃN. Codex hoãn khỏi MVP; Codex CLI chưa cài trong giai đoạn này; KHÔNG chạy `npm i -g @openai/codex` khi chưa có cho phép của Owner. Các bước dưới chỉ để tham khảo cho sau MVP. Docker Desktop cần cho sandbox validation (Q-10): Owner tự mở Docker Desktop, `docker version`, `docker info`, ghi RAM trước/sau; không tự động khởi động Docker cùng ứng dụng; không đổi cấu hình WSL/`wsl --shutdown` khi chưa có phê duyệt riêng (OWR-2 mục 5.3).]**
 
 ```powershell
@@ -299,5 +300,5 @@ Script `scripts/doctor.ts` kiểm tra và in bảng PASS/FAIL:
 - [ ] Developer mới theo tài liệu này đi từ máy sạch đến `pnpm dev` chạy được trong ≤ 60 phút (không tính thời gian tải).
 - [ ] `pnpm doctor` PASS toàn bộ mục bắt buộc trên máy dev hiện tại.
 - [ ] `.env.example` có đủ biến mà `zod` schema yêu cầu; `.env` không bao giờ được commit (gitleaks + `.gitignore`).
-- [ ] `claude -p` và (khi cài) `codex exec` chạy được từ backend với user hiện tại.
+- [ ] `claude -p` và (khi cài) `codex exec` chạy được từ backend với user hiện tại. [OWR-3 A.8/mục E: mục Codex không thuộc MVP; kiểm tra chạy agent thật qua SDK chưa được cho phép; không đánh dấu hoàn thành.]
 - [ ] Bảng sự cố thường gặp được cập nhật sau mỗi onboarding.

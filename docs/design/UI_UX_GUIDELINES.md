@@ -133,7 +133,7 @@ Virtual Office (2D pixel-art, Phaser 3.90 qua `OfficeRenderer` — OWR-2 D-011) 
 
 ## 7. Vấn đề chưa giải quyết
 
-- Ngôn ngữ UI mặc định (EN hay VI).
+- ~~Ngôn ngữ UI mặc định (EN hay VI).~~ **[OWR-3 X-1: đã giải quyết — mặc định tiếng Việt, tiếng Anh là locale phụ]**
 - Có theme "high contrast" riêng hay chỉ dựa vào `prefers-contrast`?
 - Có cho user đổi accent color (như Linear) không? Đề xuất: không ở v1.
 - Logo/wordmark AI WORKSPACE chưa có — placeholder là monogram "A" trong ô 24px radius 6px.

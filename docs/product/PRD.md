@@ -1,4 +1,5 @@
 # PRD — Product Requirements Document: AI WORKSPACE
+> **[OWR-3 A.16, QA3 F3-02]** Tên event dạng UPPER_SNAKE trong tài liệu này là tên tương thích. Tên canonical là dotted lowercase; 16 event gốc và ánh xạ đề xuất nằm ở `docs/EVENT_SYSTEM.md` mục 0 (ánh xạ chờ Owner xác nhận, P-16).
 
 **Phiên bản:** 0.1 (Phase 0 — Documentation only)
 **Tác giả:** Agent 12 — Business Analyst
@@ -85,7 +86,7 @@ Xem `USER_ROLES_AND_PERMISSIONS.md`. MVP: single-user desktop, một người đ
 ### 5.4 AI Provider Hub (FR-076…FR-100)
 
 **[Owner]**
-- Adapter: Claude Code, Codex (CLI-based, dùng lại login CLI hiện có; không cần API key nếu CLI auth hoạt động), OpenHands, generic CLI.
+- Adapter: Claude Code, Codex (CLI-based, dùng lại login CLI hiện có; không cần API key nếu CLI auth hoạt động), OpenHands, generic CLI. **[OWR-3 A.8; D-005/D-006]** MVP chỉ tích hợp **Claude**; Codex hoãn, OpenHands hoãn khỏi MVP; giữ `AgentAdapter` để mở rộng. Danh sách adapter ở trên là phạm vi dài hạn của Owner, không phải phạm vi MVP.
 - Standard operations: Connect, Disconnect, Authenticate, CheckConnection, ListModels, CreateSession, ResumeSession, SendMessage, StreamEvents, CancelTask, GetUsage, GetError, GetSessionHistory.
 - Luồng kết nối với hướng dẫn cài đặt/login.
 - Luật bảo mật xác thực: không hỏi mật khẩu; không trích xuất token; không lưu OAuth plaintext trong DB; không gửi credential lên frontend; dùng OS credential manager nếu cần; logout/reconnect/expiry; không credential trong log; không chia sẻ credential giữa agent.
@@ -148,7 +149,7 @@ Xem `USER_ROLES_AND_PERMISSIONS.md`. MVP: single-user desktop, một người đ
 ### 5.10 Multi-agent Orchestration (FR-231…FR-260)
 
 **[Owner]**
-- Concurrency toàn cục mặc định 5, cấu hình tối đa 18 agent đồng thời.
+- Concurrency toàn cục mặc định 5, cấu hình tối đa 18 agent đồng thời. **[OWR-3 A.2/D]** 5 là giới hạn scheduler nội bộ, không phải giới hạn được provider bảo đảm; không tăng khi chưa xác minh điều khoản và usage thực tế.
 - 18 vai trò mặc định: PM, BA, Architect, UI/UX, FE, BE, DB&Infra, QA, Security, Code Reviewer/Product Evaluator, R&D, Integration, Performance, DevSecOps, Documentation, UX Research, Test Automation, Release Manager.
 - Workspace/git worktree per agent; file ownership per task.
 - Task status: BACKLOG, READY, ASSIGNED, RUNNING, BLOCKED, WAITING_APPROVAL, REVIEWING, FAILED, COMPLETED, CANCELLED.
@@ -186,7 +187,7 @@ Chi tiết tại `USER_FLOWS.md`. Các luồng cốt lõi: Onboarding & kết n�
 
 ## 9. Dependencies
 
-- Claude Code CLI, Codex CLI (đã login) — bên ngoài.
+- Claude Code CLI (đã login) — bên ngoài; Codex CLI (**hoãn khỏi MVP, OWR-3 A.8; chưa cài**).
 - Docker Desktop, Git — bên ngoài.
 - Quyết định kiến trúc shell (Tauri/web) từ `docs/architecture/`.
 - Bộ sprite/pixel-art asset từ `docs/design/`.

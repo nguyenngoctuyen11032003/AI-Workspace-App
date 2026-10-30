@@ -2,7 +2,7 @@
 
 Ngày: 2026-10-30. Khắc phục QA P0-1. Trạng thái toàn bộ AC mới: **PROPOSED** (chưa được Owner duyệt). Không đổi phạm vi sản phẩm: AC chỉ diễn đạt lại điều FR đã yêu cầu.
 
-**Chú giải trạng thái xác minh (Verification Status):** `AC_DEFINED` = đã có AC trong `ACCEPTANCE_CRITERIA.md`; `AC_ADDED_PHASE0` = AC mới PROPOSED do Phase 0 thêm; `NEEDS_OWNER_CLARIFICATION` = chưa đủ thông tin để viết AC; **`AC_PROPOSED_PENDING_CLARIFICATION` (giá trị mới, OWR-2) = đã có AC đề xuất (PROPOSED, không phải APPROVED) diễn đạt lại đề xuất của Owner, nhưng các câu hỏi mở của Owner chưa được trả lời nên AC chưa thể chốt.**
+**Chú giải trạng thái xác minh (Verification Status):** `AC_DEFINED` = đã có AC trong `ACCEPTANCE_CRITERIA.md`; `AC_ADDED_PHASE0` = AC mới PROPOSED do Phase 0 thêm; `NEEDS_OWNER_CLARIFICATION` = chưa đủ thông tin để viết AC; **`AC_PROPOSED_PENDING_CLARIFICATION` (giá trị mới, OWR-2) = đã có AC đề xuất (PROPOSED, không phải APPROVED) diễn đạt lại đề xuất của Owner, nhưng các câu hỏi mở của Owner chưa được trả lời nên AC chưa thể chốt.**; **`AC_PROPOSED_OWNER_DECIDED` (giá trị mới, OWR-3) = có AC PROPOSED (agent viết câu chữ), Owner đã xác nhận quyết định ở OWR-3 nên không còn câu hỏi chặn; AC vẫn là PROPOSED, không phải APPROVED, vì agent không được tự chuyển PROPOSED thành APPROVED; `WONT_MVP` (giá trị mới, OWR-3) = FR bị Owner loại khỏi MVP (WON'T DO IN MVP), giữ hàng truy vết và không viết AC.** `AC_PROPOSED_PENDING_CLARIFICATION` (OWR-2) nay không còn FR nào.
 
 ## 1. Kết quả kiểm tra bằng lệnh
 | Chỉ số | Giá trị |
@@ -11,13 +11,17 @@ Ngày: 2026-10-30. Khắc phục QA P0-1. Trạng thái toàn bộ AC mới: **P
 | FR xuất hiện trong bảng truy vết | 199, mỗi FR đúng một dòng, không thiếu, không thừa |
 | AC_DEFINED (đã có AC từ trước) | 109 |
 | AC_ADDED_PHASE0 (AC mới, trạng thái PROPOSED) | 74 |
-| AC_PROPOSED_PENDING_CLARIFICATION (OWR-2: có AC đề xuất PROPOSED, câu hỏi Owner còn mở) | 4 |
-| NEEDS_OWNER_CLARIFICATION (chưa đủ thông tin, còn lại) | 12 |
+| AC_PROPOSED_PENDING_CLARIFICATION (OWR-2, nay không còn FR) | 0 |
+| AC_PROPOSED_OWNER_DECIDED (OWR-3: có AC PROPOSED, Owner xác nhận quyết định) | 15 |
+| WONT_MVP (OWR-3: FR-078) | 1 |
+| NEEDS_OWNER_CLARIFICATION (chưa đủ thông tin, còn lại) | 0 |
 | Tổng | 199 |
 
 Phát hiện: (1) QA ghi 50 trên 199 FR thiếu AC, còn đợt này tìm thấy 90 FR chưa có AC (74 nay đã có AC mới, 16 chưa thể viết AC). Chênh lệch có thể do cách đối chiếu mã FR trong AC cũ khác nhau và chưa được đối soát chi tiết; (2) "30 mã AC được dẫn nhưng chưa định nghĩa" chủ yếu là khoảng trống đánh số trong cụm "AC-001..130". Chỉ AC-097..100 có ngữ cảnh trích dẫn và đã được định nghĩa với giả định về ý định gốc (xem phần 3). Các khoảng trống AC-016..020, 035..040, 065..070, 083..085, 115..120 được giữ nguyên là mã dự trữ, không bịa nội dung; `TESTING.md` và `IMPLEMENTATION_ROADMAP.md` cần cập nhật khi Owner chốt.
 
-## 2. Mười sáu FR cần Owner làm rõ
+## 2. Mười sáu FR cần Owner làm rõ (đã xử lý ở OWR-3, xem mục 6)
+
+**Cập nhật OWR-3 (2026-10-30):** 16 FR dưới đây đều đã được Owner quyết định: 15 FR có AC PROPOSED và trạng thái AC_PROPOSED_OWNER_DECIDED, FR-078 là WONT_MVP. Không còn FR NEEDS_OWNER_CLARIFICATION. Chi tiết ở mục 6. Đoạn gốc bên dưới giữ để truy vết lịch sử.
 Trong đó 9 FR mức Must hoặc Should chưa thể viết AC kiểm thử được: 4 Must (FR-122, FR-181, FR-182, FR-183) và 5 Should (FR-006, FR-009, FR-088, FR-186, FR-283). Bốn FR Must thuộc dashboard và workflow nên cần Owner trả lời sớm. Mã câu hỏi Q trong các bảng bên dưới chỉ duy nhất trong từng phần (Phần 1, 2, 3); khi tham chiếu dùng dạng "P1-Q78", "P2-Q01", "P3-Q01".
 
 Không FR nào được tự gán AC bằng cách bịa tiêu chí. Mỗi FR dưới đây giữ trạng thái NEEDS_OWNER_CLARIFICATION cho tới khi Owner trả lời. **Cập nhật OWR-2:** bốn FR Must (FR-122, FR-181, FR-182, FR-183) nay có AC đề xuất và chuyển sang AC_PROPOSED_PENDING_CLARIFICATION (xem mục 5); còn 12 FR giữ NEEDS_OWNER_CLARIFICATION.
@@ -33,10 +37,10 @@ Cột: FR ID, Priority, AC ID, Test Scenario, Expected Result, Verification Stat
 | FR-003 | M | AC-203 | Tạo company mới | Đúng 12 phòng ban mặc định đúng tên | AC_ADDED_PHASE0 |
 | FR-004 | M | AC-204 | CRUD phòng ban, xóa phòng còn agent | Xóa bị từ chối khi còn agent, thành công sau khi chuyển agent | AC_ADDED_PHASE0 |
 | FR-005 | S | AC-205 | Chỉ định rồi đổi trưởng phòng | Mỗi phòng có đúng 1 trưởng phòng, hiển thị đúng | AC_ADDED_PHASE0 |
-| FR-006 | S | (không có) | Hỏi Owner: số cấp quản lý và quy tắc reporting chain | Chưa xác định (Q-06) | NEEDS_OWNER_CLARIFICATION |
+| FR-006 | S | AC-631, AC-632, AC-633 | Gán 2 quản lý cho 1 agent; chuỗi 50 cấp; gán tạo vòng lặp | Tối đa 1 quản lý trực tiếp; độ sâu không giới hạn; vòng lặp bị chặn, dữ liệu không đổi **[Nguồn: OWR-3 C; Owner xác nhận quyết định, AC PROPOSED]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-007 | S | AC-206 | Mở Org Chart | Cây 4 cấp đủ 12 phòng, mỗi agent đúng một lần | AC_ADDED_PHASE0 |
 | FR-008 | S | AC-207 | Kéo-thả agent sang phòng/manager khác | Phòng và manager cập nhật, event được ghi | AC_ADDED_PHASE0 |
-| FR-009 | S | (không có) | Hỏi Owner: đơn vị ngân sách, ngưỡng, hành vi khi vượt | Chưa xác định (Q-09) | NEEDS_OWNER_CLARIFICATION |
+| FR-009 | S | AC-634, AC-635, AC-636 | Budget theo chi phí ước tính; chạm 80%; chạm 100% | Token theo dõi riêng; cảnh báo đúng 1 lần ở 80%; ở 100% dừng cấp task và gọi model mới, yêu cầu Owner quyết định **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-010 | S | AC-208 | Mở hiệu suất phòng ban có dữ liệu thật | 5 chỉ số khớp truy vấn DB độc lập | AC_ADDED_PHASE0 |
 | FR-011 | M | AC-209 | Mở Virtual Office với 12 phòng ban mặc định | Mỗi phòng ban gắn đúng một phòng văn phòng | AC_ADDED_PHASE0 |
 | FR-021 | M | AC-001 | Tạo agent qua Agent Builder đủ trường | Agent lưu, hiển thị, Created → Idle → Available | AC_DEFINED |
@@ -56,7 +60,7 @@ Cột: FR ID, Priority, AC ID, Test Scenario, Expected Result, Verification Stat
 | FR-035 | M | AC-013 | Agent tạo subtask | Subtask hiện trên Task Board có parent link | AC_DEFINED |
 | FR-036 | S | AC-010 | Agent báo cáo cho reporting manager qua message | Manager nhận, hiển thị ở Conversations | AC_DEFINED |
 | FR-037 | C | AC-214 | Agent đề xuất thay đổi ngoài phạm vi task | Đề xuất chờ duyệt, chỉ áp dụng sau approve | AC_ADDED_PHASE0 |
-| FR-038 | C | (không có) | Hỏi Owner: meeting là cơ chế thật hay animation | Chưa xác định (Q-38) | NEEDS_OWNER_CLARIFICATION |
+| FR-038 | C | AC-637, AC-638, AC-639 | Meeting 3 agent; kết thúc meeting; Office không có event meeting | Meeting là thread thực lưu bền; PM ghi biên bản; animation chỉ theo event **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-039 | M | AC-011 | Agent ghi file thuộc task khác | Bị chặn, audit ghi, agent nhận lỗi | AC_DEFINED |
 | FR-040 | M | AC-009, AC-010, AC-126 | Restart sau hội thoại/message quan trọng | Conversations và message còn nguyên | AC_DEFINED |
 | FR-041 | M | AC-012 | Agent chạy 3 task, mở tab Performance | Token/cost/lỗi/thời gian khớp GetUsage | AC_DEFINED |
@@ -82,8 +86,8 @@ Cột: FR ID, Priority, AC ID, Test Scenario, Expected Result, Verification Stat
 | FR-067 | S | AC-218 | Gọi tool ngoài allowed tools khi áp dụng skill | Tool ngoài danh sách bị chặn, audit ghi | AC_ADDED_PHASE0 |
 | FR-068 | M | AC-082 | Gỡ skill ở tab Knowledge | Task tiếp theo không nạp skill đó | AC_DEFINED |
 | FR-076 | M | AC-021 | Connect Claude Code đã login | Connected, ListModels ≥ 1, PROVIDER_CONNECTED | AC_DEFINED |
-| FR-077 | M | AC-022 | Connect Codex đã login | Connected như Claude (UNVERIFIED nếu chưa cài Codex) **[Ghi chú OWR-2 D-005: FR hoãn khỏi MVP; AC-022 chưa áp dụng cho MVP, chờ Owner xác nhận điều chỉnh nhóm B]** | AC_DEFINED |
-| FR-078 | C | (không có) | Hỏi Owner: cơ chế tích hợp OpenHands | Chưa xác định (Q-78) **[Ghi chú OWR-2 D-006/Q-02: hoãn đến sau Phase 4]** | NEEDS_OWNER_CLARIFICATION |
+| FR-077 | M | AC-022 | Connect Codex đã login | Connected như Claude (UNVERIFIED nếu chưa cài Codex) **[OWR-3 A.8: hoãn khỏi MVP (D-005), MVP chỉ Claude; Owner-acknowledged. AC-022 không áp dụng cho MVP; hàng này giữ AC_DEFINED vì AC-022 vẫn tồn tại nguyên văn]** | AC_DEFINED |
+| FR-078 | C | (không có, WON'T DO IN MVP) | Không có kịch bản kiểm thử trong MVP | Hoãn khỏi MVP theo D-006; giữ hàng truy vết, không viết AC **[Nguồn: OWR-3 C; OWR-2 D-006, Q-02]** | WONT_MVP |
 | FR-079 | S | AC-219 | Adapter generic CLI với binary giả | Lệnh đúng tham số; output thành đúng event chuẩn | AC_ADDED_PHASE0 |
 | FR-080 | M | AC-021, AC-022 | Connect bằng CLI đã login, không có API key | Kết nối thành công, không yêu cầu API key | AC_DEFINED |
 | FR-081 | M | AC-021, AC-025, AC-034 | Gọi operation hỗ trợ và không hỗ trợ | Hoạt động đúng; không hỗ trợ trả NOT_SUPPORTED | AC_DEFINED |
@@ -93,7 +97,7 @@ Cột: FR ID, Priority, AC ID, Test Scenario, Expected Result, Verification Stat
 | FR-085 | M | AC-031 | Rà soát mã adapter | Không có mã đọc file credential của CLI | AC_DEFINED |
 | FR-086 | M | AC-029, AC-113 | Quét DB/log bằng scanner secret | 0 credential plaintext | AC_DEFINED |
 | FR-087 | M | AC-030 | Bắt payload IPC/HTTP tới frontend | Không payload nào chứa credential | AC_DEFINED |
-| FR-088 | S | (không có) | Hỏi Owner: có lưu credential, shell Tauri/web | Chưa xác định (Q-88) | NEEDS_OWNER_CLARIFICATION |
+| FR-088 | S | AC-640, AC-641 | Quét tĩnh và runtime canary: không đọc/lưu credential (yêu cầu phủ định) | 0 mã đọc file credential, 0 ghi credential vào DB/file/OS credential manager, 0 sự kiện đọc canary từ tiến trình app **[Nguồn: OWR-3 C, D-008]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-089 | M | AC-027, AC-028 | Disconnect/Connect lại; phiên hết hạn | Kết nối lại được; SESSION_EXPIRED kèm hướng dẫn | AC_DEFINED |
 | FR-090 | M | AC-029, AC-113 | Quét log sau 1 ngày chạy | Không credential trong log | AC_DEFINED |
 | FR-091 | M | AC-032 | Kiểm tra sandbox hai agent cùng provider | Không credential; gọi provider qua adapter | AC_DEFINED |
@@ -103,7 +107,7 @@ Cột: FR ID, Priority, AC ID, Test Scenario, Expected Result, Verification Stat
 | FR-095 | M | AC-026 | CancelTask khi session chạy | CLI dừng ≤ 5 s | AC_DEFINED |
 | FR-096 | S | AC-012 | Mở Performance khi CLI không cấp usage | Usage ước lượng được đánh dấu "ước lượng" | AC_DEFINED |
 | FR-097 | S | AC-034 | ResumeSession khi provider không hỗ trợ | NOT_SUPPORTED và fallback tạo session mới | AC_DEFINED |
-| FR-098 | C | (không có) | Hỏi Owner: có làm API key fallback không | Chưa xác định (Q-98) | NEEDS_OWNER_CLARIFICATION |
+| FR-098 | C | AC-642, AC-643 | Rà soát tĩnh không có đường API key; mất CLI auth (yêu cầu phủ định) | 0 trường/endpoint/biến môi trường API key; mất auth thì báo Not authenticated, không gọi thay thế **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
 
 ## Tổng kết
 
@@ -111,7 +115,9 @@ Cột: FR ID, Priority, AC ID, Test Scenario, Expected Result, Verification Stat
 |---|---|
 | AC_DEFINED | 51 |
 | AC_ADDED_PHASE0 | 19 |
-| NEEDS_OWNER_CLARIFICATION | 6 |
+| AC_PROPOSED_OWNER_DECIDED (OWR-3: FR-006, 009, 038, 088, 098) | 5 |
+| WONT_MVP (OWR-3: FR-078) | 1 |
+| NEEDS_OWNER_CLARIFICATION | 0 |
 | **Tổng** | **76** |
 
 Số FR duy nhất trong dải FR-001…FR-100 = 76 (không phải 100; các số FR-012…020, 045…050, 069…075, 099, 100 chưa được định nghĩa trong FUNCTIONAL_REQUIREMENTS.md).
@@ -139,7 +145,7 @@ FR-006 (Q-06), FR-009 (Q-09), FR-038 (Q-38), FR-078 (Q-78), FR-088 (Q-88), FR-09
 | FR-110 | M | AC-056 | Owner assign thủ công | Gán mode MANUAL, ghi đè AUTO | AC_DEFINED |
 | FR-111 | M | AC-007, AC-057 | Agent hết retry hoặc bị Disable | TASK_HANDOVER sang agent khác kèm context/log | AC_DEFINED |
 | FR-112 | S | AC-305 | Kéo 2 node và nối cạnh (P2) | Node và cạnh hiển thị, lưu giữ sau reload | AC_ADDED_PHASE0 |
-| FR-113 | S | AC-306 | Mở palette và thả từng loại (P2) | Đúng 8 loại node, mỗi loại thả và lưu được **[Ghi chú OWR-2 Q-11: 9 UI node type + 11 engine kind; AC-306 (8 loại) cần đồng bộ, chờ Owner cung cấp danh sách]** | AC_ADDED_PHASE0 |
+| FR-113 | S | AC-306 | Mở palette và thả từng loại (P2) | Đúng 9 UI node type (Agent, Task, Approval, Condition, Parallel, Merge, Tool, Test, Deployment), mỗi loại thả và lưu được; chỉ nói về UI node type **[Nguồn: OWR-3 A.14]** | AC_ADDED_PHASE0 |
 | FR-114 | S | AC-061 | Tạo project từ template đã lưu | Workflow chạy đúng cấu trúc template | AC_DEFINED |
 | FR-115 | C | AC-307 | Dry-run workflow (P2) | 0 lời gọi provider, hiển thị đường đi mô phỏng | AC_ADDED_PHASE0 |
 | FR-116 | M | AC-058 | Kiểm event store | Mọi event có id, type, timestamp, actor, entity, payload, correlation id | AC_DEFINED |
@@ -148,7 +154,7 @@ FR-006 (Q-06), FR-009 (Q-09), FR-038 (Q-38), FR-078 (Q-78), FR-088 (Q-88), FR-09
 | FR-119 | M | AC-041 | Tạo project chọn template SDLC | Workflow 8 giai đoạn khởi chạy theo thứ tự | AC_DEFINED |
 | FR-120 | M | AC-041, AC-042 | Chạy Stage 1 | Project tạo, PM phân tích, đề xuất team và backlog | AC_DEFINED |
 | FR-121 | M | AC-043 | Stage 2 BA hoàn thành | Approval gate, APPROVAL_REQUESTED ở Approval Center | AC_DEFINED |
-| FR-122 | M | AC-601, AC-602, AC-603, AC-604 | Deliverable package của Workflow Run (đề xuất Owner OWR-2 §4) | AC đề xuất; OQ-122-1/2/3 chờ Owner (Q-01) | AC_PROPOSED_PENDING_CLARIFICATION |
+| FR-122 | M | AC-601, AC-602, AC-603, AC-604 | Deliverable package của Workflow Run: required nodes, lưu và xem trong workspace | Artifact bắt buộc = output của node required; MVP lưu/xem trong workspace, không export ZIP. Còn mở không chặn: OQ-122-3 (phạm vi Stage 3 hay mọi run) **[Nguồn: OWR-3 A.3]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-123 | M | AC-047 | Stage 4 hoàn thành | Approval gate như AC-043 | AC_DEFINED |
 | FR-124 | M | AC-048, AC-049 | Stage 5 chạy FE/BE/DB | Task song song trên branch riêng, merge sau review pass | AC_DEFINED |
 | FR-125 | M | AC-050 | QA phát hiện lỗi ở Stage 6 | BUG_CREATED, bug liên kết task sửa lỗi | AC_DEFINED |
@@ -164,7 +170,7 @@ FR-006 (Q-06), FR-009 (Q-09), FR-038 (Q-38), FR-078 (Q-78), FR-088 (Q-88), FR-09
 | FR-135 | M | AC-045 | Reject approval gate Stage 2 | Revision task tạo, quay lại gate sau khi sửa | AC_DEFINED |
 | FR-151 | M | AC-086 | Mở Virtual Office | 14 phòng đúng tên | AC_DEFINED |
 | FR-152 | M | AC-087 | Zoom/pan bản đồ | Phóng/thu và kéo mượt, FPS ≥ 30 | AC_DEFINED |
-| FR-153 | C | (chưa có) | Chưa xác định số tầng và tiêu chí | Cần Owner làm rõ (Q-02) | NEEDS_OWNER_CLARIFICATION |
+| FR-153 | C | AC-644, AC-645 | Mở Office; thêm phòng ban/agent | Đúng 1 tầng, không điều khiển chuyển tầng, không tự mở rộng **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-154 | C | AC-311 | Edit layout, di chuyển/đổi kích thước phòng (P2) | Vị trí và kích thước lưu qua reload | AC_ADDED_PHASE0 |
 | FR-155 | C | AC-312 | Đặt và di chuyển furniture (P2) | Furniture ở ô đích, lưu qua reload | AC_ADDED_PHASE0 |
 | FR-156 | M | AC-088 | AGENT_CREATED | Nhân vật chibi pixel-art xuất hiện | AC_DEFINED |
@@ -177,12 +183,12 @@ FR-006 (Q-06), FR-009 (Q-09), FR-038 (Q-38), FR-078 (Q-78), FR-088 (Q-88), FR-09
 | FR-163 | M | AC-098 | Tạo agent phòng ban mặc định và gán phòng ban tùy chỉnh | Desk nằm đúng phòng theo ánh xạ | AC_ADDED_PHASE0 |
 | FR-164 | S | AC-099 | Phát/không phát event Idle | Chỉ agent có event Idle vào Relax/Coffee **[Ghi chú OWR-2 Q-14: mặc định idle không vào Coffee/Relax, setting tùy chọn; AC-099 thêm ghi chú]** | AC_ADDED_PHASE0 |
 | FR-165 | S | AC-100 | Click phòng QA | Danh sách agent và task khớp DB; phòng rỗng hiển thị 0 | AC_ADDED_PHASE0 |
-| FR-181 | M | AC-605, AC-606, AC-607 | Incident: trường bắt buộc, không suy diễn, grouping (đề xuất Owner OWR-2 §4) | AC đề xuất; OQ-181-1/2 chờ Owner (Q-03) | AC_PROPOSED_PENDING_CLARIFICATION |
-| FR-182 | M | AC-608, AC-609, AC-610, AC-611 | Công thức Progress theo trọng số task (đề xuất Owner OWR-2 §4) | AC đề xuất; OQ-182-1/2/3/4 chờ Owner (Q-04) | AC_PROPOSED_PENDING_CLARIFICATION |
-| FR-183 | M | AC-612, AC-613, AC-614 | Performance Metrics tách biệt Progress (đề xuất Owner OWR-2 §4) | AC đề xuất; OQ-183-1/2 chờ Owner (Q-05) | AC_PROPOSED_PENDING_CLARIFICATION |
+| FR-181 | M | AC-605, AC-606, AC-607 | Incident: trường bắt buộc, không suy diễn, grouping 15 phút có bộ đếm | Approval chờ lâu là operational alert, không phải incident; cùng type + target trong 15 phút gom, có occurrence_count **[Nguồn: OWR-3 A.4]** | AC_PROPOSED_OWNER_DECIDED |
+| FR-182 | M | AC-608, AC-609, AC-610, AC-611 | Progress theo trọng số task, baseline, cancelled | Baseline = task ban đầu + thay đổi phạm vi đã duyệt; cancelled loại khỏi tử số và mẫu số; trọng số bằng nhau. Còn mở không chặn: OQ-182-4 (theo giai đoạn) **[Nguồn: OWR-3 A.5]** | AC_PROPOSED_OWNER_DECIDED |
+| FR-183 | M | AC-612, AC-613, AC-614 | Dashboard nhiều metric tách biệt Progress | Nhiều metric, không KPI tổng hợp trong MVP **[Nguồn: OWR-3 A.6]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-184 | S | AC-313 | Mở Workflow dashboard | Liệt kê workflow chạy, giai đoạn hiện tại, thời gian chờ approval đúng | AC_ADDED_PHASE0 |
 | FR-185 | M | AC-314 | Nhóm chi phí theo 4 chiều và thời gian | Tổng mỗi nhóm = tổng usage, sai số 0 | AC_ADDED_PHASE0 |
-| FR-186 | S | (chưa có) | Chưa xác định công thức các rate | Cần Owner làm rõ (Q-06) | NEEDS_OWNER_CLARIFICATION |
+| FR-186 | S | AC-646, AC-647, AC-648 | Tập task có completed/failed/running/blocked/cancelled; mẫu số 0 | Success rate = completed/(completed+failed)×100%; loại running, blocked, cancelled; N/A khi mẫu số = 0. Còn mở không chặn: OQ-186-1 (test pass rate, reject rate, security findings) **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-187 | S | AC-315 | Mở System dashboard | Hiển thị provider, sandbox, hàng đợi, concurrency khớp thực tế | AC_ADDED_PHASE0 |
 | FR-188 | M | AC-316 | Mở dashboard ở workspace mới (bản release) | Chỉ giá trị 0/empty, không số mẫu; scan bundle 0 fixture | AC_ADDED_PHASE0 |
 | FR-196 | M | AC-043 | Có yêu cầu approval | Approval Center liệt kê yêu cầu kèm loại, project, giai đoạn, agent, thời gian chờ, artifact | AC_DEFINED |
@@ -196,8 +202,9 @@ FR-006 (Q-06), FR-009 (Q-09), FR-038 (Q-38), FR-078 (Q-78), FR-088 (Q-88), FR-09
 |---|---|
 | AC_DEFINED | 34 |
 | AC_ADDED_PHASE0 | 22 |
-| AC_PROPOSED_PENDING_CLARIFICATION | 4 |
-| NEEDS_OWNER_CLARIFICATION | 2 |
+| AC_PROPOSED_OWNER_DECIDED (OWR-3: FR-122, 153, 181, 182, 183, 186) | 6 |
+| AC_PROPOSED_PENDING_CLARIFICATION | 0 |
+| NEEDS_OWNER_CLARIFICATION | 0 |
 | **Tổng** | **62** |
 
 ## Mã AC đã bị tham chiếu nhưng chưa định nghĩa, nay được định nghĩa (code -> FR)
@@ -212,7 +219,7 @@ Giả định về ý định gốc (nguồn: `IMPLEMENTATION_ROADMAP.md` dòng 
 ### 3.3 Phần 3: FR-200..FR-292 (61 FR)
 | FR ID | Priority | Acceptance Criteria ID(s) | Test Scenario | Expected Result | Verification Status |
 |---|---|---|---|---|---|
-| FR-200 | C | — (Q-01) | Approval chờ quá N giờ | Chưa xác định: thiếu N, người nhận, hành động escalation | NEEDS_OWNER_CLARIFICATION |
+| FR-200 | C | AC-649, AC-650, AC-651 | Approval chờ 24 giờ; alert vs incident; approval hành động quan trọng 15 phút | remind_at = 24 giờ phát đúng 1 operational alert (không phải incident); expires_at = 15 phút là trường riêng **[Nguồn: OWR-3 C, A.12]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-201 | S | AC-401 | Mở lịch sử 3 approval đã quyết định | Đủ người, thời điểm, quyết định, feedback; khớp DB | AC_ADDED_PHASE0 |
 | FR-206 | M | AC-107 | Agent project A truy cập workspace project B | Thất bại | AC_DEFINED |
 | FR-207 | M | AC-101 | Agent chạy lệnh | Lệnh chạy trong Docker container, không chạy trên host | AC_DEFINED |
@@ -264,15 +271,15 @@ Giả định về ý định gốc (nguồn: `IMPLEMENTATION_ROADMAP.md` dòng 
 | FR-280 | M | AC-431 | Click và Dismiss finding | Mở đúng dòng; Dismiss cần lý do; metric thật | AC_ADDED_PHASE0 |
 | FR-281 | S | AC-432 | Xem cost với 7 ngày dữ liệu | Tooltip nguồn/giá; forecast chỉ khi ≥ 7 ngày | AC_ADDED_PHASE0 |
 | FR-282 | M | AC-433 | Đổi setting, Export diagnostics | Áp dụng đúng thời điểm; 0 secret | AC_ADDED_PHASE0 |
-| FR-283 | S | — (Q-02) | Kiểm giao diện "premium" | Chưa xác định: thiếu tiêu chí đo | NEEDS_OWNER_CLARIFICATION |
-| FR-284 | C | — (Q-03) | Chuyển ngôn ngữ Việt/Anh | Chưa xác định: OI-07 chưa chốt | NEEDS_OWNER_CLARIFICATION |
+| FR-283 | S | AC-652, AC-653 | Kiểm 1 màn hình theo checklist 10 tiêu chí; thử xóa/hạ mục P0 không bằng chứng | Mỗi tiêu chí Pass/Fail/N/A kèm bằng chứng; P0 không được xóa khi chưa có bằng chứng QA **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
+| FR-284 | C | AC-654, AC-655 | Cài mới; đổi sang tiếng Anh | Mặc định tiếng Việt; hỗ trợ tiếng Anh, lưu qua restart, catalog đủ khóa **[Nguồn: OWR-3 C; B X-1]** | AC_PROPOSED_OWNER_DECIDED |
 | FR-286 | M | AC-121, AC-125, AC-126 | Kill app rồi mở lại | Dashboard, approval, hội thoại, message còn nguyên | AC_DEFINED |
 | FR-287 | M | AC-121, AC-122 | Kill app, chọn Tiếp tục | Resume từ checkpoint, không chạy lại bước xong | AC_DEFINED |
 | FR-288 | M | AC-123 | Provider timeout tạm thời | Retry theo max retry/backoff, hiển thị retry count | AC_DEFINED |
 | FR-289 | M | AC-122 | Resume sau restart | Resume từ checkpoint gần nhất, không tạo trùng | AC_DEFINED |
 | FR-290 | M | AC-124 | Kill tiến trình CLI từ ngoài | Phát hiện ≤ 60 s; task FAILED hoặc retry | AC_DEFINED |
 | FR-291 | S | AC-122 | Resume step đã hoàn tất | Artifact không bị tạo trùng | AC_DEFINED |
-| FR-292 | C | — (Q-04) | Sao lưu/xuất dữ liệu workspace | Chưa xác định: thiếu phạm vi và định dạng | NEEDS_OWNER_CLARIFICATION |
+| FR-292 | C | AC-656, AC-657 | Rà soát tài liệu; thực hiện dump rồi khôi phục | MVP chỉ có hướng dẫn PostgreSQL dump (đã kiểm khôi phục); không có export workspace **[Nguồn: OWR-3 C]** | AC_PROPOSED_OWNER_DECIDED |
 
 ## Tổng kết
 
@@ -280,7 +287,8 @@ Giả định về ý định gốc (nguồn: `IMPLEMENTATION_ROADMAP.md` dòng 
 |---|---|
 | AC_DEFINED | 24 |
 | AC_ADDED_PHASE0 | 33 |
-| NEEDS_OWNER_CLARIFICATION | 4 |
+| AC_PROPOSED_OWNER_DECIDED (OWR-3: FR-200, 283, 284, 292) | 4 |
+| NEEDS_OWNER_CLARIFICATION | 0 |
 | **Tổng** | **61** |
 
 ## 4. Nội dung AC mới (PROPOSED)
@@ -332,6 +340,8 @@ Giả định về ý định gốc (nguồn: `IMPLEMENTATION_ROADMAP.md` dòng 
 - Lưu ý: một số trích dẫn dạng dải (vd. "AC-001…AC-130" trong TESTING.md dòng 11, "AC-043…046, 055…064" trong ROADMAP) ngầm bao gồm ID dự trữ; việc sửa văn bản các dải này thuộc phạm vi QA P0-1 phần (b), nằm ngoài hai file đầu ra của Part 1.
 
 ## 4. Cần Owner làm rõ (không đủ thông tin để viết AC kiểm thử được)
+
+**Cập nhật OWR-3:** sáu câu hỏi dưới đây đã được Owner trả lời ở OWR-3 mục C; xem mục 6 của file này (AC-631..AC-643; FR-078 là WONT_MVP). Bảng gốc giữ để truy vết.
 
 | # | FR | Câu hỏi cụ thể | Lý do không viết AC |
 |---|---|---|---|
@@ -398,7 +408,7 @@ Nguồn trích dẫn: `IMPLEMENTATION_ROADMAP.md` dòng 45 (Phase 6, "FR-151…1
 | AC-303 | Workflow có node Parallel 3 nhánh rồi node Merge; nhánh 3 chậm hơn nhánh 1, 2 | Chạy workflow | Node Merge không bắt đầu cho tới khi cả 3 nhánh COMPLETED; sau đó Merge bắt đầu đúng 1 lần; nếu 1 nhánh FAILED hết retry thì Merge không chạy và workflow hiển thị nhánh lỗi | FR-105 | Integration test (FakeProvider có độ trễ) | M |
 | AC-304 | Owner tạo task qua API/UI | Đọc task đã lưu | Task chứa đủ các trường: id, title, description, project, workflow/stage, assignee, status, priority, dependencies, inputs, outputs/artifacts, file ownership, token budget, time budget, retry count, parent task, version, created/updated (18 trường; danh sách là [Đề xuất]); thiếu title hoặc project thì tạo bị từ chối với mã lỗi validation | FR-107 | Unit test schema + API contract test | M |
 | AC-305 | Màn Workflow Builder mở, workflow trống (P2) | Owner kéo 2 node vào canvas và nối cạnh | 2 node hiện ở vị trí thả, 1 cạnh có hướng nối node nguồn → đích; lưu rồi mở lại giữ nguyên vị trí và cạnh; nối tạo vòng lặp trực tiếp tự thân bị chặn là phạm vi chưa nêu, không kiểm | FR-112 | E2E (Playwright) | S (P2) |
-| AC-306 | Palette Workflow Builder (P2) | Owner mở palette và thả từng loại | Palette có đúng 8 loại: Agent, Approval, Condition, Parallel, Merge, Tool, Test, Deployment; mỗi loại thả được 1 node và lưu được; loại thứ 9 không tồn tại | FR-113 | E2E (Playwright) + unit test registry | S (P2) |
+| AC-306 | Palette Workflow Builder (P2) | Owner mở palette và thả từng loại | Palette có đúng 9 UI node type (OWR-3 A.14): Agent, Task, Approval, Condition, Parallel, Merge, Tool, Test, Deployment (đây là UI node type, không phải engine kind); mỗi loại thả được 1 node và lưu được; loại thứ 9 không tồn tại | FR-113 | E2E (Playwright) + unit test registry | S (P2) |
 | AC-307 | Workflow template với 3 node Agent (P2, Could) | Owner chạy Dry-run | 0 lời gọi tới provider adapter (đếm lời gọi = 0); kết quả hiển thị trình tự node dự kiến của đường đi và nhánh Condition được mô phỏng; không có task thật hoặc file thay đổi trong workspace | FR-115 | Integration test với adapter spy | C (P2) |
 | AC-308 | Hệ thống chạy kịch bản bao phủ vòng đời | Truy vấn registry và event store | Registry có đúng 26 event type của danh mục FR-117 (AGENT_CREATED … PROVIDER_DISCONNECTED); mỗi type có contract test phát ra ít nhất 1 event hợp lệ khớp schema FR-116; event type ngoài registry bị từ chối khi ghi | FR-117 | Contract test + integration test tại `apps/backend` | M |
 | AC-309 | Workflow RUNNING có 2 task RUNNING và 1 READY | Owner nhấn Cancel ở cấp workflow | Workflow → CANCELLED; 2 task RUNNING bị hủy phiên provider trong ≤ 5 s [Đề xuất] và → CANCELLED; task READY không còn được gán; có event; Resume sau Cancel không khả dụng | FR-133 | E2E + integration test | M |
@@ -430,6 +440,8 @@ Nguồn trích dẫn: `IMPLEMENTATION_ROADMAP.md` dòng 45 (Phase 6, "FR-151…1
 | AC-320 | Policy mặc định | Owner (UI) và API cố tắt approval cho production deploy; Agent kích hoạt production deploy | UI không cho tắt (điều khiển bị vô hiệu); API trả lỗi từ chối và không đổi policy; production deploy luôn tạo yêu cầu approval; có audit log về lần cố tắt | FR-199 | Security test + integration test | M |
 
 ## 3. Cần Owner làm rõ
+
+**Cập nhật OWR-3:** Q-01 đến Q-06 dưới đây đã được Owner trả lời ở OWR-3 A.3 đến A.6 và mục C; xem mục 6 (AC-601..AC-614, AC-631..AC-657). Còn lại không chặn: OQ-122-3, OQ-182-4, OQ-186-1. Bảng gốc giữ để truy vết.
 
 Các FR sau quá mơ hồ để viết AC kiểm thử được; không bịa tiêu chí.
 
@@ -509,7 +521,7 @@ Nguồn chi tiết: `docs/design/SCREEN_SPECIFICATION.md` §3.1…§3.22. Test E
 | AC-422 | Provider Claude Code Connected, Codex Disconnected | Owner mở Provider Hub, health 1 provider đổi trạng thái, sau đó mở màn Cost | Card và topbar dot đổi ≤ 2 s sau khi health đổi; "Switch affected agents" liệt kê agent và kết quả từng agent; secret không bao giờ hiển thị plaintext (quét DOM = 0 secret); số usage khớp màn Cost Management | FR-271 | E2E + security test (DOM/payload scan) | M |
 | AC-423 | Có 3 project | Owner mở Project Management, tạo project từ prompt | Card chỉ hiện số liệu có evidence; sau khi tạo, điều hướng tới Project Detail và task Discovery ở trạng thái RUNNING thật | FR-272 | E2E Playwright | M |
 | AC-424 | Project có workflow stage 1 xong, gate approval chưa resolved | Owner mở Project Detail | Phase chỉ hiển thị ✓ khi gate approval đã resolved (stage 1 chưa ✓); deliverable là artifact thật, mở được qua link (HTTP 200); Code Workspace, Product Preview, QA & Security Report là tab của Project Detail | FR-273 | E2E Playwright | M |
-| AC-425 | Workflow Builder (P2), workflow trống | Owner kéo node từng loại, nối Condition (2 out) và Merge (N in), tạo lỗi validation rồi nhấn Run | Kéo thả và nối cạnh theo quy tắc port; Run bị chặn khi validate lỗi; trạng thái node cập nhật ≤ 1 s sau WS; Undo/Redo 50 bước; deep link `?run=&node=` mở inspector đúng node. Số loại node (9 theo SCREEN_SPECIFICATION so với 8 ở FR-113/AC-306) cần Owner thống nhất, xem Q-06 | FR-274 | E2E Playwright | S (P2) |
+| AC-425 | Workflow Builder (P2), workflow trống | Owner kéo node từng loại, nối Condition (2 out) và Merge (N in), tạo lỗi validation rồi nhấn Run | Kéo thả và nối cạnh theo quy tắc port; Run bị chặn khi validate lỗi; trạng thái node cập nhật ≤ 1 s sau WS; Undo/Redo 50 bước; deep link `?run=&node=` mở inspector đúng node. Số loại node: 9 UI node type theo OWR-3 A.14 (AC-306 đã đồng bộ) | FR-274 | E2E Playwright | S (P2) |
 | AC-426 | Project có 30 task, 1 cặp task phụ thuộc vòng | Owner mở Task Board ở 4 view kanban/table/timeline/graph | 4 view dùng chung filter và filter nằm trong URL; graph hiển thị critical path và cảnh báo cycle; đánh Done thủ công khi task agent chưa có evidence bị chặn và hiện lý do; 500 task ở table scroll không lỗi (virtualized) | FR-275 | E2E Playwright | M |
 | AC-427 | 10 event gồm 3 mục cần hành động | Owner mở Activity Center, bật filter Needs action, nhấn Mark read | Filter chỉ hiện đúng 3 mục chưa resolved; mỗi dòng có deep link đúng đích; Mark read cập nhật badge sidebar đồng bộ | FR-276 | E2E Playwright | M |
 | AC-428 | 2 approval WAITING | Owner mở Approval Center, thử Reject không lý do, rồi Reject có lý do, rồi nhấn phím `A` | Reject/Request changes thiếu lý do không gửi được; quyết định có lý do ghi history (ai, khi nào, lý do) và gửi event về workflow ≤ 1 s; phím `A/X/M` chỉ mở form tương ứng, không áp dụng ngay; checks hiển thị pending/running/done thật, không có ✓ khi chưa chạy | FR-277 | E2E Playwright + integration test | M |
@@ -520,6 +532,8 @@ Nguồn chi tiết: `docs/design/SCREEN_SPECIFICATION.md` §3.1…§3.22. Test E
 | AC-433 | App chạy | Owner đổi 1 setting hiển thị (theme) và 1 setting thực thi (concurrency), rồi Export diagnostics | Theme áp dụng ngay; setting concurrency hiển thị "áp dụng từ task tiếp theo" và chỉ có hiệu lực từ task kế; file diagnostics chứa 0 secret (quét regex) | FR-282 | E2E + security test (regex scan) | M |
 
 ## 5. Cần Owner làm rõ
+
+**Cập nhật OWR-3:** Q-01 (FR-200), Q-02 (FR-283), Q-03 (FR-284), Q-04 (FR-292) đã được Owner quyết định ở OWR-3 mục C (AC-649..AC-657, PROPOSED). Q-06 (số loại node): 9 UI node type, OWR-3 A.14. Bảng gốc giữ để truy vết.
 
 | ID | FR | Câu hỏi cụ thể | Lý do chưa viết AC |
 |---|---|---|---|
@@ -575,3 +589,42 @@ AC mới trong đợt này: AC-601..AC-614 (14) và AC-621..AC-623 (3) = 17 AC P
 - D-021: OQ-D021-1 (phạm vi kích hoạt OWN-AC-2), OQ-D021-2 (duyệt FR-293..298).
 - FR-109 (công thức deterministic cụ thể), FR-113 (tên 9 UI node type và 11 engine kind), FR-164 (tên và phạm vi setting).
 - Xung đột D-005 so với nhóm B (AC-022, GP-1); xung đột FR-076 "CLI-based" so với Q-17 (Agent SDK).
+
+## 6. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md`. Phase 0 vẫn mở; Phase 1 chưa được Owner cho phép. **Không AC nào là APPROVED.** Owner xác nhận các quyết định, nhưng câu chữ Given/When/Then do agent viết và Owner đã yêu cầu agent không chuyển PROPOSED thành APPROVED, nên mọi AC giữ PROPOSED với ghi chú "Quyết định Owner xác nhận: OWR-3" (cột riêng trong `AC_ADDENDUM_PART4_OWR2.md`). Định nghĩa đầy đủ AC nằm một lần ở file đó, không sao chép ở đây.
+
+### 6.1 Nhật ký thay đổi
+
+| # | Thay đổi | Nguồn | File |
+|---|---|---|---|
+| 1 | FR-122, 181, 182, 183: cập nhật AC-601..AC-614 theo quyết định (artifact bắt buộc là output node required, lưu/xem trong workspace, không ZIP; approval chờ lâu là operational alert; grouping 15 phút có bộ đếm; cancelled loại khỏi tử/mẫu số, baseline = task ban đầu + thay đổi phạm vi đã duyệt, trọng số bằng nhau; nhiều metric, không KPI tổng hợp) | OWR-3 A.3 đến A.6 | AC_ADDENDUM_PART4_OWR2.md mục 1 |
+| 2 | FR-006, 009, 038, 088, 098, 153, 186, 200, 283, 284, 292: AC mới AC-631..AC-657 (27 AC, PROPOSED, mỗi mã định nghĩa một lần); FR-088 và FR-098 là AC phủ định (AC-640..AC-643) | OWR-3 C | AC_ADDENDUM_PART4_OWR2.md mục 1A |
+| 3 | FR-078: WONT_MVP (WON'T DO IN MVP, D-006), giữ hàng truy vết, không AC | OWR-3 C | các bảng truy vết |
+| 4 | Trạng thái mới AC_PROPOSED_OWNER_DECIDED và WONT_MVP (định nghĩa ở chú giải đầu file) | OWR-3 | file này; TRACEABILITY_PART1..3 |
+| 5 | FR-113: 9 UI node type (Agent, Task, Approval, Condition, Parallel, Merge, Tool, Test, Deployment), không nêu lại số engine kind; AC-306 đồng bộ | OWR-3 A.14 | FR file; AC_ADDENDUM_PART2.md |
+| 6 | FR-077: xác nhận hoãn khỏi MVP (D-005), MVP chỉ Claude, nhóm B điều chỉnh được ghi Owner-acknowledged | OWR-3 A.8 | FR file; ACCEPTANCE_CRITERIA.md (ghi chú) |
+| 7 | remind_at (24 giờ) và expires_at (15 phút với hành động quan trọng) trong FR-106, FR-200 | OWR-3 A.12 | FR file; AC-649..AC-651 |
+| 8 | Ghi chú WAITING_APPROVAL không tính vào 5 active workers khi worker đã được giải phóng và state đã persist; vẫn tuân thủ quota provider (FR-231, FR-237, không thêm FR) | OWR-3 A.15 | FR file |
+
+### 6.2 Số liệu sau cập nhật (199 FR, mỗi FR đúng một dòng)
+
+| Verification Status | Số FR |
+|---|---|
+| AC_DEFINED | 109 |
+| AC_ADDED_PHASE0 | 74 |
+| AC_PROPOSED_OWNER_DECIDED | 15 (FR-006, 009, 038, 088, 098, 122, 153, 181, 182, 183, 186, 200, 283, 284, 292) |
+| WONT_MVP | 1 (FR-078) |
+| AC_PROPOSED_PENDING_CLARIFICATION | 0 |
+| NEEDS_OWNER_CLARIFICATION | 0 |
+| **Tổng** | **199** |
+
+Theo phần: Phần 1 = 51 / 19 / 5 / 1 / 0 (76 FR); Phần 2 = 34 / 22 / 6 / 0 / 0 (62 FR); Phần 3 = 24 / 33 / 4 / 0 / 0 (61 FR), theo thứ tự AC_DEFINED / AC_ADDED_PHASE0 / AC_PROPOSED_OWNER_DECIDED / WONT_MVP / NEEDS_OWNER_CLARIFICATION. AC mới trong đợt này: AC-631..AC-657 (27 AC); AC-601..AC-614 được cập nhật tại chỗ. Dải AC-615..AC-620 và AC-624..AC-630 và AC-658..AC-699 dự trữ.
+
+### 6.3 Còn mở (không chặn, không bịa quyết định)
+
+Không còn FR ở trạng thái NEEDS_OWNER_CLARIFICATION. Ba điểm xác nhận nhỏ còn lại, đã ghi trong AC nhưng không đổi trạng thái:
+- OQ-122-3 (FR-122): OWR-3 A.3 nói theo workflow definition nên AC áp dụng mọi run; Owner xác nhận nếu chỉ muốn Stage 3.
+- OQ-182-4 (FR-182): FR gốc nói "tiến độ theo giai đoạn"; OWR-3 chỉ định nghĩa tiến độ theo task; công thức theo giai đoạn chưa được nêu.
+- OQ-186-1 (FR-186): OWR-3 chỉ định nghĩa success rate; test pass rate, reject rate và cách đếm security findings chưa được định nghĩa.
+Các điểm khác: OWR-3 không nêu danh mục "các khoản phí liên quan" của FR-009 và lựa chọn cụ thể của quyết định Owner khi vượt 100% (AC-634, AC-636 ghi rõ); hành vi chi tiết sau expires_at (AC-651) là diễn giải của BA; mức P0 của FR-283 chỉ có ở các mục M và O của checklist (AC-653).

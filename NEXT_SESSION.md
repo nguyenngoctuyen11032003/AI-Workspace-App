@@ -1,6 +1,6 @@
 # NEXT_SESSION.md
 
-Cập nhật: 2026-10-30 (sau OWR-2). Đọc `AGENTS.md` (mục 8) và `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md` trước.
+Cập nhật: 2026-10-30 (sau OWR-3). Đọc `AGENTS.md` (mục 8) và `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md` trước.
 
 ## 1. Tóm tắt dự án
 AI WORKSPACE: nền tảng điều phối nhiều AI agent mô phỏng công ty phần mềm. Claude Agent SDK là adapter chính (D-004). Codex và OpenHands đã hoãn khỏi MVP. Stack: React 19 + Vite, NestJS, pnpm monorepo, PostgreSQL 16 + Redis, Drizzle. Owner nghiệm thu cuối cùng.
@@ -44,3 +44,8 @@ QA độc lập (không phải tác giả tài liệu); Documentation (đồng b
 
 ## 12. Chạy song song được
 Đồng bộ theo miền không chung file. Các PoC độc lập nhau trừ Docker (cần Owner). Không chạy nhiều model song song khi đang đo quota.
+
+## Cập nhật sau OWR-3
+- Việc còn chờ Owner: X-13 (ba câu), P-16 và X-14 (bảng ánh xạ event), Q-21..Q-26, quyền commit, quyền Docker.
+- Sau khi Owner trả lời: đồng bộ thân SECURITY mục 2 đến 5 và SANDBOX_DESIGN mục 4, ánh xạ event, rồi QA ngắn kiểm các sửa sau lần ba.
+- Chưa bắt đầu Phase 1. Chưa push. Thay đổi OWR-3 chưa commit.

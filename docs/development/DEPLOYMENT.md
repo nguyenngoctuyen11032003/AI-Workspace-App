@@ -40,7 +40,7 @@ Sau này: Tauri 2 shell đóng gói web + sidecar backend (`tauri.conf.json` `ex
 ### 3.3 Đặc điểm bảo mật desktop mode
 
 - Backend bind **chỉ `127.0.0.1`**; không có auth đa người dùng nhưng có session token local (chống CSRF từ web khác, A09).
-- Secrets (API keys nếu người dùng nhập) lưu trong Windows Credential Manager qua `keytar`-tương đương (`@napi-rs/keyring`) – DEVSECOPS_GUIDE §3.
+- Secrets (API keys nếu người dùng nhập) lưu trong Windows Credential Manager qua `keytar`-tương đương (`@napi-rs/keyring`) – DEVSECOPS_GUIDE §3. **[OWR-3 C (FR-088, FR-098): MVP không có API key fallback; ứng dụng không lưu hoặc tự đọc credential của provider (D-008). Việc lưu secret KHÔNG phải credential provider (token git, secret của dự án sinh ra) bằng OS keychain chờ Owner làm rõ Q-21; các kind API là dự phòng, không bật trong MVP]**
 - DB Postgres chỉ bind localhost; mật khẩu sinh ngẫu nhiên lúc install, lưu `.env` trong `%LOCALAPPDATA%\aiw` (ACL user-only).
 
 ## 4. Chế độ Server (self-hosted, Docker Compose)
@@ -156,7 +156,7 @@ Cụ thể:
 - [ ] `docker compose pull` đúng tag; `docker image inspect` xác nhận digest khớp release (cosign verify nếu bật).
 - [ ] Chạy migration (`run --rm api pnpm db:migrate`), kiểm tra log không lỗi.
 - [ ] `up -d`; chờ `/ready` 200 trong ≤ 2 phút.
-- [ ] Smoke test: đăng nhập UI, tạo task mock (`AGENT_MODE=mock`) hoặc chạy task thật nhỏ; preview container khởi động/stop được.
+- [ ] Smoke test: đăng nhập UI, tạo task mock (`AGENT_MODE=mock`) hoặc chạy task thật nhỏ [OWR-3 A.10/A.11/mục E: "task thật" chỉ sau khi có sandbox cô lập đã kiểm chứng và gate đạt; trước đó chỉ mock/sandbox, Docker chưa được cho phép khởi động]; preview container khởi động/stop được.
 - [ ] `claude auth status` trong worker OK.
 
 **Sau deploy**

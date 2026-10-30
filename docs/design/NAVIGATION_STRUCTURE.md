@@ -167,8 +167,8 @@ Nguồn: event bus backend (tên sự kiện đề xuất — Agent Backend đ�
 | `approval.resolved` | Director đã duyệt / từ chối | info | Bell | `/approvals/:id` |
 | `agent.blocked` | Cần input/permission, thiếu secret, provider lỗi | warning | Toast + badge Agents + speech bubble trong Office | `/agents/:id?tab=overview` (panel "Needs you") |
 | `agent.failed` | Task lỗi sau retry, process crash | critical | Toast persistent + badge | `/agents/:id?tab=logs&log=:logId` |
-| `agent.state_changed` | idle→working, finished | info | Chỉ Activity feed + Office animation (không toast) | `/agents/:id` |
-| `task.status_changed` | done / blocked | info / warning | Activity feed; toast nếu `blocked` | `/projects/:p/tasks?task=:id` |
+| `agent.state.changed` | idle→working, finished | info | Chỉ Activity feed + Office animation (không toast) | `/agents/:id` |
+| `task.status.changed` | done / blocked | info / warning | Activity feed; toast nếu `blocked` | `/projects/:p/tasks?task=:id` |
 | `workflow.run.*` | started / node failed / completed / waiting approval | info / critical | Toast nếu failed hoặc completed | `/projects/:p/workflows/:wf?run=:run&node=:node` |
 | `qa.report.ready` | test / security run hoàn tất | info (critical nếu có finding critical) | Toast | `/projects/:p/qa/runs/:runId` |
 | `provider.status` | rate limit, auth expired, down | warning / critical | Toast + topbar dot | `/providers/:id` |

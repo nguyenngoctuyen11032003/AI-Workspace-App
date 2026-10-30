@@ -96,7 +96,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
   6. **Workflow Activity**: run đang chạy, node hiện tại, `node completed/total`, link tới builder với `?run=`.
   7. **Performance Analytics**: `Tabs` 3 chart (throughput tasks/ngày, success rate %, cost per agent). Chart tuân `dataviz` guidance của Agent 11 nếu có.
 - **Dữ liệu:** `GET /api/dashboard/summary?project=&from=&to=` (metrics tổng hợp) · `GET /api/attention` (needs-you) · `GET /api/agents?fields=state,currentTask,lastEvent` · `GET /api/projects?include=progress` · `GET /api/workflow-runs?status=running` · `GET /api/analytics/performance` · `GET /api/costs/summary`.
-- **Realtime (WS):** `agent.state_changed`, `agent.tool_event` (cập nhật feed, throttle 500ms/agent), `task.status_changed` (metrics + progress), `approval.requested/resolved` (Needs-you), `workflow.run.*`, `provider.status`, `cost.updated` (mỗi 30s hoặc khi task kết thúc).
+- **Realtime (WS):** `agent.state.changed`, `agent.tool.event` (cập nhật feed, throttle 500ms/agent), `task.status.changed` (metrics + progress), `approval.requested/resolved` (Needs-you), `workflow.run.*`, `provider.status`, `cost.updated` (mỗi 30s hoặc khi task kết thúc).
 - **Hành động:** Primary: Open (mục Needs-you). Secondary: Resolve blocked (mở drawer agent), Pause agent, View logs, Create project, Create agent.
 - **Trạng thái:** loading = Skeleton 8 card + 2 cột; empty (chưa có agent/project) = EmptyState với onboarding checklist; error một phần = card lỗi riêng lẻ (không làm hỏng cả dashboard); offline = banner + dữ liệu stale có "cập nhật lúc hh:mm".
 - **Filter:** project, time range (Today / 7d / 30d / custom).
@@ -124,7 +124,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 |         |  ┌ DESIGN ──────────────┐   [Meeting room]  | ⛔ blocked 4m    |
 |         |  │ [UX-01]🎨 [UX-02]💻  │   (chỉ hiển thị  | Task: Auth API   |
 |         |  └──────────────────────┘    khi có review | Provider: Claude |
-|         |   Floor plan pixel art 32px tiles           | Model: sonnet-4.5|
+|         |   Floor plan pixel art 16px x2 = 32px       | Model: sonnet-4.5|
 |         |   bubble "?" = waiting_input                | Progress 3/7 ✓   |
 |         |   bubble "✋" = waiting_approval            | Last log: "env   |
 |         |   bubble "⛔" = blocked/failed              |  DATABASE_URL…"  |
@@ -139,14 +139,14 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 **Ba chế độ:** `Live` (mặc định) · `Edit` (layout editor) · `Fullscreen` (ẩn sidebar + topbar, HUD overlay).
 
 **Vùng/Component:**
-1. **Canvas** (Phaser 3.90 qua abstraction `OfficeRenderer`, benchmark trước khi khóa implementation — OWR-2 D-011; thay thế "PixiJS/Canvas 2D [Giả định]"; kích thước tile 16 vs 32 chưa được Owner quyết định, xem `VIRTUAL_OFFICE.md` §21): tiles, tường, bàn, nhân vật. Mỗi department = một **Area** có màu viền và nhãn; agent ngồi trong Area của department mình (`agent.departmentId`). Agent ngoài project đang lọc → mờ 40%.
+1. **Canvas** (Phaser 3.90 qua abstraction `OfficeRenderer`, benchmark trước khi khóa implementation — OWR-2 D-011; thay thế "PixiJS/Canvas 2D [Giả định]"; **[OWR-3 A.7/X-6]** art tile **16 px**, hiển thị phóng **2 lần** (hiệu dụng 32 px), benchmark sau; xem `VIRTUAL_OFFICE.md` §5, §21): tiles, tường, bàn, nhân vật. Mỗi department = một **Area** có màu viền và nhãn; agent ngồi trong Area của department mình (`agent.departmentId`). Agent ngoài project đang lọc → mờ 40%.
 2. **Nhân vật** = `agent`; animation map trực tiếp từ state/tool event: `working` + tool `edit/write` → gõ phím; `read/search` → đọc tài liệu; `bash/test` → terminal; `idle` → ngồi/đi lại nhẹ (**không** đi Coffee/Relax mặc định — OWR-2 Q-14; chỉ có setting tùy chọn, mặc định tắt; không xem TV); `waiting_input` → bubble "?"; `waiting_approval` → bubble "✋" + đi tới "Review desk"; `blocked/failed` → bubble "⛔" đỏ, nhân vật đứng; `paused` → bubble "⏸"; `offline/stopped` → ghế trống + nameplate xám. Review/handoff giữa 2 agent thật (task handoff event) → hai nhân vật tới meeting table; **không** có meeting giả lập.
 3. **HUD top:** office selector (layout), project filter, bộ đếm trạng thái (click → lọc highlight nhân vật), Follow (camera bám agent), Edit mode, Fullscreen, Sound, Hide HUD.
 4. **Agent Panel** (docked phải, `Drawer` inline, 320px): tên/role/department/provider/model/state + thời lượng; task hiện tại (link); progress evidence (`subtasks done/total` hoặc `tests pass/total`); last log line (monospace, 2 dòng); actions: Resolve (nếu blocked: mở form cung cấp input/secret), Pause/Resume, Stop (confirm), Retry, Reassign, View logs, View changes, Open workspace, Request review, Send instruction (textarea). Panel hiển thị khi click nhân vật hoặc `?focus=`.
 5. **HUD bottom:** minimap, zoom, ticker 1 dòng event mới nhất (không phải log đầy đủ).
 6. **Layout Editor mode** (`E`): toolbar trái (Select / Floor / Wall / Furniture / Area / Label / Eraser), palette tài sản (desk, chair, meeting table, whiteboard, plant, server rack, review desk…), thuộc tính phải (Area: tên, màu, department mapping, số chỗ), undo/redo, Save / Save as / Reset to default, Import/Export JSON `[Đề xuất]` (học từ Pixel Agents/MVO nhưng định dạng riêng — không dùng `.mvo-layout.json` vì AGPL, xem `docs/research/MY_VIRTUAL_OFFICE_ANALYSIS.md`). Trong edit mode, nhân vật đứng yên và mờ để không gây rối.
 
-- **Dữ liệu:** `GET /api/office/layouts`, `GET/PUT /api/office/layouts/:id` (tiles, walls, furniture, areas[] với `departmentId`, seats[]) · `GET /api/agents?include=state,currentTask,seat` · `GET /api/departments` · WS `agent.state_changed`, `agent.tool_event` (loại tool để chọn animation), `agent.seat_assigned`, `task.handoff`, `approval.requested`.
+- **Dữ liệu:** `GET /api/office/layouts`, `GET/PUT /api/office/layouts/:id` (tiles, walls, furniture, areas[] với `departmentId`, seats[]) · `GET /api/agents?include=state,currentTask,seat` · `GET /api/departments` · WS `agent.state.changed`, `agent.tool.event` (loại tool để chọn animation), `agent.seat.assigned`, `task.handoff`, `approval.requested`.
 - **Hành động:** Primary: click nhân vật → Agent Panel; double-click → `/agents/:id`. Secondary: lọc theo trạng thái; Follow; Edit layout; Fullscreen; toggle sound; right-click nhân vật → context menu (cùng action panel).
 - **Trạng thái:** loading = sơ đồ sàn skeleton + "Đang tải văn phòng"; empty (chưa agent) = sàn trống + ghế có nhãn "Create your first agent"; error = fallback sang danh sách agent (text) với nút Retry (Office không được là single point of failure); offline = nhân vật đóng băng + banner "Mất kết nối — trạng thái tại hh:mm".
 - **Filter:** project, department, state (chip ở HUD).
@@ -176,7 +176,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 ```
 
 - **Component:** React Flow (read-mostly) hoặc tree layout; `AgentNode` (Avatar, tên, role, StatusDot), `DepartmentNode` (tên, số agent, màu Area), `Minimap`.
-- **Dữ liệu:** `GET /api/org/tree` (departments[], agents[] với `departmentId`, `managerAgentId`), WS `agent.state_changed` (dot), `org.updated`.
+- **Dữ liệu:** `GET /api/org/tree` (departments[], agents[] với `departmentId`, `managerAgentId`), WS `agent.state.changed` (dot), `org.updated`.
 - **Hành động:** Primary: kéo agent sang department khác (ConfirmDialog: "Chuyển Dev-02 sang QA? Seat trong Office sẽ đổi"). Secondary: Add department, Collapse/expand nhánh, Export PNG, click node → `/agents/:id` hoặc `/org/departments/:id`.
 - **Trạng thái:** empty = "Chưa có department — tạo hoặc dùng mẫu (Product, Design, Engineering, QA, DevOps)"; error chuẩn.
 - **Realtime:** StatusDot; cấu trúc cập nhật khi `org.updated`.
@@ -242,7 +242,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 - **Vùng/Component:** `PageHeader` + `SegmentedControl` view; `FilterBar`; **Attention banner** (chỉ hiện khi có agent `blocked|failed|waiting_*`; "Show only" lọc nhanh); `AgentCard` (grid) / `DataTable` (list, virtualized, cột ẩn/hiện, sort, bulk select) / Org view = embed Org Chart §3.4 rút gọn. `⋯` menu = đủ 10 action: Pause, Resume, Stop, Retry, Reassign, View logs, View changes, Open workspace, Request review, Edit.
 - **Bulk actions (list):** Pause selected, Resume selected, Stop selected (ConfirmDialog liệt kê tên), Move to department, Set provider/model (chỉ khi idle).
 - **Sort mặc định `[Đề xuất]`:** Needs attention (blocked/failed/waiting) → working → idle → offline; sau đó theo thời gian chờ giảm dần.
-- **Dữ liệu:** `GET /api/agents?include=state,currentTask,progress,lastLog,provider,costToday` · `POST /api/agents/:id/{pause|resume|stop|retry|reassign}` · `POST /api/agents/bulk` · WS `agent.state_changed`, `agent.tool_event` (lastLog, throttle), `task.progress`.
+- **Dữ liệu:** `GET /api/agents?include=state,currentTask,progress,lastLog,provider,costToday` · `POST /api/agents/:id/{pause|resume|stop|retry|reassign}` · `POST /api/agents/bulk` · WS `agent.state.changed`, `agent.tool.event` (lastLog, throttle), `task.progress`.
 - **Trạng thái:** loading = skeleton card; empty = CTA Create agent / Use template team; error chuẩn; partial (một agent fetch lỗi) → card lỗi riêng.
 - **Filter/search:** department, state, provider, project (tasks đang giao), role; search tên/role; filter lưu vào URL.
 - **Quyền:** Owner. Viewer: ẩn action, ẩn bulk.
@@ -280,7 +280,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
   - **Profile:** tên, avatar/sprite (chọn trong bộ ký tự pixel — `[Đề xuất]` 8 bộ ký tự tự vẽ, không dùng asset của repo tham chiếu vì license), role, department, mô tả, system prompt (Monaco, versioned, diff khi sửa), persona tone, working hours/concurrency limit.
   - **Skills:** skill đã gắn (chip + version), toggle, "Teach skill" → chọn từ Library hoặc tạo mới (xem `USER_JOURNEY.md` §J5); bảng usage count per skill (evidence).
   - **Knowledge:** nguồn tri thức (repo paths, docs, URLs, files), trạng thái index (chunks, last indexed), Re-index.
-  - **Provider:** provider, model, temperature/max tokens, permission mode (ask / auto-edit / full — `[Cần người dùng phê duyệt]` cho phép full), fallback provider, test connection.
+  - **Provider:** provider, model, temperature/max tokens, permission mode (ask / auto-edit; **[OWR-3 X-3/Q-03] không có chế độ/quyền `full`**; mức quyền theo L0..L5 qua `permission_level` + `permission_profile`), fallback provider, test connection.
   - **Tasks:** DataTable task của agent (status, project, started, duration, result), filter.
   - **Conversations:** phiên hội thoại với Director và với agent khác (handoff); mỗi phiên = transcript (markdown render, tool call collapsed); ô gửi instruction mới.
   - **Activity Logs:** `LogViewer` streaming (level filter, search, pause auto-scroll, copy, download); mỗi dòng có timestamp, tool, duration; deep link `?log=`.
@@ -465,7 +465,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 - **Validation (trước Run/Publish):** không có node mồ côi, Approval có approver, Parallel có Merge tương ứng, Condition có đủ 2 nhánh, Deployment có Approval trước (cảnh báo nếu không) — hiển thị panel lỗi click → focus node.
 - **Chế độ:** Design (edit) vs Run view (read-only overlay trạng thái; chọn `?run=`; mở Inspector run: input/output, logs, artifact, duration, cost; nút Retry node / Skip node / Open agent / Open approval).
 - **Template:** Discovery → Design → Build → QA → Release (mỗi phase có Approval gate) `[Đề xuất]`.
-- **Dữ liệu:** `GET/PUT /api/workflows/:id` (graph JSON), `POST /api/workflows/:id/validate`, `POST /api/workflows/:id/runs`, `GET /api/workflow-runs/:runId` (node states, artifacts), `POST /api/workflow-runs/:id/nodes/:nodeId/{retry|skip}`, WS `workflow.run.node_state`, `workflow.run.*`.
+- **Dữ liệu:** `GET/PUT /api/workflows/:id` (graph JSON), `POST /api/workflows/:id/validate`, `POST /api/workflows/:id/runs`, `GET /api/workflow-runs/:runId` (node states, artifacts), `POST /api/workflow-runs/:id/nodes/:nodeId/{retry|skip}`, WS `workflow.run.node.state`, `workflow.run.*`.
 - **Trạng thái:** empty = template picker; run history empty = "Chưa chạy"; version conflict (edit khi đang run) → banner "Run #17 dùng v3; bạn đang sửa v4 draft".
 - **Quyền:** Owner edit/run; Viewer xem run.
 - **AC:** [ ] 9 node type kéo thả, kết nối theo quy tắc port (Condition 2 out, Merge N in). [ ] 9 visual state phân biệt được cả ở chế độ color-blind (icon + viền, không chỉ màu). [ ] Validate chặn Run khi lỗi. [ ] Trạng thái node cập nhật ≤ 1s sau WS. [ ] Deep link `?run=&node=` mở inspector đúng node. [ ] Undo/redo 50 bước. [ ] Không có animation edge khi không có run.
@@ -499,7 +499,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 - **Dữ liệu:** `GET /api/projects/:p/tasks?view=` · `PATCH /api/tasks/:id` · `GET /api/tasks/:id?include=evidence,dependencies,log` · `POST /api/tasks` · WS `task.*`.
 - **Hành động:** Create, Assign (gợi ý agent idle + skill match), Drag giữa cột (một số chuyển đổi bị cấm: Backlog → Done cần evidence; cảnh báo), Add dependency, Split, Request review (tạo approval), Bulk (table).
 - **Trạng thái:** empty = "Workflow sẽ tạo task tự động" + Create thủ công; timeline empty khi không có started time.
-- **Realtime:** card di chuyển cột khi `task.status_changed` (animation ngắn), evidence chip cập nhật.
+- **Realtime:** card di chuyển cột khi `task.status.changed` (animation ngắn), evidence chip cập nhật.
 - **AC:** [ ] 4 view cùng filter, filter trong URL. [ ] Không cho Done thủ công khi task do agent làm chưa có evidence (hiển thị lý do; Owner có thể override với ghi chú `[Đề xuất]`). [ ] Graph hiển thị critical path và vòng phụ thuộc (cảnh báo cycle). [ ] 500 task table scroll mượt (virtualized).
 
 ---
@@ -578,7 +578,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 ```
 
 - **Vùng:** Explorer (tree, search, file đang bị agent sửa có dot màu agent), Editor (Monaco; multi-tab; read-only khi agent giữ lock trên file `[Đề xuất]`; có "Take over" với confirm = pause agent), Right panel (Git changes với stage/unstage/discard, Agent activity per-file, Test results, Logs, Code review: comment theo dòng → gửi thành Request changes cho agent), Bottom panel (Terminal thật gắn sandbox project, Problems, Test output, Diff viewer, Commit history, Branches: create/switch/merge/delete với bảo vệ main).
-- **Dữ liệu:** `GET /api/projects/:p/fs/tree`, `GET/PUT /api/projects/:p/fs/file?path=` , `GET /api/projects/:p/git/{status|log|branches|diff}` , `POST /api/projects/:p/git/{commit|checkout|branch|merge}` , `POST /api/projects/:p/terminal` (WS PTY), `GET /api/projects/:p/tests/latest`, WS `fs.changed`, `git.changed`, `agent.tool_event`(file scope), `test.progress`.
+- **Dữ liệu:** `GET /api/projects/:p/fs/tree`, `GET/PUT /api/projects/:p/fs/file?path=` , `GET /api/projects/:p/git/{status|log|branches|diff}` , `POST /api/projects/:p/git/{commit|checkout|branch|merge}` , `POST /api/projects/:p/terminal` (WS PTY), `GET /api/projects/:p/tests/latest`, WS `fs.changed`, `git.changed`, `agent.tool.event`(file scope), `test.progress`.
 - **Hành động:** Open file, Edit/Save (tạo commit có author "Director" tách biệt commit của agent), Run tests, Commit, Create branch, Open PR/approval, Review comment → request changes, Revert file, Take over file.
 - **Trạng thái:** repo chưa init → EmptyState "Project chưa có repo — agent sẽ tạo ở bước Build" + Init thủ công; file nhị phân → "Không xem được"; terminal mất kết nối → Reconnect; xung đột ghi → dialog diff 3 bên `[Đề xuất]`.
 - **Quyền:** Owner; Viewer read-only (không terminal, không commit).
@@ -696,7 +696,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 - Người dùng có thể kỳ vọng Office "vui" như MVO; quyết định tối giản cần được phê duyệt sớm.
 
 ## 8. Vấn đề chưa giải quyết
-1. Permission mode `full` (không hỏi) có được phép chọn trong UI không?
+1. ~~Permission mode `full` (không hỏi) có được phép chọn trong UI không?~~ **[OWR-3 X-3 / OWR-2 Q-03: đã giải quyết — KHÔNG có permission `full`]**
 2. Office: cho phép hoạt động trang trí nhẹ ở trạng thái idle (đi lấy nước) nếu không ảnh hưởng nhận thức?
 3. Giới hạn 18 agent: chặn tạo thứ 19 hay cho tạo offline?
 4. Reveal secret trong Provider Settings: cho phép hay chỉ rotate?

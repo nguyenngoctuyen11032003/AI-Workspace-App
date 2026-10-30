@@ -116,3 +116,12 @@ Nguồn: OWR-2 §3 D-011, §2 Q-14 trong `docs/owner-responses/OWR-2_2026-10-30_
 - Animation và trạng thái nhân vật phải phản ánh event thực tế, không giả lập trạng thái Agent. Q-14: agent idle không tự chuyển sang coffee/relax mặc định, chỉ có setting tùy chọn.
 - Chưa quyết định: kích thước tile 16 hay 32 (CF-019: DATABASE_DESIGN và SCREEN_SPECIFICATION ghi 32; VIRTUAL_OFFICE và Pixel Agents dùng 16). OWR-2 không giải quyết; PENDING_OWNER_CLARIFICATION.
 - **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (A.7, C-FR-038). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED_CONDITIONAL** (benchmark `OfficeRenderer` chưa chạy).
+- A.7: tile **art 16 px, hiển thị phóng 2 lần**; benchmark sau. Quyết định này đóng P-7 và X-6 (CF-019); **vẫn bắt buộc benchmark** trước khi khóa implementation. Giá trị 32 ở DATABASE_DESIGN.md và SCREEN_SPECIFICATION.md cần đồng bộ (do agent khác).
+- FR-038: meeting là thread thực, animation chỉ phản ánh sự kiện, không giả lập.
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

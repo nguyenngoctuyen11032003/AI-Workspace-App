@@ -13,7 +13,7 @@ Cấu trúc bắt buộc của mọi ADR: Metadata, Context, Problem, Options co
 - **Verified:** các claim cốt lõi của quyết định đã được đọc mã/chạy lệnh thật và truy vết được; không còn claim cốt lõi nào chỉ là giả định.
 - **Partial:** một phần claim cốt lõi đã xác minh (đọc mã, spot-check của QA, hoặc số đo do tác giả tài liệu báo cáo), phần còn lại là giả định hoặc chưa kiểm chứng.
 - **Unverified:** claim cốt lõi dựa trên tài liệu nghiên cứu, web search hoặc ngoại suy, chưa prototype hay chạy thật.
-- QA Phase 0 không chạy lại live test nào, nên **chưa ADR nào đạt Verified**. Mức hiện tại là mức trung thực, không phải mức mong muốn. Sau OWR-2 mức bằng chứng không đổi: chưa có PoC report (không giả định `docs/poc/` tồn tại); khi có báo cáo PoC thật mới được nâng mức. Status (quyết định của Owner) và Validation evidence (bằng chứng kiểm thử) là hai trục độc lập.
+- QA Phase 0 không chạy lại live test nào, nên **chưa ADR nào đạt Verified**. Mức hiện tại là mức trung thực, không phải mức mong muốn. Sau OWR-2 mức bằng chứng không đổi: đã có 3 báo cáo PoC trong docs/poc (Drizzle Partial, Skill/Resume Partial, Docker BLOCKED) nhưng không ADR nào đạt Verified (không giả định `docs/poc/` tồn tại); khi có báo cáo PoC thật mới được nâng mức. Status (quyết định của Owner) và Validation evidence (bằng chứng kiểm thử) là hai trục độc lập.
 
 | ID | Tiêu đề | Decision ID | Status | Owner approval needed | Validation evidence |
 |---|---|---|---|---|---|
@@ -40,3 +40,22 @@ Cấu trúc bắt buộc của mọi ADR: Metadata, Context, Problem, Options co
 | [ADR-0021](ADR-0021-dynamic-skill-overlay.md) | Skill Overlay Directory: nạp skill Markdown động theo agent | D-021 | APPROVED_CONDITIONAL (OWR-2) | yes | Partial (script và CLI, chưa SDK) |
 
 Tệp liên quan: [TEMPLATE.md](TEMPLATE.md) (mẫu ADR mới), [CONFLICTS_TO_RESOLVE.md](CONFLICTS_TO_RESOLVE.md) (mâu thuẫn giữa các tài liệu Phase 0 cần chủ sở hữu giải quyết).
+
+## Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md`; chi tiết ở `PHASE_0_OWNER_DECISION_REGISTER.md` mục 13. Mỗi ADR bị ảnh hưởng có mục "14. Cập nhật OWR-3" (ADR-0003, 0004, 0005, 0006, 0007, 0010, 0011, 0012, 0014, 0015). Cột Status ở bảng trên là lịch sử OWR-2; thay đổi hiện hành theo OWR-3:
+
+| ADR | Thay đổi theo OWR-3 |
+|---|---|
+| ADR-0003 | Giữ APPROVED_CONDITIONAL; WAITING_APPROVAL không giữ worker (A.15); PoC vẫn NOT RUN và chưa được cho phép lúc này |
+| ADR-0004 | Giữ APPROVED; SDK là adapter chính; kết quả điều khoản provider là lời Owner, agent chưa kiểm chứng độc lập; không API key fallback |
+| ADR-0005 | Giữ APPROVED (hoãn): MVP chỉ Claude, Codex sau, giữ `AgentAdapter` |
+| ADR-0006 | Giữ APPROVED (hoãn): OpenHands hoãn, Tier 2 không có trong MVP |
+| ADR-0007 | Giữ APPROVED_CONDITIONAL với điều kiện chặt hơn (A.10); xung đột X-13 và bốn câu hỏi PENDING_OWNER_CLARIFICATION |
+| ADR-0010 | Giữ APPROVED; 5 là giới hạn scheduler nội bộ, không phải provider bảo đảm; quy tắc slot WAITING_APPROVAL |
+| ADR-0011 | Giữ APPROVED_CONDITIONAL; tile 16 px hiển thị x2; benchmark vẫn bắt buộc |
+| ADR-0012 | Giữ APPROVED; asset MIT chỉ khi xác minh nguồn gốc, license, NOTICE (APPROVED_CONDITIONAL cho điểm này); CC0 mặc định |
+| ADR-0014 | Giữ APPROVED; 16 event gốc được xác nhận; chỉ dotted lowercase canonical; bảng ánh xạ còn thiếu (P-16, X-14) |
+| ADR-0015 | Giữ APPROVED; locale mặc định tiếng Việt được xác nhận (X-1) |
+
+Mức Validation evidence không đổi: đã có 3 báo cáo PoC trong docs/poc (Drizzle Partial, Skill/Resume Partial, Docker BLOCKED), **chưa ADR nào Verified**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

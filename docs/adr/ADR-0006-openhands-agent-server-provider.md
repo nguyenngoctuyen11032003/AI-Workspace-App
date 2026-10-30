@@ -112,3 +112,11 @@ Nguồn: OWR-2 §3 D-006, §2 Q-02 trong `docs/owner-responses/OWR-2_2026-10-30_
 - OpenHands bị hoãn đến **sau Phase 4**; không tích hợp như provider thứ ba trong MVP. Q-02: không tích hợp OpenHands ACP trong MVP.
 - Hệ quả: Tier 2 của ADR-0007 chưa có runtime OpenHands trong MVP (register mục 11, X-9). Cần Owner biết khi lập kế hoạch Tier 2.
 - **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (A.10, C-FR-078). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED** theo nghĩa hoãn: OpenHands hoãn khỏi MVP (A.10); **Tier 2 không có trong MVP**. FR-078 là WON'T DO IN MVP theo D-006, vẫn giữ trong traceability.
+- Hệ quả: chưa có runtime OpenHands cho sandbox cô lập. Câu hỏi runtime sandbox thay thế là X-13 (iii), PENDING_OWNER_CLARIFICATION (xem ADR-0007).
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

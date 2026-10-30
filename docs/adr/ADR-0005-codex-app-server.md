@@ -115,3 +115,12 @@ Nguồn: OWR-2 §3 D-005, §5.2, §2 Q-10 trong `docs/owner-responses/OWR-2_2026
 - Không cài Codex CLI (không chạy `npm i -g @openai/codex`), không live test trong phạm vi hiện tại (Q-10).
 - **Xung đột cần Owner biết:** quyết định này THAY ĐỔI nhóm chấp nhận MVP B (Provider) của đặc tả gốc, vốn yêu cầu kết nối Codex (FR-077 "M, MVP, [Owner]", AC-022, GP-1 trong `product/ACCEPTANCE_CRITERIA.md`). Agent không tự sửa FR/AC; đã ghi ở register mục 11 (X-2), PENDING_OWNER_CLARIFICATION P-8.
 - **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (A.8, E). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED** theo nghĩa hoãn: **Codex để sau MVP, MVP chỉ tích hợp Claude** (A.8). Owner xác nhận đã biết thay đổi nhóm chấp nhận MVP B (đóng P-8, X-2). Phần `codex app-server` ở trên là thiết kế tham khảo cho sau MVP.
+- Giữ abstraction `AgentAdapter` để mở rộng.
+- OWR-3 E: không cài Codex CLI; không test Codex thật.
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

@@ -115,3 +115,19 @@ Nguồn: OWR-1 mục 8.1, 8.3; OWR-2 §8, §5.3, §2 Q-10 trong `docs/owner-resp
 - Q-10: Docker cần cho sandbox validation. §5.3: Owner tự mở Docker Desktop, chạy `docker version`, `docker info`, ghi RAM trước và sau; không tự khởi động Docker cùng ứng dụng; không đổi WSL hay `wsl --shutdown` khi chưa phê duyệt riêng. Docker daemon chưa được ghi nhận là chạy; sandbox chưa được xác thực.
 - Q-01: chỉ là xác nhận có điều kiện của Owner (các ô checklist chưa được Owner ký). Không tuyên bố 18 Agent concurrent đã kiểm thử.
 - **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## 14. Cập nhật OWR-3 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-3_2026-10-30_decision_clarification.md` (OWR-3) (A.10, A.11, E). Các mục 1 đến 13 ở trên giữ làm lịch sử; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**. Việc đồng bộ tài liệu khác do agent khác thực hiện, xem `docs/DOC_SYNC_LOG_OWR3_A.md` và `docs/DOC_SYNC_LOG_OWR3_B.md`; ADR này không khẳng định đã đồng bộ.
+
+- Decision status giữ **APPROVED_CONDITIONAL**. Không nâng trạng thái.
+- **Điều kiện chặt hơn từ OWR-3 A.10 (thêm vào điều kiện OWR-1 và OWR-2 §8):** không cho Agent chạy arbitrary code trên Windows host; mọi code do Agent sinh phải thực thi trong sandbox cô lập; Docker chỉ cho build/test/run là **không đủ** nếu Agent vẫn có quyền thực thi trên host; sandbox không hoạt động thì **fail closed**. Tier 2 và OpenHands hoãn khỏi MVP.
+- **Xung đột X-13** với thiết kế Tier 1 trong các mục 5 đến 12 (CLI/Agent chạy trên host với chính sách và hook, chỉ build/test/run trong Docker). Đề xuất gốc không được viết lại; phần Tier 1 đó **không còn đủ** nếu Agent vẫn thực thi trên host.
+- Câu hỏi còn lại (PENDING_OWNER_CLARIFICATION, agent không tự điền):
+  1. Edit/Write file trên host bên trong worktree của task có được tính là cho phép không?
+  2. Bản thân tiến trình runtime của Agent (Claude Agent SDK hoặc CLI trên host, giữ phiên đăng nhập) có bị coi là "Agent thực thi trên host" không?
+  3. Runtime sandbox nào cung cấp thực thi cô lập khi OpenHands hoãn? Đường suy ra là executor dựa trên Docker do dự án tự xây, nhưng cần Docker, mà Owner **chưa cho phép** mở Docker lúc này (OWR-3 E).
+  4. Hệ quả: Docker (hoặc sandbox tương đương) là **điều kiện bắt buộc** cho mọi lần thực thi Agent thật; khi chưa có thì không có thực thi Agent thật (chỉ mock/dry-run).
+- A.11: Phase 2 chỉ mock hoặc sandbox khi security gate chưa đạt; không production-capable execution.
+- OWR-3 E: không mở Docker Desktop, không chạy VAL-DOCKER-01..09, không chạy SB-00..SB-17 lúc này (NOT RUN). Hẹp hơn OWR-2 §5.6.
+- **Validation evidence (trung thực):** mức giữ nguyên (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

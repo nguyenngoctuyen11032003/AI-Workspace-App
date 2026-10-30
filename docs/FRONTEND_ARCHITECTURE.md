@@ -150,7 +150,7 @@ Ranh giới **[Đề xuất]**:
 **[Đề xuất]**, nhằm xử lý tối đa 18 agent + event stream tần suất cao:
 
 1. **Batch + coalesce**: gom event theo khung 50–100 ms; với cùng khóa (`agentId`, `status`) chỉ giữ giá trị cuối.
-2. **Chunk output**: `AGENT_OUTPUT_CHUNK`/`llm.stream_chunk` không đi qua React state từng chunk; ghi vào ring buffer ngoài React và render bằng virtualized list ở nhịp `rAF`. Giữ tối đa N dòng trong bộ nhớ (ví dụ 5 000) **[Giả định]**, phần còn lại lấy qua REST/artifact.
+2. **Chunk output**: `AGENT_OUTPUT_CHUNK`/`llm.stream.chunk` không đi qua React state từng chunk; ghi vào ring buffer ngoài React và render bằng virtualized list ở nhịp `rAF`. Giữ tối đa N dòng trong bộ nhớ (ví dụ 5 000) **[Giả định]**, phần còn lại lấy qua REST/artifact.
 3. **Selector hẹp**: dùng `useStore(selector, shallow)`; không đọc toàn bộ store. Component danh sách dùng `React.memo` + key ổn định.
 4. **Virtualization** cho Activity feed, Tasks table, log console (ví dụ `@tanstack/react-virtual`).
 5. **Tách luồng**: dữ liệu office/animation không qua TanStack Query cache; đi thẳng `liveStore` → Phaser. Khi tab ẩn (`document.hidden`) tạm dừng Phaser và giảm tần suất flush.
@@ -161,7 +161,7 @@ Ranh giới **[Đề xuất]**:
 
 ### 3.11 i18n
 
-- **[Đã xác minh, OWR-2 D-015]** Mặc định tiếng Việt (VI), EN là locale thứ hai (thay thế "mặc định EN" trước đây); fallback khi thiếu key: xem mục kiểm thử bên dưới (hiện ghi fallback EN, có thể giữ).
+- **[Đã xác minh, OWR-2 D-015]** Mặc định tiếng Việt (VI), EN là locale thứ hai (thay thế "mặc định EN" trước đây; **OWR-3 X-1** xác nhận lại); fallback khi thiếu key: xem mục kiểm thử bên dưới (hiện ghi fallback EN, có thể giữ).
 - **[Đề xuất]** `i18next` + `react-i18next`; namespace theo feature; key dạng `feature.section.label`; dữ liệu do backend trả (tên phòng ban/agent seed) có `slug` ổn định, FE dịch theo slug khi có bản dịch, không dịch nội dung người dùng nhập.
 - Định dạng ngày/giờ/tiền bằng `Intl` với locale đang chọn; thời gian từ backend là UTC ISO.
 - Test: lint kiểm tra key thiếu ở locale phụ; snapshot bố cục với chuỗi VI dài hơn.
@@ -233,6 +233,6 @@ Ranh giới **[Đề xuất]**:
 - [ ] Reconnect socket: không mất, không trùng event (test gap + dedupe với fake server).
 - [ ] Không có dữ liệu server state trong Zustand (review checklist + lint tùy chọn).
 - [ ] Lệnh phá hủy luôn hiển thị `ConfirmDialog`; Emergency stop yêu cầu gõ `STOP`.
-- [ ] Mọi chuỗi hiển thị qua i18n; bộ key EN đầy đủ, VI thiếu thì fallback EN.
+- [ ] Mọi chuỗi hiển thị qua i18n; bộ key locale mặc định **VI** đầy đủ, EN là locale phụ (OWR-3 X-1). **[Cờ phán đoán]** hướng fallback khi thiếu key (hiện ghi: key thiếu thì fallback EN) chưa được Owner chốt; cần xác nhận.
 - [ ] MSW mock sinh từ `@aiw/contracts`; đổi DTO thì build FE fail nếu không cập nhật.
 - [ ] Benchmark 18 agent giả lập event 10 tick/s giữ UI phản hồi (số liệu ghi vào tài liệu hiệu năng).

@@ -41,7 +41,7 @@ Có thể kiểm soát luồng.
 
 Trạng thái: **PENDING_OWNER_APPROVAL**. Nội dung dưới đây là đề xuất của System Architect, chưa phải quyết định có hiệu lực.
 
-- App không đọc `.credentials.json`/`auth.json`; mọi secret khác vào OS keychain (`@napi-rs/keyring` hoặc `keytar`, chưa chốt).
+- App không đọc `.credentials.json`/`auth.json`; mọi secret khác vào OS keychain (`@napi-rs/keyring` hoặc `keytar`, chưa chốt). **[OWR-3 C (FR-088, FR-098): ứng dụng không lưu hoặc tự đọc credential provider (D-008); secret khác phải làm rõ ở Q-21]**
 - Không secret nào vào Postgres plaintext hay frontend; env whitelist cho process agent.
 - Log/WS/DB qua redaction (corpus ≥ 200 mẫu × 6 encoding, 0 leak) và `safe-regex2` chống ReDoS.
 - Chưa chốt: bảng `secrets` hay chỉ `credential_ref` (CREDENTIAL_MANAGEMENT §14).

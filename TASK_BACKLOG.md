@@ -58,3 +58,15 @@ Xem `docs/IMPLEMENTATION_ROADMAP.md`, mục Phase 1 breakdown. Các task F1..F6 
 | FIN-009 | PoC kiểm chứng skill động và resume | BLOCKED | Chờ Owner cho phép chạy |
 | FIN-010 | Đồng bộ giá trị phụ thuộc quyết định | PARTIAL | Đã duyệt D-001 (trừ frontend), D-002, D-007, D-010; còn lại chờ Owner |
 | FIN-011 | AC cho 16 FR chờ làm rõ | BLOCKED | Chờ Owner |
+
+## OWR-3
+| ID | Task | Trạng thái | Kết quả |
+|---|---|---|---|
+| OWR3-001 | Ghi nhận quyết định OWR-3, X-13, X-14 | DONE | Sổ quyết định mục 13 đến 15 |
+| OWR3-002 | Đồng bộ tài liệu (nhóm A, B) | PARTIAL | `docs/DOC_SYNC_LOG_OWR3_A.md`, `_B.md`; thân SECURITY chờ X-13 |
+| OWR3-003 | AC cho 4 FR và 11 FR bổ sung, FR-078 WONT_MVP | DONE (PROPOSED) | Traceability mục 6 |
+| OWR3-004 | QA độc lập lần ba | DONE (PASS WITH FIXES) | `PHASE_0_QA_REVIEW_3.md` |
+| OWR3-005 | Sửa theo QA ba (nhãn, chú thích, banner) | DONE, chưa QA lại | Xem log đồng bộ |
+| OWR3-006 | Mô tả PR | DONE | `PHASE_0_PR_DESCRIPTION.md` (chưa push) |
+| OWR3-007 | Commit thay đổi OWR-3 | BLOCKED | Chờ Owner cho phép |
+| OWR3-008 | Docker validation | BLOCKED / NOT AUTHORIZED | Chờ Owner |

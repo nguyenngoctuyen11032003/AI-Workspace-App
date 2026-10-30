@@ -16,6 +16,25 @@
 
 ## 3. Danh mục sự kiện được ghi
 
+> **[OWR-3 A.16/X-4 — quy ước tên event/action]** Canonical chỉ dotted lowercase, không dùng underscore làm chuẩn: quy tắc cơ học viết thường, mọi `_` thành `.` (UPPER_SNAKE chỉ là tên tương thích ngoài qua một hàm xác định). Các tên action bên dưới còn phân đoạn có `_` được đọc theo bảng ánh xạ **đề xuất** sau; **chưa đổi tại chỗ** vì còn được tham chiếu trong `PERMISSION_MODEL.md` và `CREDENTIAL_MANAGEMENT.md` (agent A sở hữu; cần đồng bộ cùng lúc). Đây là tên action audit, **không thuộc 16 event gốc** của Owner (`EVENT_SYSTEM.md` §0), là đề xuất ngoài danh sách gốc, chờ Owner. Retention: audit online 365 ngày (OWR-3 X-8) + signed export 2 năm, xem §8.
+>
+> | Tên hiện dùng | Canonical dotted (đề xuất) |
+> |---|---|
+> | `auth.login_check` | `auth.login.check` |
+> | `auth.api_token_fail` | `auth.api.token.fail` |
+> | `auth.hook_token_fail` | `auth.hook.token.fail` |
+> | `provider.needs_login` | `provider.needs.login` |
+> | `approval.toctou_detected` | `approval.toctou.detected` |
+> | `file.write_outside_manifest` | `file.write.outside.manifest` |
+> | `git.branch_delete` | `git.branch.delete` |
+> | `container.inspect_fail` | `container.inspect.fail` |
+> | `settings.spawn_snapshot` | `settings.spawn.snapshot` |
+> | `permission_level.change` | `permission.level.change` |
+> | `audit.chain_fail` | `audit.chain.fail` |
+> | `audit.spool_replay` | `audit.spool.replay` |
+> | `audit.epoch_change` | `audit.epoch.change` |
+> | `audit.outcome_missing` | `audit.outcome.missing` |
+
 Cột `cat` = `category`. Mức `sev` theo enum `audit_severity` hiện có (`info|warning|...` — danh sách giá trị cụ thể chưa có trong phần đã đọc; đề xuất `info|notice|warning|critical`).
 
 | cat | action (ví dụ) | Khi nào | Ghi intent trước? | sev mặc định |
@@ -33,7 +52,7 @@ Cột `cat` = `category`. Mức `sev` theo enum `audit_severity` hiện có (`in
 | `emergency_stop` | `emergency.stop.intent`, `emergency.stop.outcome` | STOP ALL | Có | critical |
 | `api_request` | `api.mutation` (do `AuditInterceptor`, DATABASE_DESIGN dòng 1256) | mọi mutation REST/WS của user | Không | info |
 | `audit` | `audit.verify`, `audit.chain_fail`, `audit.spool_replay`, `audit.export`, `audit.purge` | tự quan sát | Có | critical với chain_fail |
-| `agent` | `agent.spawn` (argv hash, env keys, settings sha256, hook verified), `agent.kill`, `agent.pause`, `agent.blocked` | vòng đời CLI | Có (spawn) | info |
+| `agent` | `agent.spawn` (argv hash, env keys, settings sha256, hook verified), `agent.kill`, `agent.pause`, `agent.blocked` (action audit, **không phải event gốc** của Owner) | vòng đời CLI | Có (spawn) | info |
 
 Không ghi vào audit: nội dung prompt, nội dung file, stdout đầy đủ, giá trị secret (chỉ `sha256`, độ dài, loại). Hành động agent không nhạy cảm đã có trong `agent_events` (DATABASE_DESIGN dòng 1256); hành động nhạy cảm (git push, shell exec bị ask/deny/rewrite, approval, memory approve) ghi **cả hai** với cùng `correlation_id`.
 

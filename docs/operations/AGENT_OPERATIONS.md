@@ -18,8 +18,8 @@ Hướng dẫn operator (owner hoặc người được ủy quyền) vận hàn
 
 ## 3. Khái niệm nhanh
 
-- **Agent** = `AgentInstance` (nhân viên AI). **Execution** = một lần agent chạy một task = một CLI subprocess (`claude.exe`, sau này `codex`).
-- **Executing** = SPAWNING/RUNNING/STOPPING — chỉ những execution này chiếm slot `max_concurrent_agents` (default 5, max 18).
+- **Agent** = `AgentInstance` (nhân viên AI). **Execution** = một lần agent chạy một task = một CLI subprocess (`claude.exe`; `codex` hoãn sau MVP, OWR-3 A.8).
+- **Executing** = SPAWNING/RUNNING/STOPPING — chỉ những execution này chiếm slot `max_concurrent_agents` (default 5, max 18). [OWR-3 A.2/D: 5 là giới hạn scheduler nội bộ, không phải số provider cho phép; không tự tăng lên 10/18. OWR-3 A.15: `WAITING_APPROVAL`/`WAITING_HUMAN` không tính vào 5 active workers khi worker đã giải phóng và state đã persist; quota provider vẫn áp dụng.]
 - Nguồn sự thật: Postgres. Redis chỉ là cache/semaphore, xóa được.
 
 ## 4. Khởi động và dừng [Đề xuất]
@@ -76,7 +76,7 @@ Widget toàn cục: `executing N/max`, free RAM, CPU, provider pool state + coun
 | **View changes** | `git diff` trong worktree của task so với base; danh sách file + ownership check | Thủ công: `git -C <worktree> status && git diff --stat` |
 | **Open workspace** | Mở thư mục worktree trong Explorer/VS Code | `code <worktree>` |
 | **Request review** | Tạo `REQUEST_REVIEW` cho role reviewer với diffRef | Xem `AGENT_COLLABORATION.md` §4 |
-| **Approve / Deny** | Giải quyết `APPROVAL_REQUEST` (L4 command, chuyển provider, quyết định họp) | Mọi approve có audit userId |
+| **Approve / Deny** | Giải quyết `APPROVAL_REQUEST` (L4 command, chuyển provider, quyết định họp) | Mọi approve có audit userId. [OWR-3 A.13: "L4 command" là nhãn cũ, cần làm rõ không nhầm với permission level L4 Operator trong L0-L5; xem AGENT_COLLABORATION §4] |
 | **Adjust limits** | Đổi `max_concurrent_agents` (1–18), budget | Hiệu lực tick kế tiếp; giảm không giết execution |
 | **Send message to agent** | `AGENT_MESSAGE` từ user; giao ở turn kế | Không phải chat realtime |
 
@@ -139,7 +139,7 @@ Dấu hiệu: cost/giờ project vượt 2× trung bình 7 ngày; một executio
 
 - [ ] Sáng: `claude auth status` OK; free RAM ≥ 4 GB; pool OK; không execution LOST qua đêm.
 - [ ] Rà QUEUED có `queuedReason` bất thường (NO_ELIGIBLE_AGENT → thiếu role/skill).
-- [ ] Rà approval đang chờ (`WAITING_HUMAN`): chờ tối đa 540 s rồi lưu và chuyển `WAITING_HUMAN` không giữ worker; nhắc sau 24 h; `prod_deploy`/`data_deletion`/`merge_main` có approval riêng hết hiệu lực sau 15 phút (Q-05/OWR-2).
+- [ ] Rà approval đang chờ (`WAITING_HUMAN`): chờ tối đa 540 s rồi lưu và chuyển `WAITING_HUMAN` không giữ worker; nhắc sau 24 h; `prod_deploy`/`data_deletion`/`merge_main` có approval riêng hết hiệu lực sau 15 phút (Q-05/OWR-2). OWR-3 A.12: `remind_at` = nhắc sau 24 giờ (không hết hạn); `expires_at` = 15 phút chỉ cho approval hành động quan trọng (prod deploy, data deletion, merge main). X-7: timeout chờ 540 s.
 - [ ] Cost hôm qua vs budget; rate-limit events.
 - [ ] Tối: Pause scheduling nếu không muốn agent chạy qua đêm (quota 5 giờ reset tốt hơn khi dùng tập trung [Giả định]).
 

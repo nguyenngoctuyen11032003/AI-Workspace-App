@@ -25,3 +25,8 @@
 - 6 agent song song: sổ quyết định và ADR, đồng bộ tài liệu A (44 thay đổi) và B (30 thay đổi), AC cho FR, Drizzle PoC, Skill/Resume PoC. Tôi viết POC_DOCKER_SANDBOX.md (BLOCKED) và ADR-0021.
 - Kiểm tra độc lập kết quả: `npm view`, file đầu ra PoC, `grep` các thay đổi chính. Chưa tái chạy PoC.
 - Không cài Codex, không bật Docker, không chạy 27 runbook, không bắt đầu Phase 1.
+
+## 2026-10-30 (OWR-3)
+- Nhận OWR-3, lưu nguyên văn. Phát hiện bảng ánh xạ event không có, và chỉ thị A.10 chặt hơn D-007: ghi thành X-14 và X-13, không tự quyết.
+- 4 agent song song (sổ quyết định và ADR, đồng bộ nhóm A, nhóm B, AC). Kiểm tra độc lập: đủ 16 event gốc nguyên văn, `remind_at`, tile 16, thống kê 199 FR.
+- QA độc lập lần ba (PASS WITH FIXES). Sửa nhãn và chú thích theo QA ba, thêm Q-21..Q-26. Viết mô tả PR. Không push, không commit thêm.

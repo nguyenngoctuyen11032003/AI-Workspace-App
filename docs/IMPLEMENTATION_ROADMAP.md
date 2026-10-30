@@ -2,7 +2,7 @@
 
 Trạng thái: DRAFT (Phase 0). Ngày: 2026-10-30. Tác giả: Delivery/Engineering Lead.
 Ký hiệu: [Đã xác minh] / [Đề xuất] / [Giả định] / [Cần người dùng phê duyệt].
-Nguồn: `DECISION_LOG.md` (D-001…D-016), `WORK_PLAN.md`, `product/FUNCTIONAL_REQUIREMENTS.md` (FR-001…FR-292), `product/ACCEPTANCE_CRITERIA.md` (AC-001…AC-130), `architecture/*`, `SECURITY.md`, `research/MULTI_AGENT_SCALABILITY.md`, `development/*`.
+Nguồn: `DECISION_LOG.md` (D-001…D-016), `WORK_PLAN.md`, `product/FUNCTIONAL_REQUIREMENTS.md` (FR-001…FR-292), `product/ACCEPTANCE_CRITERIA.md` (AC-001…AC-130 (có khoảng trống đánh số) cộng AC-201…AC-657 PROPOSED trong PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md), `architecture/*`, `SECURITY.md`, `research/MULTI_AGENT_SCALABILITY.md`, `development/*`.
 Vai trò (18 role seed, `architecture/AGENT_ORGANIZATION.md` §4): `pm, ba, architect, uiux, frontend, backend, db_infra, qa, security, reviewer, research, integration, performance, devsecops, docs, ux_research, test_automation, release`.
 
 ---
@@ -53,7 +53,7 @@ Các phase không nối tiếp tuyệt đối: Phase 6 (Office, màn hình) bắ
 |---|---|---|---|---|
 | EXT-1 | Phê duyệt D-001…D-016 và giải quyết 5 mâu thuẫn trong `DECISION_LOG.md` | Chờ duyệt | P1-01 trở đi (D-001, D-002), P4 (D-007) | Owner |
 | EXT-2 | [HOÃN, D-005/OWR-2: không cài Codex CLI trong phạm vi hiện tại] Cài Codex CLI (`npm i -g @openai/codex`) và `codex login` | Chưa cài; không được cài | P2-11, P2-12, P4-11, AC-022 | Owner |
-| EXT-3 | Docker daemon đang chạy (Docker Desktop 29.8.1 đã cài; daemon chưa chạy lúc kiểm tra) | Chưa chạy | P1-20, P1-62 (integration), mọi P4 sandbox | Owner |
+| EXT-3 | Docker daemon đang chạy (Docker Desktop 29.8.1 đã cài; daemon chưa chạy lúc kiểm tra) | Chưa chạy; Owner CHƯA cho phép mở Docker Desktop (OWR-3 mục E); chờ Owner cho phép. Docker nay là điều kiện tiên quyết cứng cho mọi thực thi agent thật (OWR-3 A.10, X-13) | P1-20, P1-62 (integration), mọi P4 sandbox, mọi thực thi agent thật | Owner |
 | EXT-4 | Phê duyệt quota chạy benchmark T1-T4 (≈ 89 spawn nhẹ, ≈ 33 USD list) | Chờ | P2-13, P7-01 | Owner |
 | EXT-5 | Ký xác nhận rủi ro còn lại R1, R2, R3, R5, R6 (`SECURITY.md` §10) | Chưa | P4 exit | Owner |
 | EXT-6 | Tạo GitHub repo/remote, bật ruleset | Chưa (thư mục chưa là git repo) | P1-01 | Owner |
@@ -171,6 +171,8 @@ Phân rã chi tiết Phase 1 ở mục 3.13 (sẵn sàng thực thi).
 
 ### 3.7 Phase 2 — Provider & Agent Core
 
+> **[OWR-3 A.11 (2026-10-30)]**: Phase 2 chỉ ở chế độ **mock hoặc sandbox** khi các security gate chưa đạt; KHÔNG có production-capable execution. Mọi chữ "thật", "real", "live" trong Phase 2 (mục tiêu, P2-01, P2-10, P2-13) và ở P3-12, P5-13 chỉ có hiệu lực sau khi gate đạt và Owner cho phép; trước đó đọc là mock/sandbox. OWR-3 A.10 + mục E: chưa có agent thật nào được chạy cho đến khi có sandbox cô lập hoạt động; Docker chưa được cho phép khởi động. Xem Phụ lục OWR-3 cuối file.
+
 **Mục tiêu:** Adapter Claude Code thật hoạt động đủ 13 operation; quản lý agent đầy đủ (Builder, Detail 10 tab, Pause/Resume/Disable/Delete); chat trực tiếp với agent; credential không bao giờ lộ.
 
 **Module:** `packages/adapters-claude`, `apps/api/modules/{providers,agents,conversations,usage}`, `apps/web/features/{providers,agents}`, `packages/policy/redaction`.
@@ -186,10 +188,10 @@ Phân rã chi tiết Phase 1 ở mục 3.13 (sẵn sàng thực thi).
 | P2-07 | Usage/cost tracking per agent (ước tính có nhãn `estimated`) | backend | W3 | P2-05 | bảng usage + API | FR-041, 096 / AC-012 |
 | P2-08 | FE Provider Hub (Connect/Disconnect, hướng dẫn Not installed/Not authenticated/Session expired) | frontend | W2 | P2-02 | màn `/providers` + `ProviderStatusCard` | FR-082-083, 089 / AC-023, 024, 027, 028 |
 | P2-09 | FE Agent Management/Builder (6 bước)/Detail (10 tab) | frontend + uiux | W3 | P2-04, P2-05 | màn `/agents*` | FR-021, 026-028, 044 / AC-001-003, 008, 009 |
-| P2-10 | Provider real tests (P-C): Connect, ListModels, SendMessage, Stream, CancelTask ≤ 5 s, Resume | test_automation | W3 | P2-01 | log thật `docs/evidence/` | AC-021, 026 (VERIFIED-REAL) |
+| P2-10 | [chỉ mock/sandbox cho đến khi gate đạt, OWR-3 A.11] Provider real tests (P-C): Connect, ListModels, SendMessage, Stream, CancelTask ≤ 5 s, Resume | test_automation | W3 | P2-01 | log thật `docs/evidence/` | AC-021, 026 (VERIFIED-REAL) |
 | P2-11 | CodexAdapter qua `codex app-server`, dự phòng `codex exec --json` (D-005) | integration | W2 | P2-01, **EXT-2** | adapter + fixture | FR-077 / AC-022 |
 | P2-12 | Codex real smoke (P-D) | test_automation | W4 | P2-11 | log thật | AC-022 |
-| P2-13 | Benchmark T0-T4 (CLI thô, chưa cần app): 5/10/18 tiến trình nhẹ, số đo RAM/CPU/session_id | performance | W2 | **EXT-4**, P1-02 | `bench/` + báo cáo nháp | MULTI_AGENT §9 |
+| P2-13 | [OWR-3 A.2/D/E: cần Owner phê duyệt riêng; 5/10/18 không phải số provider cho phép; không chạy khi chưa có phép] Benchmark T0-T4 (CLI thô, chưa cần app): 5/10/18 tiến trình nhẹ, số đo RAM/CPU/session_id | performance | W2 | **EXT-4**, P1-02 | `bench/` + báo cáo nháp | MULTI_AGENT §9 |
 | P2-14 | Thử nghiệm giảm spawn tax (config dir tối giản) và đo lại | performance + integration | W3 | P2-13 | số đo trước/sau | RESOURCE_MANAGEMENT §4.3 |
 | P2-15 | Tài liệu API + cập nhật contract 0.2 | docs + architect | W4 | P2-01…P2-09 | OpenAPI, docs | — |
 
@@ -210,7 +212,7 @@ Phân rã chi tiết Phase 1 ở mục 3.13 (sẵn sàng thực thi).
 
 ### 3.8 Phase 3 — Orchestration Engine ("Conductor")
 
-**Mục tiêu:** Workflow bền vững trên BullMQ + Postgres, scheduler phụ thuộc, semaphore đồng thời Redis Lua, approval `WAITING_HUMAN`, checkpoint và khôi phục sau crash; tăng đồng thời 5 → 10 bằng session thật.
+**Mục tiêu:** Workflow bền vững trên BullMQ + Postgres, scheduler phụ thuộc, semaphore đồng thời Redis Lua, approval `WAITING_HUMAN`, checkpoint và khôi phục sau crash; tăng đồng thời 5 → 10 bằng session thật. **[OWR-3 A.2 và D: mặc định 5 là giới hạn scheduler nội bộ, không phải giới hạn provider bảo đảm; 10 và 18 chỉ là trần cấu hình, KHÔNG bật; chỉ nâng khi Owner cho phép sau khi xác minh điều khoản và usage thực tế]**
 
 **Module:** `apps/api/modules/{workflows,scheduler,tasks,approvals,events,recovery}`, `packages/events`, FE Task Board + Approval Center.
 
@@ -227,7 +229,7 @@ Phân rã chi tiết Phase 1 ở mục 3.13 (sẵn sàng thực thi).
 | P3-09 | Workflow pause/resume/cancel cấp workflow | backend | W3 | P3-07 | API | FR-133 / AC-062 |
 | P3-10 | FE Task Board (kanban/table/timeline/graph) + `TaskCard` | frontend | W2 | P3-02 | màn `/tasks` | FR-107, 118 / AC-063 |
 | P3-11 | FE Approval Center + `ApprovalCard`, `ApprovalQueue` | frontend | W2 | P3-06 | màn `/approvals` | FR-196-205 / AC-043-046 |
-| P3-12 | Concurrency thật: 5 task đồng thời (prompt nhẹ), rồi 10, qua scheduler (T5-lite) | performance + qa | W4 | P3-04, P3-10, EXT-4 | log, session_id, task id | D-010 / AC-063 (5), một phần AC-064 |
+| P3-12 | [chỉ mock/sandbox cho đến khi gate đạt, OWR-3 A.11] Concurrency thật: 5 task đồng thời (prompt nhẹ), rồi 10, qua scheduler (T5-lite) | performance + qa | W4 | P3-04, P3-10, EXT-4 | log, session_id, task id | D-010 / AC-063 (5), một phần AC-064 |
 | P3-13 | Test độ tin cậy: kill app giữa run, kill CLI, provider mất kết nối, task quá thời gian | qa + test_automation | W4 | P3-07 | E2E-07 + chaos | AC-121-130 |
 | P3-14 | Workflow template lưu/chạy lại (data-driven, không hardcode) | backend | W3 | P3-01 | template CRUD | FR-114 / AC-061 |
 
@@ -262,7 +264,7 @@ Phân rã chi tiết Phase 1 ở mục 3.13 (sẵn sàng thực thi).
 | P4-05 | Network modes: deny mặc định, allowlist qua proxy, phase install | devsecops | W3 | P4-04 | egress proxy | FR-211 / AC-106 |
 | P4-06 | Audit log append-only (lệnh, file, approval, emergency stop) | backend | W2 | P3-08 | bảng + API + UI hook | FR-208 / AC-108 |
 | P4-07 | Emergency Stop: dừng session + container ≤ 5 s; Resume từ checkpoint; nút trên mọi màn | backend + frontend | W3 | P4-04, P3-07 | API + `EmergencyStopButton` | FR-214 / AC-109, 110, 112 |
-| P4-08 | Permission level L0-L4 theo role; chặn tạo branch/commit khi L1 | backend + security | W2 | P4-02 | enforcement | FR-215 / AC-111 |
+| P4-08 | Permission level L0-L5 theo role (OWR-3 A.13); chặn tạo branch/commit khi L1 | backend + security | W2 | P4-02 | enforcement | FR-215 / AC-111 |
 | P4-09 | Luồng merge `task → integration/<project> → main` (người duyệt cuối) | backend | W3 | P4-02 | merge service | FR-124, D-009 |
 | P4-10 | Bảo mật API localhost (token, Origin, WS auth), admin guard | security + backend | W1 | P1-11 | `SECURITY.md` §7 | NFR bảo mật |
 | P4-11 | Cấu hình Codex sandbox/approval (mxc chưa xác minh trên build Windows 26300) | security + integration | W3 | P2-11, **EXT-2** | policy projection | FR-077 |
@@ -306,7 +308,7 @@ Phân rã chi tiết Phase 1 ở mục 3.13 (sẵn sàng thực thi).
 | P5-10 | Stage 6: QA/Security/Review tạo bug record link task sửa | qa + security | W3 | P5-09 | bug module | FR-125 / AC-050 |
 | P5-11 | Stage 7 Preview trong sandbox; không deploy production | devsecops + backend | W3 | P4-04 | preview runner | FR-126 / AC-051 |
 | P5-12 | Stage 8 Human Acceptance: approve/reject/feedback/screenshot markup, revision targeted, versioning | backend + frontend | W4 | P5-09, P3-11 | revision loop | FR-127-130 / AC-052-054 |
-| P5-13 | **E2E SDLC thật**: project nhỏ từ prompt tới Acceptance bằng Claude thật, concurrency 5 | qa + test_automation | W5 | P5-01…P5-12 | log, evidence | AC-041-054 |
+| P5-13 | [chỉ mock/sandbox cho đến khi gate đạt, OWR-3 A.11] **E2E SDLC thật**: project nhỏ từ prompt tới Acceptance bằng Claude thật, concurrency 5 | qa + test_automation | W5 | P5-01…P5-12 | log, evidence | AC-041-054 |
 | P5-14 | Phân tích lại Codex trong SDLC nếu EXT-2 xong | integration | W5 | EXT-2 | provider mix | FR-077 |
 | P5-15 | Học liệu `docs`: hướng dẫn người dùng, seed skill content | docs | W3 | P5-01 | tài liệu | FR-055 |
 
@@ -362,7 +364,7 @@ Phân rã chi tiết Phase 1 ở mục 3.13 (sẵn sàng thực thi).
 
 ### 3.12 Phase 7 — Scale, Hardening & Release
 
-**Mục tiêu:** Chứng minh bằng session thật rằng 18 agent chạy đồng thời; chứng minh độ tin cậy; hoàn tất giấy phép, bảo mật, đóng gói; Owner nghiệm thu.
+**Mục tiêu:** Chứng minh bằng session thật rằng 18 agent chạy đồng thời; chứng minh độ tin cậy; hoàn tất giấy phép, bảo mật, đóng gói; Owner nghiệm thu. **[OWR-3 A.2 và D: mặc định 5 là giới hạn scheduler nội bộ, không phải giới hạn provider bảo đảm; 10 và 18 chỉ là trần cấu hình, KHÔNG bật; chỉ nâng khi Owner cho phép sau khi xác minh điều khoản và usage thực tế]**
 
 **Module:** `bench/`, `docs/performance/`, `THIRD_PARTY_NOTICES.md`, release pipeline, (tuỳ chọn) `apps/desktop` Tauri.
 
@@ -502,7 +504,7 @@ Con số trên chưa hiệu chuẩn; sẽ cập nhật sau Phase 1 từ tốc đ
 | # | Quyết định | Lý do | Nhãn |
 |---|---|---|---|
 | IR-1 | Contract freeze (P1-04) là cổng trước mọi nhóm song song | WORK_PLAN §2 đã nêu "Shared contracts do Architect chốt TRƯỚC khi F3/F5 chạy" | [Đã xác minh nguồn], phương án [Đề xuất] |
-| IR-2 | Tăng đồng thời tuần tự 5 → 10 → 18 | D-010: giới hạn thực là quota; cần bằng chứng | [Đề xuất] |
+| IR-2 | Tăng đồng thời tuần tự 5 → 10 → 18 [OWR-3 A.2/D: 5 là giới hạn scheduler nội bộ, không phải số provider cho phép; không tăng khi chưa xác minh điều khoản và usage thực tế] | D-010: giới hạn thực là quota; cần bằng chứng | [Đề xuất] |
 | IR-3 | Chạy security core (P4-03, P4-10) sớm, song song, không chờ P3 | Không phụ thuộc engine, giảm rủi ro dồn cuối | [Đề xuất] |
 | IR-4 | Phase 6 bắt đầu song song sau khi event catalogue ổn định | Office chỉ cần event; rút ngắn lịch | [Đề xuất] |
 | IR-5 | Task provider không được COMPLETED khi chỉ có mock | `TESTING.md` §3.5 | [Đề xuất] |
@@ -525,7 +527,7 @@ Rủi ro cấp lộ trình (chi tiết, owner và trigger ở `PROJECT_RISKS.md`
 
 | Rủi ro | Phase | Giảm thiểu trong roadmap |
 |---|---|---|
-| Quota/ToS giới hạn nhiều phiên song song | 2, 3, 7 | Tăng dần 5 → 10 → 18, EXT-4/EXT-7, dừng khi RATE_LIMIT |
+| Quota/ToS giới hạn nhiều phiên song song | 2, 3, 7 | Tăng dần 5 → 10 → 18, EXT-4/EXT-7, dừng khi RATE_LIMIT | **[OWR-3 A.2 và D: mặc định 5 là giới hạn scheduler nội bộ, không phải giới hạn provider bảo đảm; 10 và 18 chỉ là trần cấu hình, KHÔNG bật; chỉ nâng khi Owner cho phép sau khi xác minh điều khoản và usage thực tế]**
 | Khoảng trống sandbox trên Windows | 4 | Mô hình 2 tầng, EXT-5 ký chấp nhận, test hook thật |
 | Codex chưa cài | 2, 4, 5 | UNVERIFIED rõ ràng, không đánh dấu đạt |
 | Docker daemon chưa chạy | 1, 4 | EXT-3, `SKIPPED-NO-DOCKER`, AC-114 |
@@ -576,6 +578,17 @@ Nguồn: `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8 và `owner-responses/OWR-2
 9. Phạm vi provider: MVP chỉ Claude qua Claude Agent SDK (Q-17/D-004). Codex hoãn khỏi MVP, giữ abstraction `AgentAdapter`, không cài Codex CLI (D-005, Q-10); OpenHands hoãn đến sau Phase 4, không phải provider thứ ba của MVP, ACP tắt (Q-02, D-006). EXT-2 (cài Codex) và các task P2-11, P2-12, P4-11, P5-14 vì vậy bị hoãn, không phải điều kiện của MVP.
 Ghi chú sắp xếp: các hạng mục xác thực, hardening Docker sandbox (SB-00..SB-17, chạy trên máy có Docker, Q-10), audit log, policy engine/approval và emergency stop trước đây nằm ở Phase 4; cần kéo lên trước khi có production-capable Agent execution. Việc xếp lại task chi tiết do Owner duyệt khi mở Phase 1.
 
+**[OWR-3 A.10 / X-13: đoạn "Rủi ro chấp nhận có điều kiện" dưới đây dựa trên Tier 1 (agent có Bash trên host, D-007). OWR-3 A.10 chặt hơn: shell tích hợp không bật trên host; rủi ro này có thể không còn nếu Owner chốt như vậy; PENDING_OWNER_CLARIFICATION, xem Phụ lục OWR-3.]**
+
 **Rủi ro chấp nhận có điều kiện:** rủi ro agent ghi vào thư mục overlay qua Bash trên host (Tier 1, Windows không có sandbox cấp hệ điều hành) được chấp nhận ở Phase 0 và 1, giảm bằng checksum và audit để phát hiện, trước khi chuyển sang môi trường Linux/Docker ở phase sau.
 
 **Chính sách autonomy:** hành động quan trọng cần duyệt thủ công. Agent chưa được trao tự trị hoàn toàn.
+
+## Phụ lục OWR-3 (2026-10-30)
+Nguồn: `owner-responses/OWR-3_2026-10-30_decision_clarification.md`. Khi có mâu thuẫn, phụ lục này và phụ lục OWR-2 ở trên thắng. **Phase 0 vẫn mở; Phase 1 chưa được cho phép; chỉ bàn Phase 1 khi Owner xác nhận rõ ràng.** Không có mục nào dưới đây là VERIFIED.
+1. **Phase 2 (A.11):** chỉ mock hoặc sandbox khi security gate chưa đạt; không production-capable execution. Đối chiếu: mục 4 và mục 5 của phụ lục OWR-2 ở trên đã khớp nội dung này. Các chữ "thật/real/live" ở P2-01, P2-10, P2-13, P3-12, P5-13 đã được gắn nhãn mock/sandbox.
+2. **Sandbox chặt hơn (A.10, XUNG ĐỘT X-13 với D-007):** không cho agent chạy arbitrary code trên Windows host; mọi code do agent sinh ra phải chạy trong sandbox cô lập; Docker chỉ cho build/test/run không đủ nếu agent còn quyền thực thi trên host; sandbox không hoạt động thì fail closed. OpenHands hoãn khỏi MVP; Tier 2 không thuộc MVP. Hệ quả: chưa có thực thi agent thật nào cho đến khi có sandbox cô lập đã kiểm chứng; Docker là điều kiện tiên quyết cứng (EXT-3) nhưng **chưa được Owner cho phép khởi động** (mục E). PENDING_OWNER_CLARIFICATION: (i) host Edit/Write trong worktree; (ii) runtime SDK trên host có tính là host execution; (iii) runtime sandbox thay OpenHands (hàm ý executor Docker tự xây, chưa có task trong roadmap, cần Owner duyệt khi mở Phase 1). Xem `SECURITY.md` §0.6.
+3. **Concurrency (A.2, D):** 5 là giới hạn scheduler nội bộ, không phải số provider cho phép; không tăng lên 10/18; Owner nói đã kiểm tra tài liệu chính thức và không thấy căn cứ công khai rõ (Owner statement, chưa xác minh độc lập); không chia sẻ credential/seat. IR-2 (tăng 5 -> 10 -> 18) chỉ hợp lệ khi đã xác minh điều khoản và usage thực tế.
+4. **Provider (A.8):** MVP chỉ Claude; Codex để sau, giữ `AgentAdapter`. EXT-2, P2-11, P2-12, P4-11, P5-14 vẫn hoãn.
+5. **Approval (A.12, A.15, X-7):** `remind_at` 24 giờ tách khỏi `expires_at` 15 phút (chỉ prod deploy, data deletion, merge main); timeout chờ 540 s; `WAITING_APPROVAL` không tính vào 5 active workers khi worker đã giải phóng và state persist, quota provider vẫn áp dụng.
+6. **Phạm vi máy (mục E):** chưa cho phép Docker Desktop và VAL-DOCKER-01..09; không cài Codex CLI; không chạy 27 runbook; không chạy PoC Conductor; không test Agent thật qua SDK. Cho phép: Drizzle PoC và Dynamic Skill/Resume PoC trong scratch; QA độc lập lần 3 cho tài liệu.
