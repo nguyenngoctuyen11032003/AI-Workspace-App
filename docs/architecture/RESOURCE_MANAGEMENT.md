@@ -45,14 +45,14 @@ Nhận xét quan trọng:
 ### 4.1 Thứ tự kiểm (tất cả phải pass mới spawn)
 
 ```
-global.max_concurrent_agents (default 5, max 18)
+global.max_concurrent_agents (default 5, max 18)   # Q-07/OWR-2: 5 là giới hạn mặc định của ứng dụng, KHÔNG xác nhận subscription cho phép song song (chưa xác minh ToS); không tự tăng lên 10/18 khi chưa xác minh điều khoản provider
   └─ provider_pool[credentialId].max_concurrent (default: claude-code 5, codex 3; D-010 APPROVED 2026-10-30)
        └─ project.max_concurrent (default = global; fair share xem AGENT_SCHEDULER §9)
             └─ agent.max_concurrent_executions (default 1)
                  └─ host guard: free RAM ≥ min_free_ram_mb (2048), CPU 1-min avg ≤ 90%
 ```
 
-"Đang executing" = `AgentExecution.state ∈ {SPAWNING, RUNNING, STOPPING}`. `PAUSED` và `WAITING_APPROVAL` **không** chiếm slot (process đã dừng) nhưng vẫn chiếm workspace lock.
+"Đang executing" = `AgentExecution.state ∈ {SPAWNING, RUNNING, STOPPING}`. `PAUSED` và `WAITING_APPROVAL` **không** chiếm slot (process đã dừng) nhưng vẫn chiếm workspace lock. [CẦN QUYẾT ĐỊNH, CF-048/Q-05: OWR-2 chỉ quy định hết 540 s thì chuyển `WAITING_HUMAN` và không giữ worker; chưa nêu approval mức tool trong 540 s có chiếm slot hay không. Giữ nguyên câu trên cho đến khi Owner/Architect chốt; xem DOC_SYNC_LOG_OWR2_A.md.]
 
 ### 4.2 Semaphore trong Redis (rebuild được từ Postgres)
 
@@ -101,7 +101,7 @@ Lưu ý: vì subscription `team` không tính tiền theo token, **budget USD l�
 | `task_timeout` | theo complexity: 15/30/60/120/240 phút | hard kill, retry nếu attempt < maxRetries |
 | `silence_timeout` (stale hard) | 20 phút | không có stdout event/file change — xem `AGENT_SCHEDULER.md` §10 |
 | `graceful_stop_timeout` | 10 s | sau SIGTERM trước khi taskkill /F |
-| `approval_timeout` | 24 h | WAITING_APPROVAL quá hạn → task về QUEUED và thông báo |
+| `approval_wait_timeout` | 540 s | Q-05/OWR-2: hết 540 s lưu approval `pending`, task → `WAITING_HUMAN`, không giữ worker/slot; nhắc Owner sau 24 h (không phải hạn chót). `prod_deploy`/`data_deletion`/`merge_main`: approval riêng, hết hiệu lực sau 15 phút. Thay giá trị cũ "24 h → QUEUED" |
 | `tool_command_timeout` | 10 phút | truyền vào CLI (A05: cấu hình Bash timeout qua settings) |
 
 ## 8. Quota và rate-limit của provider
@@ -129,7 +129,7 @@ function classify(exitCode: number, json?: CliResult, stderr?: string): FailureC
 }
 ```
 
-Khi `RATE_LIMIT`: `provider_pool[cred].state = RATE_LIMITED(until)` với `until` = reset time nếu parse được, nếu không = now + 15 phút (tăng gấp đôi mỗi lần liên tiếp, cap 5 giờ). Mọi task trên pool đó về QUEUED(reason=`PROVIDER_RATE_LIMITED`). **Không** tự chuyển sang credential/provider khác.
+Khi `RATE_LIMIT`: `provider_pool[cred].state = RATE_LIMITED(until)` với `until` = reset time nếu parse được, nếu không = now + 15 phút (tăng gấp đôi mỗi lần liên tiếp, cap 5 giờ). Mọi task trên pool đó về QUEUED(reason=`PROVIDER_RATE_LIMITED`). **Không** tự chuyển sang credential/provider khác. Khi hết quota: không tự động failover provider; thông báo Owner và chờ quyết định (Q-08/OWR-2).
 
 ## 9. Chế độ suy giảm (degraded modes) [Đề xuất] — [Cần người dùng phê duyệt]
 
@@ -186,6 +186,8 @@ Giả định (ghi rõ để owner kiểm): (A1) mỗi process ổn định ở 
 | 5 | 1.2 / 4.5 GB | thoải mái; build đồng thời có thể bão hòa 12 thread | 5–15 / 10–25 USD | **Có — khuyến nghị mặc định** |
 | 10 | 2.3 / 9 GB | 10 build/test đồng thời sẽ chậm ×2–3 | 10–30 / 20–50 USD | Có với free RAM ≥ 10 GB (hiện chỉ 6.4 GB free → phải đóng app khác); quota là chặn thực tế |
 | 18 | 4.1 / 16 GB | bão hòa CPU; latency tool call tăng mạnh | 18–54 / 36–90 USD | **Nhẹ: có; nặng: không** trên 16 GB RAM. Cần ≥ 32 GB hoặc chia agent sang máy/container khác; quota gần như chắc chắn cạn trước |
+
+> [Q-07/OWR-2: bảng 5/10/18 chỉ là ngoại suy tài nguyên máy, không phải xác nhận ToS/quota subscription và không có nghĩa 18 agent đã được kiểm thử; không tăng concurrency lên 10/18 khi chưa xác minh điều khoản provider.]
 
 Kết luận: về OS/process, 18 CLI đồng thời **khả thi** (18 × 230 MB ≈ 4 GB); nút thắt thật là (1) quota subscription dùng chung, (2) RAM khi task nặng, (3) chất lượng (xung đột workspace, review không kịp). Chi tiết: `docs/research/MULTI_AGENT_SCALABILITY.md`.
 

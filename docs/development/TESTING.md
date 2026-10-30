@@ -85,7 +85,7 @@ Hiện trạng [Đã xác minh]: Claude Code CLI 2.1.312 đã cài và đăng nh
 | P-A Adapter conformance (fake) | Bộ test chung cho 13 operation của `ProviderAdapter` (FR-081) chạy với **FakeProvider** phát stream-json ghi sẵn | CI mọi PR | VERIFIED-MOCK |
 | P-B Parser/mapper | Parse stream-json/JSON-RPC ghi từ CLI thật (fixture "golden" có nguồn gốc: ghi lại bằng lệnh thật, kèm version CLI + ngày) | CI mọi PR | VERIFIED-MOCK (golden từ thật) |
 | P-C Claude real smoke | `claude -p` qua adapter: Connect, ListModels, SendMessage, StreamEvents, CancelTask ≤ 5 s (AC-026), ResumeSession, thông báo rate-limit thật | máy dev có login; nightly self-hosted runner nếu Owner chấp thuận | VERIFIED-REAL |
-| P-D Codex real smoke | tương tự P-C qua `codex app-server`, dự phòng `codex exec --json` (D-005) | **chặn tới khi Owner cài Codex** | UNVERIFIED cho đến lúc đó |
+| P-D Codex real smoke | tương tự P-C qua `codex app-server`, dự phòng `codex exec --json` (D-005) | **HOÃN khỏi MVP (D-005/OWR-2); không cài Codex CLI, không live test ở phạm vi hiện tại** | UNVERIFIED cho đến khi Codex được đưa vào sau MVP |
 | P-E Provider lifecycle | CLI chưa cài / chưa login / session hết hạn / kill giữa chừng (AC-023, 024, 028, 124, 130) bằng cách chạy adapter với binary giả có exit code tương ứng | CI | VERIFIED-MOCK |
 
 **Quy tắc: mock không bao giờ thay thế luồng sản phẩm** [Đề xuất — Cần người dùng phê duyệt]:
@@ -101,6 +101,8 @@ Hiện trạng [Đã xác minh]: Claude Code CLI 2.1.312 đã cài và đăng nh
 Chi phí quota: test thật tốn quota subscription dùng chung (một lệnh `claude -p` nhẹ ≈ 48k token tiền xử lý, ≈ 0.37 USD giá niêm yết [Đã xác minh, `MULTI_AGENT_SCALABILITY.md` §4.2]). Do đó P-C giới hạn ≤ 10 lần gọi mỗi lượt chạy, và không chạy trên mỗi PR. [Đề xuất]
 
 ### 3.6 Bộ test chứng minh đồng thời 18 agent (T0-T7) [Đề xuất] — [Cần người dùng phê duyệt trước khi chạy]
+
+> [OWR-2 2026-10-30, Q-07/mục 5.6/mục 8: bộ test này CHƯA chạy; không tuyên bố 18 Agent concurrent đã được kiểm thử; test stress/quota cần Owner phê duyệt riêng và xác minh điều khoản provider trước khi tăng concurrency vượt mặc định 5. Hiện chỉ cho phép Drizzle PoC, Dynamic Skill/Resume PoC và Docker sandbox validation (Docker cần cho sandbox validation, Q-10).]
 
 Nguồn: `MULTI_AGENT_SCALABILITY.md` §9 (bản gốc) và §14 (tiêu chí). Yêu cầu của Owner: bằng chứng gồm **18 session_id thật, 18 task id, log, số đo RAM/CPU, không rate-limit**. [Đã xác minh]
 
@@ -207,7 +209,7 @@ Quy tắc: coverage không giảm so với `main` (diff coverage ≥ 80% cho dò
 ## 5. Dependencies
 
 - Docker daemon chạy (Testcontainers, security container, sandbox).
-- Claude Code CLI đã login (P-C); Codex CLI cài + login (P-D) — Owner.
+- Claude Code CLI đã login (P-C); Codex CLI cài + login (P-D) — [hoãn khỏi MVP, D-005/OWR-2: không cài trong phạm vi hiện tại].
 - `packages/testing` (FakeProvider, factories, fixture) do `test_automation` tạo ở Phase 1.
 - Runner CI có Docker; self-hosted runner nếu muốn nightly real-provider [Cần người dùng phê duyệt].
 - Phê duyệt chạy T1-T4 và quota (Owner).

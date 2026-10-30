@@ -43,7 +43,7 @@ src/
 | `departments` | 12 phòng ban mặc định (seed), CRUD, head, ngân sách, org chart | `departments` | organizations |
 | `agents` | CRUD agent (Agent Builder), lifecycle 12 trạng thái, profile, gán skill, presence; 18 vai trò là seed (D-016) | `agents`, `agent_profiles`, `agent_provider_connections`, `agent_skills`, `agent_memories` | departments, skills, providers |
 | `skills` | Skill Library, version, document, Teach Agent flow, nạp skill (`--add-dir`, junction) (D-013) | `skills`, `skill_versions`, `skill_documents` | agents |
-| `providers` | Provider Hub; `AgentAdapter` cho Claude Code / Codex / OpenHands / generic CLI; health check; ListModels; Connect/Disconnect | `provider_configs` | agent-core, keychain |
+| `providers` | Provider Hub; `AgentAdapter` (MVP: Claude; Codex/OpenHands/generic CLI hoãn, OWR-2 D-005/D-006, chỉ giữ abstraction); health check; ListModels; Connect/Disconnect | `provider_configs` | agent-core, keychain |
 | `sessions` | Vòng đời `agent_session`, nhận `AgentEvent` từ adapter, ghi `agent_events`, replay | `agent_sessions`, `agent_events`, `agent_messages` | providers, events |
 | `orchestrator` | Conductor: validate Workflow Definition, RunService, XState guard, revision loop, message bus, PM assignment | `workflows`, `workflow_versions`, `workflow_nodes`, `workflow_edges`, `workflow_runs`, `node_runs` | scheduler, approvals, events |
 | `scheduler` | `tick(run)` ready-set, priority, dispatcher, semaphore Lua (global + provider + agent + worktree), retry/backoff, heartbeat, stale recovery | `task_assignments`, `resource_limits` (đọc) | orchestrator, Redis |

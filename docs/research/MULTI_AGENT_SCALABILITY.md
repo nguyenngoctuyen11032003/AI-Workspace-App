@@ -9,6 +9,8 @@ Ký hiệu: [Đã xác minh] / [Đề xuất] / [Giả định] / [Cần ngườ
 
 ## 1. Mục đích
 
+> **[Ghi chú OWR-2 2026-10-30, Q-07]**: tài liệu nghiên cứu này không chứng minh 18 agent đồng thời; số đo là tài nguyên máy, không phải xác nhận điều khoản provider. Mặc định ứng dụng 5, không tự tăng lên 10/18.
+
 Trả lời bằng bằng chứng câu hỏi của owner: *máy hiện tại (Windows 11, 16 GB, i5-11400H) với Claude Code CLI 2.1.312 có thể chạy 18 agent CLI đồng thời không?* Đưa ra mô hình chi phí, giới hạn OS và provider, khuyến nghị mặc định (5) và điều kiện để nâng lên 18, và test plan để chứng minh 18-concurrency bằng session thật, log và task id như owner yêu cầu.
 
 ## 2. Phạm vi
@@ -120,6 +122,8 @@ Với subscription, các con số này là **tương đương quota** chứ khô
 2. CPU khởi động 5 process ≈ 20 s CPU, chia trên 12 thread → không nghẽn.
 3. Quota chưa rõ; 5 là mức cho phép quan sát tốc độ cạn quota trước khi tăng.
 4. Chất lượng cộng tác: với 1 reviewer và 1 PM, > 5 dev song song tạo backlog review không kịp.
+
+> [Q-07/OWR-2, 2026-10-30: mặc định 5 là giới hạn của ứng dụng, KHÔNG xác nhận subscription cho phép chạy song song 5 session; chưa xác minh ToS. Không tự tăng lên 10 hoặc 18 khi chưa xác minh điều khoản provider (ngoài các điều kiện kỹ thuật dưới đây còn cần xác minh ToS/provider contract hoặc API billing). Không được tuyên bố 18 agent đã được kiểm thử; test plan §9 chưa chạy. Chạy test quota/stress cần Owner phê duyệt riêng (OWR-2 mục 5.6).]
 
 **Điều kiện để nâng lên 10 → 18** (từng bước, mỗi bước chạy test §9):
 - RAM free ≥ 1 GB × N (nhẹ) hoặc ≥ 32 GB tổng (nặng); host guard bật.

@@ -19,7 +19,7 @@
 
 ### 3.1 Stack **[Đã xác minh]** từ `docs/research/LICENSE_AND_REUSE.md` §5.5 và D-001/D-011
 
-**Khung frontend: chờ Owner xác nhận (Q-16)** · Vite 7 + TypeScript 5.9 · React 19.2 · Tailwind 4.1 (`@tailwindcss/vite`, cấu hình CSS-first `@theme`) · shadcn/ui + lucide-react · Phaser 3.90 · `@xyflow/react` 12 · Zustand 5 · TanStack Query 5 · socket.io-client 4. **[Đề xuất]** thêm: React Router (data router), Monaco (`@monaco-editor/react`), `react-hook-form` + Zod resolver, `i18next`, Vitest, Testing Library, Playwright, MSW.
+**Khung frontend: APPROVED (OWR-2 Q-16/D-001: React 19 + Vite, NestJS backend, TypeScript monorepo, pnpm workspace; không chuyển Next.js trong MVP)** · Vite 7 + TypeScript 5.9 · React 19.2 · Tailwind 4.1 (`@tailwindcss/vite`, cấu hình CSS-first `@theme`) · shadcn/ui + lucide-react · Phaser 3.90 · `@xyflow/react` 12 · Zustand 5 · TanStack Query 5 · socket.io-client 4. **[Đề xuất]** thêm: React Router (data router), Monaco (`@monaco-editor/react`), `react-hook-form` + Zod resolver, `i18next`, Vitest, Testing Library, Playwright, MSW.
 
 ### 3.2 Cấu trúc ứng dụng **[Đề xuất]**
 
@@ -100,7 +100,7 @@ Quy tắc:
 
 ### 3.6 Design system package (`@aiw/ui`, `@aiw/design-tokens`)
 
-- **[Đã xác minh]** quyết định thị giác ở D-015: accent AI tím `--ai-accent`, Inter + JetBrains Mono, mật độ Comfortable, avatar agent bo vuông / người tròn, mặc định tiếng Anh. Chi tiết ở `docs/design/DESIGN_TOKENS.md`, `DESIGN_SYSTEM.md` (không lặp lại ở đây).
+- **[Đã xác minh]** quyết định thị giác ở D-015: accent AI tím `--ai-accent`, Inter + JetBrains Mono, mật độ Comfortable, avatar agent bo vuông / người tròn, mặc định tiếng Việt (OWR-2 D-015; trước đây ghi tiếng Anh). Chi tiết ở `docs/design/DESIGN_TOKENS.md`, `DESIGN_SYSTEM.md` (không lặp lại ở đây).
 - `@aiw/design-tokens`: token dạng CSS variables + TS constants, build ra file CSS Tailwind v4 `@theme`. Không đặt giá trị màu cứng trong feature.
 - `@aiw/ui`: component dựa shadcn/ui (copy-in), bọc thành API ổn định: `Sidebar`, `Topbar`, `Badge(count)`, `Tooltip`, `Toast`, `ConfirmDialog`, `CommandPalette`, `Drawer`, `DataTable`, `StatusDot`, `AgentAvatar`. **[Đề xuất]** có Storybook hoặc trang gallery nội bộ để Phaser/FE cùng xem (cần Owner chốt, xem §7).
 - Component không biết API/store: nhận props; lệnh phá hủy luôn đi qua `ConfirmDialog` (NAV §8.2).
@@ -161,7 +161,7 @@ Ranh giới **[Đề xuất]**:
 
 ### 3.11 i18n
 
-- **[Đã xác minh]** Mặc định tiếng Anh, VI là locale thứ hai (D-015).
+- **[Đã xác minh, OWR-2 D-015]** Mặc định tiếng Việt (VI), EN là locale thứ hai (thay thế "mặc định EN" trước đây); fallback khi thiếu key: xem mục kiểm thử bên dưới (hiện ghi fallback EN, có thể giữ).
 - **[Đề xuất]** `i18next` + `react-i18next`; namespace theo feature; key dạng `feature.section.label`; dữ liệu do backend trả (tên phòng ban/agent seed) có `slug` ổn định, FE dịch theo slug khi có bản dịch, không dịch nội dung người dùng nhập.
 - Định dạng ngày/giờ/tiền bằng `Intl` với locale đang chọn; thời gian từ backend là UTC ISO.
 - Test: lint kiểm tra key thiếu ở locale phụ; snapshot bố cục với chuỗi VI dài hơn.

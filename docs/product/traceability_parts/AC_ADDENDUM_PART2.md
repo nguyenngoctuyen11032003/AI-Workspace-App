@@ -80,5 +80,11 @@ Các FR sau quá mơ hồ để viết AC kiểm thử được; không bịa ti
 ## 4. Thống kê
 
 - AC mới AC-301…AC-320: 20 AC. AC được định nghĩa với mã cũ: AC-097…AC-100 (4 AC). Tổng thêm: 24.
-- Câu hỏi cần Owner làm rõ: 7 (Q-00…Q-06); 6 FR bị gắn NEEDS_OWNER_CLARIFICATION (FR-122, 153, 181, 182, 183, 186).
+- Câu hỏi cần Owner làm rõ: 7 (Q-00…Q-06); 6 FR bị gắn NEEDS_OWNER_CLARIFICATION (FR-122, 153, 181, 182, 183, 186; từ OWR-2: FR-122, 181, 182, 183 chuyển sang AC_PROPOSED_PENDING_CLARIFICATION, còn FR-153, FR-186 giữ NEEDS_OWNER_CLARIFICATION).
 - Tổng hợp mã AC đã định nghĩa theo mã cũ: AC-097 → FR-162; AC-098 → FR-163; AC-099 → FR-164; AC-100 → FR-165.
+
+## 5. Ghi chú OWR-2 (2026-10-30), chỉ bổ sung, không viết lại AC
+
+- AC-306 (FR-113, 8 loại node): OWR-2 Q-11 chấp thuận 9 UI node type và 11 engine kind. Số "8 loại" ở AC-306 lỗi thời; danh sách cụ thể của 9 và 11 chưa có trong OWR-2 nên chưa sửa AC. PENDING_OWNER_CLARIFICATION. AC-425 (9 loại node theo SCREEN_SPECIFICATION) khớp số 9 UI node type.
+- AC-099 (FR-164): OWR-2 Q-14 quy định mặc định agent idle không vào Coffee/Relax; hành vi chỉ có khi bật setting tùy chọn. Kịch bản AC-099 chỉ còn đúng khi setting đó bật; bản mặc định cần AC bổ sung sau khi Owner chốt tên và phạm vi setting.
+- FR-122, 181, 182, 183: xem `AC_ADDENDUM_PART4_OWR2.md` (AC-601..AC-614). Q-01, Q-03, Q-04, Q-05 ở mục 3 vẫn là câu hỏi mở nhưng nay có AC đề xuất đi kèm.

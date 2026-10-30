@@ -47,6 +47,8 @@ Ma trận quyền chi tiết giữ nguyên ở `USER_ROLES_AND_PERMISSIONS.md` �
 
 Cần mở rộng `agents.permission_level` thêm `permission_profile text` hoặc lưu L0–L5 vào `agents.config` [Cần người dùng phê duyệt].
 
+> **[Q-03, OWR-2 2026-10-30]**: Owner chấp thuận permission level L0 đến L5, dùng hai trường `permission_level` và `permission_profile`; **không hỗ trợ quyền `full`** (không cấp, không có giá trị `full` hợp lệ cho agent). Hai điểm còn mở, cần Architect/Owner chốt (CF-008): cách chốt enum DB (bỏ `full` khỏi enum hay khóa bằng CHECK) và nơi lưu L0–L5. USER_ROLES_AND_PERMISSIONS.md không thuộc agent A: báo cáo để đồng bộ.
+
 ### 4.2 Giao của các nguồn quyền
 
 Quyền hiệu lực của một tool call = **giao** của:
@@ -200,7 +202,7 @@ Dùng bảng `approval_policies`/`approvals` hiện có (DATABASE_DESIGN §4.9) 
 
 ### 6.4 Timeout approval — hoà giải
 
-BA đề xuất "không timeout, nhắc 24 h" (USER_ROLES §5.5) vs SECURITY §5.3 "hook timeout 540 s ⇒ deny, task `blocked`". Đề xuất hợp nhất: hook HTTP không thể giữ vô hạn (600 s tối đa). Khi hết 540 s: hook trả `deny` với lý do "pending_human"; approval **vẫn `pending`** trong DB (không expire); task chuyển `WAITING_HUMAN` (D-003, không giữ worker). Khi user duyệt muộn, orchestrator **kích hoạt lại** hành động từ đầu (agent được nhắc retry với hash đã duyệt) thay vì giữ kết nối. `expires_at` mặc định 7 ngày; `onTimeout='reject'`. [Cần người dùng phê duyệt]
+BA đề xuất "không timeout, nhắc 24 h" (USER_ROLES §5.5) vs SECURITY §5.3 "hook timeout 540 s ⇒ deny, task `blocked`". Đề xuất hợp nhất: không giữ kết nối/worker vô hạn. **[Q-05, OWR-2 2026-10-30]**: chờ approval tối đa **540 s**; hết thời gian thì lưu trạng thái (approval vẫn `pending` trong DB) và chuyển task `WAITING_HUMAN`, không giữ worker (D-003); có thể nhắc Owner sau **24 giờ**; `prod_deploy`, `data_deletion`, `merge_main` cần approval riêng và hết hiệu lực sau **15 phút**. Với SDK, callback `canUseTool` trả deny `pending_human` tại mốc 540 s (với CLI fallback là hook). Khi user duyệt muộn, orchestrator **kích hoạt lại** hành động từ đầu (agent được nhắc retry với hash đã duyệt) thay vì giữ kết nối. [CẦN QUYẾT ĐỊNH: `expires_at` mặc định 7 ngày và `onTimeout='reject'` ở bản đề xuất cũ chưa được OWR-2 xác nhận, và 3600 s `timeout_sec` ở DATABASE_DESIGN khác; xem DOC_SYNC_LOG_OWR2_A.md. Giá trị 15 phút chỉ áp dụng cho ba hành động nhạy cảm.]
 
 ## 7. Enforcement file ownership manifest
 
@@ -310,7 +312,7 @@ Khác biệt cần chốt: POL-11 (merge vào nhánh chính "tùy chọn, code r
 | Policy file ngoài worktree, hash lưu audit | Chống TM-T-01 | Đề xuất |
 | Approval pending không expire theo hook; reactivation | Hợp nhất BA (không timeout) với giới hạn hook 600 s | Cần người dùng phê duyệt |
 | Manifest JSON chuẩn `readOnly`, đặt ngoài worktree | Hợp nhất hai tài liệu | Đề xuất |
-| Lead agent không approve thay human | Đóng OI-ROLE-03 theo hướng an toàn | Cần người dùng phê duyệt |
+| Lead agent không approve thay human | Đóng OI-ROLE-03 theo hướng an toàn | Q-04 (OWR-2 2026-10-30): Lead Agent không được thay thế quyền phê duyệt của Owner; merge `main` luôn cần Owner; agent được merge vào `integration/*` sau gate |
 | Fail-closed ở mọi lỗi engine | Tránh bypass bằng lỗi | Đề xuất |
 
 ## 12. Dependencies và inconsistency liên quan
@@ -340,7 +342,7 @@ Lệch cần chủ sở hữu từng doc xử lý (tôi không sửa file của 
 1. Hành vi chính xác của exit 2 / `updatedInput` trong `-p` trên 2.1.312 (WORKSPACE §16.6) cần test thực.
 2. Vị trí chính xác key `disableBypassPermissionsMode` trong settings (Giả định).
 3. Số cấp L0–L5, PM chạy code (OI-ROLE-01/02), multi-user data model (OI-ROLE-04).
-4. Có dùng `canUseTool` của Agent SDK (D-004) thay cho PreToolUse hook không; hai đường phải dùng chung một engine.
+4. Có dùng `canUseTool` của Agent SDK (D-004) thay cho PreToolUse hook không; hai đường phải dùng chung một engine. [Q-17/D-004, OWR-2 2026-10-30: trả lời = Agent SDK là adapter chính; cổng approval = `canUseTool` + PreToolUse policy in-process; ví dụ hook HTTP ở §5 (dòng ~148) chỉ là biến thể fallback raw CLI.]
 5. Cơ chế phát hiện giao glob chính xác giữa manifest.
 6. Taint flag có ảnh hưởng quyết định (không chỉ hiển thị)?
 

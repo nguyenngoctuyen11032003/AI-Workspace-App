@@ -2,6 +2,8 @@
 
 Ngày: 2026-10-30. Nguồn: `D:\Code\Tuyen\Agent management\herdr` (clone của https://github.com/herdrdev/herdr, commit `ee5bfb50`, Apache-2.0). Chủ sở hữu yêu cầu: xem phần thiết kế, đánh giá và kết hợp vào AI WORKSPACE.
 
+> **[OWR-2 D-020]** herdr chỉ là **design reference**. Không tái sử dụng Rust runtime; không dùng screen heuristic làm nguồn dữ liệu sự thật (D-017: attention state chỉ suy ra từ lifecycle event và heartbeat thực tế, không suy diễn khi thiếu dữ liệu). Mục "HerdrRuntime" tùy chọn ở §9 chỉ là ý tưởng chưa được duyệt. D-019: Agent CLI/API chỉ ở Phase 3 sau Security Review.
+
 Nhãn: **[ĐX]** Đã xác minh từ mã nguồn hoặc tài liệu trong repo; **[ĐXuất]** Đề xuất; **[GĐ]** Giả định; **[PD]** Cần người dùng phê duyệt.
 
 ## 1. Mục đích và phạm vi

@@ -155,7 +155,7 @@ Hợp nhất lệch (SECURITY §8: 180 ngày audit; DEVSECOPS §9: 365 ngày onl
 
 | Dữ liệu | Online | Lưu trữ lạnh | Xoá | Trạng thái |
 | --- | --- | --- | --- | --- |
-| `audit_logs` | **365 ngày** (partition tháng) | export JSONL.age + chữ ký HMAC thêm 2 năm | sau đó | Đề xuất; Cần người dùng phê duyệt (SECURITY nói 180) |
+| `audit_logs` | **365 ngày** (partition tháng) | export JSONL.age + chữ ký HMAC thêm 2 năm | sau đó | Q-06 (OWR-2 2026-10-30): audit online 365 ngày, signed export 2 năm; SECURITY §8 đã sửa từ 180 |
 | `audit.checkpoint` + anchors | vĩnh viễn (nhỏ) | — | không xoá | Đề xuất |
 | Transcript đầy đủ (đã redact) | 30 ngày | — | tự xoá | SECURITY §8 |
 | `tool_result` > 64 KB | object store local theo hash | — | purge theo task + 30 ngày | SECURITY §8 |
@@ -236,7 +236,7 @@ Gate CI: PR chạm `audit/`, `redaction/`, migration `0006*` cần AU-01..AU-16 
 | Chuỗi hash per-organization, checkpoint HMAC + anchor ngoài DB | Phát hiện cắt đuôi, partition drop không phá chuỗi | Đề xuất |
 | Single chain writer, batch trong transaction | Thứ tự hash tất định với 18 agent | Đề xuất |
 | Intent trước, outcome sau; fail-closed khi không ghi được | SECURITY §8 | Đề xuất |
-| Retention 365 ngày online (thay 180) | Thống nhất DEVSECOPS; đủ điều tra | Cần người dùng phê duyệt |
+| Retention 365 ngày online (thay 180) | Thống nhất DEVSECOPS; đủ điều tra | Q-06 (OWR-2 2026-10-30): Owner chốt 365 ngày online + signed export 2 năm |
 | `host_safe` gom `tool.summary` | Tránh phình log | Đề xuất |
 | Hash trên dữ liệu đã redact | Verify không cần secret | Đề xuất |
 | `input_hash` dùng HMAC khi lệnh ngắn | Chống brute-force từ hash | Đề xuất |
@@ -262,7 +262,7 @@ Gate CI: PR chạm `audit/`, `redaction/`, migration `0006*` cần AU-01..AU-16 
 
 1. **Tên bảng:** `audit_logs` (DATABASE_DESIGN) vs `audit_events` (SECURITY, DEVSECOPS, INFRA).
 2. **Schema:** DATABASE_DESIGN dùng `before/after`, `entity_type/entity_id`, `uuid` PK; SECURITY dùng `bigserial`, `category`, `input_hash`, `hash` — cần migration §4.3.
-3. **Retention:** 180 (SECURITY) vs 365 (DEVSECOPS).
+3. **Retention:** 180 (SECURITY) vs 365 (DEVSECOPS). [Đã chốt theo Q-06, OWR-2: 365 ngày online + signed export 2 năm; SECURITY §8 đã sửa.]
 4. **Phạm vi:** DATABASE_DESIGN: agent actions không vào `audit_logs` mà `agent_events`; SECURITY §8: tool_call/tool_result vào audit. Đề xuất tách như §2/§5.4.
 5. DEVSECOPS §9 nói hash chain "tuỳ chọn sau MVP"; SECURITY §8 coi là yêu cầu — đề xuất bật từ M0 (SECURITY §11) vì chi phí thấp.
 6. Giá trị enum `audit_severity` chưa xem đầy đủ (Giả định).

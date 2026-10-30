@@ -2,7 +2,7 @@
 
 > Tác giả: System Architect · Phase 0 (chỉ tài liệu) · Trạng thái: Draft v0.1 · Ngày: 2026-10-30
 > Nhãn: **[Đã xác minh]** = có trong tài liệu nguồn đã đọc (kèm đường dẫn); **[Đề xuất]** = quyết định của System Architect; **[Giả định]** = chưa có bằng chứng; **[Cần người dùng phê duyệt]** = cần Owner chốt.
-> Mọi quyết định `D-xxx` lấy từ `DECISION_LOG.md` và đều đang ở trạng thái "Chờ duyệt" (chưa quyết định nào được Owner phê duyệt).
+> Mọi quyết định `D-xxx` lấy từ `DECISION_LOG.md`. **[OWR-2, 2026-10-30]** Trạng thái "Chờ duyệt" nói chung nay bị ghi đè từng quyết định bởi `PHASE_0_OWNER_DECISION_REGISTER.md` và `owner-responses/OWR-2_*.md` (ví dụ Q-16/D-001 React 19 + Vite APPROVED; D-003 định hướng duyệt, chưa khóa implementation tới khi PoC đạt; D-005 Codex và D-006 OpenHands **hoãn khỏi MVP**). Phase 0 vẫn mở; Phase 1 chưa được cho phép.
 > Tài liệu liên quan: `docs/BACKEND_ARCHITECTURE.md`, `docs/FRONTEND_ARCHITECTURE.md`, `docs/API_DOCUMENTATION.md`.
 
 ---
@@ -64,7 +64,7 @@ flowchart LR
 | `worker` (cùng codebase `api`, entry riêng) | BullMQ processors: agent-runner, workflow-engine, sandbox, rollup | BullMQ | D-003, DATABASE_DESIGN §10 |
 | `postgres` | Source of truth: 44 bảng, event store phân vùng theo tháng | PostgreSQL 16 + Drizzle | D-002 |
 | `redis` | BullMQ, semaphore Lua, pub/sub, stream buffer, presence | Redis 7 | D-002, D-003, DATABASE_DESIGN §10 |
-| Provider adapters | Chuẩn hóa Claude Code / Codex / OpenHands về `AgentEvent` | `@anthropic-ai/claude-agent-sdk`, `codex app-server` | D-004, D-005, D-006 |
+| Provider adapters | Chuẩn hóa provider về `AgentEvent` qua `AgentAdapter`; **MVP chỉ Claude** (Claude Agent SDK, OWR-2 Q-17); Codex (D-005) và OpenHands (D-006, sau Phase 4) **hoãn, chỉ giữ abstraction để mở rộng** | `@anthropic-ai/claude-agent-sdk`; (hoãn) `codex app-server` | D-004, D-005, D-006 |
 | Sandbox executor | Chạy build/test/lint/preview trong Docker | dockerode | D-007, INFRASTRUCTURE_DESIGN §6 |
 | `desktop` (giai đoạn sau) | Vỏ Tauri 2, backend làm sidecar | Tauri 2 | D-001 |
 
@@ -232,7 +232,7 @@ Quy tắc: module chỉ truy cập bảng do mình sở hữu; truy cập chéo 
 | ORM | Drizzle (postgres.js) | partial index, transaction savepoint, không binary engine trên đường có khoảng trắng | D-002, DATABASE_DESIGN §1.2 |
 | Queue/cache | Redis 7 + BullMQ | transport, retry, stalled detection; semaphore Lua | D-003 |
 | Workflow | "Conductor" tự xây | DAG user-editable, WAITING_HUMAN durable; loại LangGraph/Temporal | D-003, ORCHESTRATION §2.2 |
-| Provider | Claude Agent SDK; Codex app-server; OpenHands agent-server | D-004/005/006 | |
+| Provider | Claude Agent SDK (MVP); Codex app-server và OpenHands agent-server **hoãn khỏi MVP** (OWR-2 D-005/D-006, Q-02) | D-004/005/006 | |
 | Realtime | Socket.IO 4 | rooms theo project/agent/run, reconnect, ack lệnh điều khiển | D-014, LICENSE_AND_REUSE §5.4 |
 | Office | Phaser 3.90 | D-011 | |
 | Workflow UI | `@xyflow/react` 12 | LICENSE_AND_REUSE §5.2 (cần attribution badge hoặc Pro) | **[Đã xác minh]** |

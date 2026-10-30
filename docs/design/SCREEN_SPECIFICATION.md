@@ -139,8 +139,8 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 **Ba chế độ:** `Live` (mặc định) · `Edit` (layout editor) · `Fullscreen` (ẩn sidebar + topbar, HUD overlay).
 
 **Vùng/Component:**
-1. **Canvas** (PixiJS/Canvas 2D — chọn công nghệ thuộc Agent Frontend `[Giả định]`): tiles, tường, bàn, nhân vật. Mỗi department = một **Area** có màu viền và nhãn; agent ngồi trong Area của department mình (`agent.departmentId`). Agent ngoài project đang lọc → mờ 40%.
-2. **Nhân vật** = `agent`; animation map trực tiếp từ state/tool event: `working` + tool `edit/write` → gõ phím; `read/search` → đọc tài liệu; `bash/test` → terminal; `idle` → ngồi/đi lại nhẹ (**không** đi uống cà phê, xem TV); `waiting_input` → bubble "?"; `waiting_approval` → bubble "✋" + đi tới "Review desk"; `blocked/failed` → bubble "⛔" đỏ, nhân vật đứng; `paused` → bubble "⏸"; `offline/stopped` → ghế trống + nameplate xám. Review/handoff giữa 2 agent thật (task handoff event) → hai nhân vật tới meeting table; **không** có meeting giả lập.
+1. **Canvas** (Phaser 3.90 qua abstraction `OfficeRenderer`, benchmark trước khi khóa implementation — OWR-2 D-011; thay thế "PixiJS/Canvas 2D [Giả định]"; kích thước tile 16 vs 32 chưa được Owner quyết định, xem `VIRTUAL_OFFICE.md` §21): tiles, tường, bàn, nhân vật. Mỗi department = một **Area** có màu viền và nhãn; agent ngồi trong Area của department mình (`agent.departmentId`). Agent ngoài project đang lọc → mờ 40%.
+2. **Nhân vật** = `agent`; animation map trực tiếp từ state/tool event: `working` + tool `edit/write` → gõ phím; `read/search` → đọc tài liệu; `bash/test` → terminal; `idle` → ngồi/đi lại nhẹ (**không** đi Coffee/Relax mặc định — OWR-2 Q-14; chỉ có setting tùy chọn, mặc định tắt; không xem TV); `waiting_input` → bubble "?"; `waiting_approval` → bubble "✋" + đi tới "Review desk"; `blocked/failed` → bubble "⛔" đỏ, nhân vật đứng; `paused` → bubble "⏸"; `offline/stopped` → ghế trống + nameplate xám. Review/handoff giữa 2 agent thật (task handoff event) → hai nhân vật tới meeting table; **không** có meeting giả lập.
 3. **HUD top:** office selector (layout), project filter, bộ đếm trạng thái (click → lọc highlight nhân vật), Follow (camera bám agent), Edit mode, Fullscreen, Sound, Hide HUD.
 4. **Agent Panel** (docked phải, `Drawer` inline, 320px): tên/role/department/provider/model/state + thời lượng; task hiện tại (link); progress evidence (`subtasks done/total` hoặc `tests pass/total`); last log line (monospace, 2 dòng); actions: Resolve (nếu blocked: mở form cung cấp input/secret), Pause/Resume, Stop (confirm), Retry, Reassign, View logs, View changes, Open workspace, Request review, Send instruction (textarea). Panel hiển thị khi click nhân vật hoặc `?focus=`.
 5. **HUD bottom:** minimap, zoom, ticker 1 dòng event mới nhất (không phải log đầy đủ).
@@ -687,7 +687,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 - Agent Backend: endpoint/entity `[Giả định]` trong từng mục; đặc biệt `attention`, `evidence`, `provider.health`, `workflow-runs.node_state`.
 - Agent Realtime: WS topic; throttle guidelines (500ms/agent feed, 1s node state).
 - Agent Sandbox/Security: PTY terminal, file lock, secret masking, permission mode.
-- Agent Office/Game: engine chọn (PixiJS/Canvas), sprite set tự vẽ (license), layout JSON schema riêng.
+- Agent Office/Game: engine Phaser 3.90 qua `OfficeRenderer` (OWR-2 D-011; benchmark trước khi khóa), sprite set tự vẽ (license), layout JSON schema riêng.
 
 ## 7. Rủi ro
 - Khối lượng 22 màn + 10 tab Agent Detail lớn hơn Phase 3 cho phép → ưu tiên 11 core; các màn còn lại có thể là "embed/lite" của màn core (Project Detail nhúng Tasks/Approvals).

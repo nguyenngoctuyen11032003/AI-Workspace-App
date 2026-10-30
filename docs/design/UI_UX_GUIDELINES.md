@@ -87,7 +87,7 @@ Cảm xúc tổng thể: "tĩnh, chính xác, đắt tiền nhờ tiết chế" 
 
 ### 3.6 Virtual Office và khu SaaS cùng tồn tại
 
-Virtual Office (2D pixel-art, Phaser/Pixi) là khu vực duy nhất được phép có phong cách "game" **[Đã xác minh]**. Quy tắc ranh giới:
+Virtual Office (2D pixel-art, Phaser 3.90 qua `OfficeRenderer` — OWR-2 D-011) là khu vực duy nhất được phép có phong cách "game" **[Đã xác minh]**. Quy tắc ranh giới:
 
 - **Canvas pixel-art chỉ nằm trong viewport nội dung** của route `/office`. App shell (sidebar, topbar, command palette, toast, dialog) vẫn là SaaS style 100% — không pixel font, không pixel border ở shell.
 - **Palette của office được "dịch" từ token SaaS**: nền sàn/tường dùng neutral-800/900 của dark theme; màu trạng thái nhân vật (bong bóng "coding", "waiting approval") dùng đúng status colors của hệ thống (có thể lượng tử hóa cho pixel-art nhưng hue không đổi). Ở light theme, office đổi bộ tile sáng (tilemap variant) — **[Giả định]** cần Agent Virtual Office xác nhận chi phí asset.
@@ -99,7 +99,7 @@ Virtual Office (2D pixel-art, Phaser/Pixi) là khu vực duy nhất được ph�
 
 ### 3.7 Nguyên tắc ngôn ngữ (UX writing)
 
-- Ngôn ngữ UI mặc định: tiếng Anh (i18n-ready, key-based) **[Giả định — Cần người dùng phê duyệt]**; tiếng Việt là locale thứ hai.
+- Ngôn ngữ UI mặc định: **tiếng Việt**; tiếng Anh là locale thứ hai (i18n-ready, key-based) **[OWR-2 D-015 ĐÃ DUYỆT; thay thế "mặc định tiếng Anh" trước đây]**.
 - Sentence case; không dấu chấm cuối label; thông báo lỗi = [Chuyện gì] + [Vì sao nếu biết] + [Làm gì tiếp].
 - Tránh "Oops", "Uh-oh"; hệ thống không xưng "I"; agent được gọi bằng tên agent.
 - Số liệu: `1,204` (dấu phẩy nghìn), `12.5k` khi ≥ 10k ở chỗ chật, thời gian `2m 13s`, token `1.2M`.
@@ -109,12 +109,12 @@ Virtual Office (2D pixel-art, Phaser/Pixi) là khu vực duy nhất được ph�
 | # | Quyết định | Lý do | Trạng thái |
 |---|---|---|---|
 | D1 | Dark theme mặc định, Light ngang hàng (không phải phụ) | Brief yêu cầu Dark/Light/System; ops console thường dùng dark; light cần cho tablet/mobile ban ngày | Đã xác minh |
-| D2 | Accent AI = violet, không trùng blue "running" | Tránh trộn nghĩa "AI" vs "đang chạy" | Cần người dùng phê duyệt |
-| D3 | Inter + JetBrains Mono | Phổ biến, hinting tốt trên Windows ClearType, có tabular-nums, OFL | Cần người dùng phê duyệt |
+| D2 | Accent AI = violet/purple, không trùng blue "running" | Tránh trộn nghĩa "AI" vs "đang chạy" | Đã duyệt (OWR-2 D-015) |
+| D3 | Inter + JetBrains Mono | Phổ biến, hinting tốt trên Windows ClearType, có tabular-nums, OFL | Đã duyệt (OWR-2 D-015) |
 | D4 | Một cấp card | Brief cấm card lồng card; giảm noise | Đã xác minh |
 | D5 | Office UI overlay bằng DOM, không vẽ trong canvas | Accessibility + đồng nhất | Đề xuất |
 | D6 | lucide strokeWidth 1.75 (thay vì mặc định 2) | Nhẹ hơn, hợp text 13px; vẫn đủ nét ở 16px | Đề xuất |
-| D7 | Ngôn ngữ UI mặc định tiếng Anh | Thuật ngữ kỹ thuật, tránh dịch nửa vời | Cần người dùng phê duyệt |
+| D7 | Ngôn ngữ UI mặc định tiếng Việt, tiếng Anh là phụ | OWR-2 D-015 (thay thế đề xuất "mặc định tiếng Anh"); giữ thuật ngữ kỹ thuật tiếng Anh khi cần | Đã duyệt (OWR-2 D-015) |
 
 ## 5. Dependencies
 

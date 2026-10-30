@@ -1,53 +1,46 @@
 # NEXT_SESSION.md
 
-Cập nhật: 2026-10-30 (Phase 0 Finalization). Đọc `AGENTS.md` trước, rồi file này.
+Cập nhật: 2026-10-30 (sau OWR-2). Đọc `AGENTS.md` (mục 8) và `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md` trước.
 
 ## 1. Tóm tắt dự án
-AI WORKSPACE là nền tảng điều phối nhiều AI agent mô phỏng một công ty phần mềm, mỗi agent dùng Claude Code hoặc Codex CLI làm bộ não. Có Virtual Office 2D điều khiển bằng sự kiện thật, workflow node-based, Approval Center, sandbox, Skill Library và (đề xuất D-021) thư mục skill Markdown động theo từng agent. Owner giữ quyền nghiệm thu cuối cùng.
+AI WORKSPACE: nền tảng điều phối nhiều AI agent mô phỏng công ty phần mềm. Claude Agent SDK là adapter chính (D-004). Codex và OpenHands đã hoãn khỏi MVP. Stack: React 19 + Vite, NestJS, pnpm monorepo, PostgreSQL 16 + Redis, Drizzle. Owner nghiệm thu cuối cùng.
 
 ## 2. Phase hiện tại
-**Phase 0: các đầu việc kỹ thuật hoàn tất, chờ QA độc lập lần hai và quyết định của Owner.** Phase 1 **không được bắt đầu** khi chưa có xác nhận rõ ràng của Owner. Hoàn thành đầu việc kỹ thuật không có nghĩa là Owner đã phê duyệt.
+**Phase 0 MỞ. Phase 1 chưa được cho phép.** Không chuyển Phase 0 thành Completed, không bắt đầu Phase 1 khi chưa có xác nhận rõ ràng của Owner.
 
-## 3. Tiến độ tổng thể
-Nội dung Phase 0 xong. Chưa đóng vì thiếu quyết định Owner, QA lần hai chưa có kết quả cuối, và 16 FR chưa có AC.
+## 3. Tiến độ
+Quyết định OWR-2 đã ghi nhận (16 APPROVED, 5 APPROVED_CONDITIONAL, 0 VERIFIED). Tài liệu đã đồng bộ phần có căn cứ (74 thay đổi). PoC Drizzle và Skill/Resume đã chạy (Partial). Docker BLOCKED. QA lần ba chưa chạy.
 
-## 4. Việc đã hoàn thành
-Xem `PROJECT_STATUS.md` mục "Đã hoàn thành" và `TASK_BACKLOG.md` (FIN-001..FIN-007 DONE).
+## 4. Đã hoàn thành
+Xem `PROJECT_STATUS.md` và `PHASE_0_FINAL_REPORT.md` mục A đến D.
 
-## 5. Việc chưa hoàn thành
-- QA lần hai: `PHASE_0_QA_REVIEW_2.md` (đang chạy lúc ghi).
-- 16 FR cần Owner làm rõ trước khi viết AC.
-- Đồng bộ các giá trị phụ thuộc quyết định vào tài liệu nguồn (hoãn có chủ đích, xem `docs/DOC_SYNC_LOG_PHASE0.md` bảng "Deferred").
-- PoC kiểm chứng skill động và resume (FIN-009), kiểm chứng Codex, Docker sandbox, concurrency (runbook trong `PHASE_0_TECHNICAL_VALIDATION_REPORT.md`), tất cả cần Owner cho phép.
+## 5. Chưa hoàn thành
+- Câu hỏi PENDING_OWNER_CLARIFICATION (9 mục): danh sách event gốc, Q-07 ToS, FR-122/181/182/183, tile 16 hay 32, D-005 đổi MVP B, MIT asset.
+- 12 FR NEEDS_OWNER_CLARIFICATION.
+- Xung đột X-1..X-12 và các mục "Not synced" trong `docs/DOC_SYNC_LOG_OWR2_A.md`, `docs/DOC_SYNC_LOG_OWR2_B.md`.
+- QA độc lập lần ba.
+- Docker validation (`docs/poc/POC_DOCKER_SANDBOX.md`), Drizzle trên PG16, SK-04 với agent thật, test qua Agent SDK, Conductor PoC (Q-20).
 
 ## 6. Task đang làm dở
-Không có agent nào đang chạy, trừ QA lần hai nếu chưa kết thúc. Kiểm tra `TASK_BACKLOG.md` mục FIN-008.
+Không có agent chạy.
 
 ## 7. Quyết định quan trọng
-`PHASE_0_OWNER_DECISION_REGISTER.md` (D-001..D-021 và Q-01..Q-15, **tất cả PENDING_OWNER_APPROVAL**), `DECISION_LOG.md`, `docs/adr/`. Thứ tự nên quyết trước: D-001, D-002, D-014, D-004 cùng D-010, D-007.
+`PHASE_0_OWNER_DECISION_REGISTER.md` mục 9 đến 12, `DECISION_LOG.md`, `docs/adr/` (ADR-0001..0021).
 
 ## 8. Vấn đề đang gặp
-`KNOWN_ISSUES.md` (14 mục), `PHASE_0_REMAINING_RISKS.md`, `PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md`. Chính: Codex CLI chưa cài, Docker daemon chưa chạy, lộ trình phase đặt agent chạy thật trước policy và audit, `--system-prompt-snapshot` ảnh hưởng skill động khi resume, điều khoản subscription cho nhiều phiên.
+`KNOWN_ISSUES.md` (19 mục), `PHASE_0_REMAINING_RISKS.md`.
 
 ## 9. File đã thay đổi
-Tất cả tài liệu trong `docs/`, các file `PHASE_0_*.md`, `AGENTS.md`, `DECISION_LOG.md`, `TASK_BACKLOG.md`, `PROJECT_STATUS.md`, `KNOWN_ISSUES.md`, `IMPLEMENTATION_LOG.md`, `AGENT_WORK_LOG.md`, `NEXT_SESSION.md`. Chi tiết thay đổi tài liệu nguồn: `docs/DOC_SYNC_LOG_PHASE0.md`. Không có mã ứng dụng. Repo là git repo; Owner đã commit và đẩy Phase 0 lên main (1aec2b3). Các thay đổi sau đó (ghi nhận phản hồi Owner, đồng bộ tài liệu) chưa commit; agent không commit khi chưa được yêu cầu.
+Xem nhật ký đồng bộ `docs/DOC_SYNC_LOG_OWR2_A.md`, `docs/DOC_SYNC_LOG_OWR2_B.md` và `git log`. Thư mục `docs/poc/` và `docs/owner-responses/` là mới.
 
-## 10. Chỉ dẫn chính xác cho phiên tiếp theo
-1. Đọc `PHASE_0_FINAL_REPORT.md`, `PHASE_0_QA_REVIEW_2.md`, `PHASE_0_OWNER_DECISION_REGISTER.md`.
-2. **Chờ Owner phản hồi.** Không tự coi đề xuất là đã duyệt, không bắt đầu Phase 1.
-3. Khi Owner ghi APPROVED hoặc REJECTED kèm ngày cho từng quyết định: cập nhật `DECISION_LOG.md`, sổ quyết định và ADR liên quan; rồi đồng bộ các mục "Deferred" trong `DOC_SYNC_LOG_PHASE0.md` đúng theo quyết định đó.
-4. Nếu Owner cho phép: chạy các runbook kiểm chứng (Codex, Docker, concurrency, PoC skill động) và ghi bằng chứng thật.
-5. Hợp nhất AC mới vào `docs/product/ACCEPTANCE_CRITERIA.md` chỉ sau khi Owner duyệt.
-6. Chạy lại QA độc lập ngắn trước khi đề xuất đóng Phase 0.
+## 10. Chỉ dẫn cho phiên tiếp theo
+1. Chờ Owner trả lời các mục chờ. Không tự điền thông tin thiếu.
+2. Khi Owner tự mở Docker Desktop và báo `docker version`, `docker info` thành công: chạy VAL-DOCKER-01..09 theo `docs/poc/POC_DOCKER_SANDBOX.md` rồi cập nhật.
+3. Chạy QA độc lập lần ba sau khi các xung đột được Owner quyết.
+4. Chỉ khi Owner xác nhận rõ ràng mới bàn tới Phase 1; lộ trình theo `docs/IMPLEMENTATION_ROADMAP.md` (phụ lục OWR-2: Phase 2 chỉ mock/sandbox nếu cổng an ninh chưa đạt).
 
 ## 11. Agent cần khởi chạy
-| Việc | Vai trò | Ghi chú |
-|---|---|---|
-| Đồng bộ theo quyết định đã duyệt | Documentation + Architect | Mỗi agent một nhóm file, không ghi chung |
-| AC cho 16 FR sau khi Owner trả lời | BA | ID AC không trùng dải 201-433 |
-| Re-review | QA độc lập, không phải tác giả tài liệu | |
-| Phase 1 sau khi được phép | Theo `docs/IMPLEMENTATION_ROADMAP.md` | Xem xét xếp lại phase an toàn (KNOWN_ISSUES #14) |
+QA độc lập (không phải tác giả tài liệu); Documentation (đồng bộ theo quyết định mới); BA (AC cho FR sau khi Owner làm rõ); Validation Engineer (Docker, khi Docker sẵn sàng).
 
-## 12. Task chạy song song được
-Đồng bộ theo miền (DB và Event, Security, Provider và Office, Design) nếu Owner duyệt từng nhóm. Các runbook kiểm chứng độc lập nhau trừ khi dùng chung quota subscription: chạy nối tiếp khi đo concurrency.
-Việc phải chờ: mọi thay đổi giá trị chính tắc chờ quyết định của Owner.
+## 12. Chạy song song được
+Đồng bộ theo miền không chung file. Các PoC độc lập nhau trừ Docker (cần Owner). Không chạy nhiều model song song khi đang đo quota.

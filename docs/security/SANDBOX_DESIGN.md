@@ -140,6 +140,8 @@ Hạn chế đã biết: proxy theo hostname không chặn **domain fronting** h
 
 ### 4.5 Volume mount
 
+> [D-008, OWR-2 mục 8 (2026-10-30)]: không mount bất kỳ thư mục credential nào của Owner/host (`%USERPROFILE%\.claude`, `.codex`, `.ssh`, `.aws`...) và không mount Docker socket/named pipe vào Agent sandbox; sandbox không hoạt động thì fail closed. Docker cần cho sandbox validation (Q-10); Owner tự khởi động Docker Desktop và kiểm tra tài nguyên theo OWR-2 mục 5.3.
+
 | Mount | Nguồn | Đích | Chế độ | Ghi chú |
 | --- | --- | --- | --- | --- |
 | Workspace | named volume `aiw-<pid>-ws` hoặc đồng bộ một chiều host→volume (SECURITY §2.3 mục 6) | `/workspace` | rw | Không bind `D:\` trực tiếp ở mặc định (9P chậm, junction không resolve — INFRA §6.4) |

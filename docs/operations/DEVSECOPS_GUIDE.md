@@ -167,7 +167,7 @@ Audit event là **append-only** (không có UPDATE/DELETE qua app role; retentio
 | gitleaks ở 3 điểm (pre-commit, CI, diff validation) | Bảo vệ cả code platform lẫn code sinh ra | [Đề xuất] |
 | Trivy + `pnpm audit` + Dependabot | Chuỗi OSS đủ cho đội nhỏ | [Đề xuất] |
 | pnpm `minimum-release-age` 3 ngày | Giảm rủi ro supply-chain (package vừa bị chiếm) | [Cần người dùng phê duyệt] |
-| Audit retention 365 ngày online | Cân bằng dung lượng/điều tra | [Cần người dùng phê duyệt] |
+| Audit retention 365 ngày online | Cân bằng dung lượng/điều tra | Q-06 (OWR-2 2026-10-30): 365 ngày online + signed export 2 năm |
 
 ## 12. Dependencies
 

@@ -3,6 +3,8 @@
 > Phase 0 · Agent 15 (AI Agent Architect — Skill & Knowledge System) · Phiên bản 0.1 · Trạng thái: Draft chờ owner phê duyệt
 > Quy ước đánh dấu: **[Đã xác minh]** (kiểm tra từ tài liệu chính thức / source code local ngày 2026-10-30) · **[Đề xuất]** (quyết định của Architect, có lý do) · **[Giả định]** (chưa có dữ liệu) · **[Cần người dùng phê duyệt]** (owner phải chốt trước Phase 1)
 
+> **[OWR-2 D-013 / Q-18]** `SKILL.md` là chuẩn Skill; metadata mở rộng bằng `skill.yaml`; Skill và Memory là hai thành phần riêng; Memory cần cơ chế quản lý và approval phù hợp. Dynamic Skill Injection (D-021) = APPROVED_CONDITIONAL cho tới khi OWN-AC-1..3 được kiểm thử (xem `DYNAMIC_SKILL_INJECTION.md`).
+
 ## 1. Mục đích
 
 Tài liệu này định nghĩa cách AI WORKSPACE lưu trữ, phân phối và kiểm chứng **tri thức có thể tái sử dụng** cho AI employee:

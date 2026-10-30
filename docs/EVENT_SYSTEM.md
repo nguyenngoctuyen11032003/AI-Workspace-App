@@ -6,6 +6,10 @@ Anh em: `AGENT_ARCHITECTURE.md` (state, session), `MULTI_AGENT_ORCHESTRATION.md`
 
 Nhãn: **[Đã xác minh]** · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**.
 
+> **[OWR-2 / Q-12, Q-19, D-014 — CHUẨN TÊN EVENT, ghi đè các câu "chọn UPPER_SNAKE" bên dưới]** Tên event **lưu trong database** (cột `type`, outbox, replay) là `lowercase.dot.notation`, ví dụ `task.started`, `task.completed`, `agent.blocked`. Dạng `UPPER_SNAKE_CASE` (ví dụ `TASK_COMPLETED`) **chỉ** là tên tương thích ở API/output bên ngoài, sinh ra từ DUY NHẤT một hàm ánh xạ xác định `toLegacyName(dbName)` (tên khớp `API_DOCUMENTATION.md` §6.3; đề xuất: `dbName.toUpperCase().replaceAll('.', '_')`, đặt trong `packages/contracts`); không được có hệ thống đặt tên thứ hai độc lập. Các bảng §4–§9 hiện còn liệt kê tên ở dạng UPPER_SNAKE: **đọc là tên tương thích bên ngoài**; tên DB tương ứng là dạng dotted của cùng tên (ví dụ `AGENT_STATE_CHANGED` ↔ `agent.state.changed`) và việc đổi từng dòng sang dotted nằm trong hạng mục dọn dẹp tiếp theo của Phase 0 (OWR-2 §1 Q-19, §3 D-014).
+>
+> **[PENDING_OWNER_CLARIFICATION — D-014 / OWR-2 §3]** Mười sáu tên event gốc của Owner ("Prompt 1 mục 8.4") **không được lưu trong repo**. Owner cần cung cấp hoặc xác nhận danh sách gốc. Toàn bộ danh mục §5–§6 dưới đây là **đề xuất, chưa phải danh sách gốc của Owner**, không được xem là đã phê duyệt.
+
 ---
 
 ## 1. Mục đích
@@ -36,7 +40,7 @@ interface EventEnvelope<T extends string = string, P = unknown> {
   id: string;                 // UUID v7 (sắp xếp theo thời gian; cột uuid của DB) — xem M-E1
   globalSeq?: number;         // do DB cấp khi INSERT (bigserial); không có ở event transient
   schemaVersion: number;      // phiên bản payload của `type`
-  type: T;                    // UPPER_SNAKE, ví dụ 'TASK_COMPLETED'
+  type: T;                    // OWR-2 Q-19: lowercase.dot.notation trong DB, ví dụ 'task.completed'; UPPER_SNAKE ('TASK_COMPLETED') chỉ là ánh xạ API qua toLegacyName()
   occurredAt: string;         // ISO 8601 UTC; do server gán, không tin đồng hồ client/provider
   delivery: 'durable' | 'transient';
   organizationId: string;
@@ -69,7 +73,7 @@ Cấp `sequence` trong transaction: aggregate `session` dùng `UPDATE agent_sess
 
 ## 5. Danh mục event
 
-Quy ước: tên UPPER_SNAKE theo tiền tố; cột "D/T" = Durable (ghi `agent_events` + outbox) hoặc Transient (chỉ Redis). Trường `?` là tùy chọn. Mọi event có envelope §4; bảng chỉ liệt kê `payload`.
+**[Đề xuất, chưa phải danh sách gốc của Owner — xem PENDING_OWNER_CLARIFICATION ở đầu tài liệu]** Quy ước: tên liệt kê dạng UPPER_SNAKE theo tiền tố = tên tương thích API (OWR-2 Q-19); tên lưu DB là dạng lowercase.dot; cột "D/T" = Durable (ghi `agent_events` + outbox) hoặc Transient (chỉ Redis). Trường `?` là tùy chọn. Mọi event có envelope §4; bảng chỉ liệt kê `payload`.
 
 ### 5.1 AGENT_*
 
@@ -169,7 +173,7 @@ Ghi chú: FR-117 dùng `STAGE_STARTED/STAGE_COMPLETED`; A07 dùng `WORKFLOW_STAG
 | A07 | `SEMAPHORE_WAIT` | `RESOURCE_SEMAPHORE_WAIT` |
 | DB §5.2 | `session.started` … `office.animation` (dotted, lowercase) | Bảng dưới |
 
-DB §5.2 dùng dạng dotted (`task.status_changed`, `run.node_entered`, `approval.requested`...). Hai kiểu đặt tên cùng tồn tại trong tài liệu nguồn; chọn **UPPER_SNAKE** vì FR-117 là yêu cầu của owner. Quy đổi: `session.*→AGENT_SESSION_*`, `task.*→TASK_*`, `run.*→WORKFLOW_*`, `approval.*→HUMAN_APPROVAL_*`, `agent.*→AGENT_*`, `llm.*`/`tool.*`/`file.*`/`shell.*`/`git.*→PROVIDER_*` (xem §6), `office.moved/animation` là **transient, không thuộc catalogue durable** (§9) (M-E2).
+DB §5.2 dùng dạng dotted (`task.status_changed`, `run.node_entered`, `approval.requested`...). Hai kiểu đặt tên cùng tồn tại trong tài liệu nguồn; ~~chọn **UPPER_SNAKE** vì FR-117 là yêu cầu của owner~~ **[bị thay thế bởi OWR-2 Q-12/Q-19: DB dùng lowercase.dot; UPPER_SNAKE chỉ là ánh xạ API qua một hàm duy nhất]**. Xung đột còn lại: DB §5.2 có phân đoạn chứa dấu gạch dưới (`task.status_changed`) trong khi quy tắc ánh xạ đề xuất thay `.`→`_`; cần Owner/Architect chốt dùng `status.changed` hay giữ `status_changed` (xem DOC_SYNC_LOG_OWR2_B, Conflicts). Quy đổi: `session.*→AGENT_SESSION_*`, `task.*→TASK_*`, `run.*→WORKFLOW_*`, `approval.*→HUMAN_APPROVAL_*`, `agent.*→AGENT_*`, `llm.*`/`tool.*`/`file.*`/`shell.*`/`git.*→PROVIDER_*` (xem §6), `office.moved/animation` là **transient, không thuộc catalogue durable** (§9) (M-E2).
 
 ## 6. Event provider chuẩn hóa
 
@@ -227,6 +231,7 @@ Luồng: `BEGIN` → thay đổi trạng thái nghiệp vụ → `INSERT agent_e
 - Relay: **một leader** (advisory lock) đọc `ORDER BY global_seq LIMIT 500`, giữ thứ tự, phát **at-least-once**; leader chết thì replica khác lấy lock. A07 dùng nhiều relay với `FOR UPDATE SKIP LOCKED` (nhanh hơn nhưng mất thứ tự); chọn thứ tự vì office/timeline cần (M-E3).
 - DB §5.4 đề xuất (a) outbox cho server mode, (b) publish-after-commit cho desktop. Đề xuất hợp nhất: **dùng outbox ở mọi chế độ** (D-014); chi phí nhỏ, loại một nhánh mã. Owner duyệt.
 - Transient không đi qua outbox: publish thẳng Redis.
+- **[OWR-2 D-014: ĐÃ DUYỆT hướng]** Transactional Outbox; một relay leader chịu trách nhiệm phát; Redis Pub/Sub hoặc Streams cho realtime delivery; hỗ trợ replay bằng `lastEventId`; tên event theo Q-19. Bảng `event_outbox` được định nghĩa ở `DATABASE_DESIGN.md` §4/§5.5 (đề xuất, cần duyệt chi tiết cột).
 
 ### 7.2 Redis pub/sub (đẩy tức thời)
 

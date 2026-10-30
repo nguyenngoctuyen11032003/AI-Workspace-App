@@ -106,6 +106,8 @@ Mỗi task mang một manifest (JSON) do PM agent hoặc người dùng tạo, p
 
 ### 7.1 Lớp 1 – cấu hình CLI của agent (runtime)
 
+> **[CẦN QUYẾT ĐỊNH, CF-014/Q-17/D-004 (OWR-2 2026-10-30)]**: thiết kế dưới đây (`acceptEdits`, `.claude/settings.json` trong worktree, hook `command`, `claude -p` spawn) mâu thuẫn với hướng đã chốt: Claude Agent SDK là adapter chính, mode mặc định `default` + whitelist, `canUseTool` + PreToolUse policy in-process (SECURITY.md §5.1), settings không ghi file trong worktree. Giữ nguyên nội dung gốc làm biến thể fallback/raw CLI cho đến khi tác giả doc viết lại; xem DOC_SYNC_LOG_OWR2_A.md. Không mount thư mục credential hoặc Docker socket vào Agent; fail closed nếu sandbox không hoạt động.
+
 **Claude Code** (platform sinh `<worktree>/.claude/settings.json` trước khi spawn):
 
 ```json
@@ -129,7 +131,7 @@ Mỗi task mang một manifest (JSON) do PM agent hoặc người dùng tạo, p
 - Spawn với `claude -p --permission-mode acceptEdits --max-turns N --output-format stream-json`; **không** dùng `--dangerously-skip-permissions` trừ khi agent chạy trong container sandbox (INFRASTRUCTURE_DESIGN §6.6).
 - Matcher dùng **tên tool chuẩn** (`Edit`, `Write`, `Bash`); tên sai sẽ không khớp và hook im lặng – test case bắt buộc.
 
-**Codex CLI** (khi cài): spawn với `codex exec --sandbox workspace-write --ask-for-approval never --cd <worktree>` và `config.toml` do platform sinh (`sandbox_mode = "workspace-write"`, `sandbox_workspace_write.writable_roots` = chỉ worktree, `network_access = false`). Codex không có hook cấp file-level như Claude, nên manifest tinh hơn worktree chỉ được enforce ở Lớp 3. [Đề xuất; chi tiết flag cần kiểm tra lại khi cài Codex – xem ENVIRONMENT_SETUP §7]
+**Codex CLI** (khi cài; **hoãn khỏi MVP, D-005/OWR-2, không cài ở phạm vi hiện tại**): spawn với `codex exec --sandbox workspace-write --ask-for-approval never --cd <worktree>` và `config.toml` do platform sinh (`sandbox_mode = "workspace-write"`, `sandbox_workspace_write.writable_roots` = chỉ worktree, `network_access = false`). Codex không có hook cấp file-level như Claude, nên manifest tinh hơn worktree chỉ được enforce ở Lớp 3. [Đề xuất; chi tiết flag cần kiểm tra lại khi cài Codex – xem ENVIRONMENT_SETUP §7]
 
 ### 7.2 Lớp 2 – hệ điều hành / container
 
@@ -157,6 +159,7 @@ agent/<slug>/<task-id>  ──merge --no-ff──▶  integration/<project>  ─
 - `integration/<project>` được platform tạo từ `main` khi project khởi tạo; tất cả task base từ đây (hoặc từ branch task cha khi có dependency chain).
 - Merge task → integration là `--no-ff` để giữ ranh giới task trong lịch sử.
 - `integration → main` chỉ xảy ra khi người dùng bấm **Approve/Release** (nếu có remote: tạo PR bằng `gh pr create`, merge qua GitHub với branch protection – xem CI_CD.md). Không bao giờ tự động.
+- [Q-04, D-009, OWR-2 2026-10-30] Agent được merge task → `integration/*` khi vượt qua các gate (Lớp 3 validation, review diff). Merge vào `main` luôn cần Owner approval riêng, hết hiệu lực sau 15 phút (Q-05); Lead Agent không được thay thế quyền phê duyệt của Owner. Mỗi task một worktree/branch riêng, review diff trước khi merge, không tự động merge vào `main`; Owner là người phê duyệt cuối cùng.
 - Sau mỗi merge vào integration, các worktree đang chạy **không** bị rebase tự động (tránh phá tiến trình agent); chúng sẽ được rebase lúc chính chúng chuẩn bị merge.
 
 ### 8.1 Thứ tự merge theo dependency

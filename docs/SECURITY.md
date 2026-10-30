@@ -1,8 +1,7 @@
 # AI WORKSPACE — Security Architecture & Threat Model
 
 > Agent 09 (Cybersecurity Engineer) · 2026-10-30 · Trạng thái: PROPOSAL v1
-> Phạm vi: nền tảng chạy tới 10 AI employee đồng thời, mỗi employee là một subprocess
-> Claude Code CLI (2.1.312, OAuth subscription) hoặc Codex CLI (chưa cài), backend NestJS
+> Phạm vi: nền tảng chạy nhiều AI employee đồng thời (mặc định ứng dụng 5, Q-07/OWR-2: giới hạn của ứng dụng, **không** xác nhận subscription cho phép song song; chưa xác minh ToS; không tự tăng lên 10/18), mỗi employee là một phiên Claude (adapter chính: Claude Agent SDK theo Q-17/D-004/OWR-2; raw CLI 2.1.312 chỉ cho tác vụ phụ trợ/PoC) hoặc Codex CLI (**hoãn khỏi MVP, D-005/OWR-2; chưa cài, Q-10**), backend NestJS
 > trên Windows 11 Pro (build 26300), Docker Desktop 29 (WSL2 backend), desktop shell Tauri 2 (kế hoạch).
 
 ## 0. Tóm tắt điều hành
@@ -23,6 +22,7 @@
    Secret của chính app đi qua OS keychain (Windows Credential Manager). Postgres chỉ lưu
    ciphertext hoặc reference. Mọi event/log/transcript đi qua redaction middleware.
 4. 5 rủi ro còn lại cần user chấp nhận bằng văn bản: xem §10 (R1, R2, R3, R5, R6).
+5. **Security gates (OWR-2 mục 8, D-008, D-019)**: (a) không cho Agent thực thi arbitrary code trên Windows host khi chưa có sandbox đạt chuẩn; (b) không mount thư mục credential của host hoặc Docker socket vào Agent; **không mount bất kỳ thư mục credential nào vào Agent sandbox** (D-008); (c) sandbox không hoạt động thì fail closed; (d) không đưa production-capable Agent execution vào trước khi authentication, authorization, permission model, credential isolation, audit, sandbox và emergency stop hoàn thành; (e) Phase 2 chỉ được xây provider adapter ở mock/sandbox mode khi các gate chưa đạt; (f) không tuyên bố 18 Agent concurrent đã được kiểm thử; (g) Agent CLI/API chỉ triển khai ở Phase 3 sau Security Review, token ngắn hạn least-privilege, có redaction, chặn nested execution trái phép (D-019). Docker cần cho sandbox validation (Q-10). Phase 0 còn mở; Phase 1 chưa được cho phép (OWR-2). Phần thiết kế CLI-hook/`--permission-mode manual` ở §2.2, §2.3, §5 là biến thể **fallback** sau khi Q-17/D-004 chọn Agent SDK (xem §5.1).
 
 ---
 
@@ -91,7 +91,7 @@ Claude Code 2.1.312 (kiểm chứng bằng `claude --help` và docs):
 | `Read(~/.claude/**)` deny | Read/Edit/Write/Grep/Glob tool, `cat`/`head`/`sed`/`tee` và redirect `< >` mà CLI nhận dạng | `grep -r` không nêu tên file, `node script.js` tự mở file, `powershell Get-Content` (PowerShell tool có AST riêng nhưng không map Read rules đầy đủ) |
 | Working directories (`cwd`, `--add-dir`) | File tools; `cd` ra ngoài cần prompt; `blockReadsOutsideWorkingDirectories` | Subprocess tự truy cập đường dẫn tuyệt đối |
 | PreToolUse hook (exit 2 / `permissionDecision: deny`) | Thấy toàn bộ `tool_input.command` trước khi chạy, có thể `updatedInput` để rewrite | Chỉ chạy nếu settings không bị `--bare`/`disableAllHooks`; hook script phải nằm ngoài tầm sửa của agent |
-| `--permission-mode manual` + `--permission-prompts host` | Mọi lệnh không match allow sẽ hỏi host (app) qua `--permission-prompt-tool`/stream-json control request | — |
+| `--permission-mode manual` + `--permission-prompts host` [biến thể raw CLI = fallback; mặc định theo CF-014/Q-17: `default` + whitelist qua Agent SDK] | Mọi lệnh không match allow sẽ hỏi host (app) qua `--permission-prompt-tool`/stream-json control request | — |
 | `--restricted` | Bỏ hẳn Bash/PowerShell/WebFetch, bỏ qua user/project settings | Không phù hợp cho coding agent cần chạy test |
 | `sandbox.enabled` | **Không trên native Windows** (chỉ WSL2) | — |
 
@@ -107,6 +107,8 @@ có khả năng gây hại chạy trên host (denylist + hook + approval), và (
 code sang container**.
 
 ### 2.3 Tier 1 — Host agent, containerized execution (mặc định)
+
+> [Q-17/D-004, OWR-2: sơ đồ dưới minh họa biến thể raw CLI (`claude -p`, `--permission-mode manual`, hook HTTP) và chỉ là **fallback**. Thiết kế chính: Claude Agent SDK, `canUseTool` + PreToolUse policy in-process, mode `default` + whitelist (§5.1). Fail closed nếu sandbox/Docker không hoạt động; không mount thư mục credential hoặc Docker socket vào Agent.]
 
 ```
 ┌──────────────── Host (Windows, user TUYEN, non-admin) ──────────────────┐
@@ -164,7 +166,7 @@ Thành phần:
 
 Trade-off Tier 1:
 - (+) Giữ nguyên OAuth subscription; UX nhanh (edit file trên host, IDE thấy ngay); 1 container/project,
-  không phải 1/agent nên nhẹ (10 agent ≈ 3–4 project).
+  không phải 1/agent nên nhẹ (10 agent ≈ 3–4 project) [ví dụ kích thước, không phải đề xuất concurrency; mặc định ứng dụng là 5, Q-07/OWR-2].
 - (+) Code sinh ra chưa bao giờ chạy trên host với quyền user trừ khi hook bị bypass.
 - (−) Boundary vẫn phụ thuộc vào hook + denylist: nếu agent ngụy trang lệnh (`node -e`, heredoc
   `python - <<`), hook phải **mặc định rewrite mọi interpreter vào container**, chấp nhận
@@ -200,6 +202,8 @@ subscription, build image nặng, latency cao hơn, debug khó hơn; nhưng là 
 đúng nghĩa "sandbox" khi Claude Code không có native Windows sandbox.
 
 ### 2.5 Codex-specific
+> [D-005/OWR-2: Codex hoãn khỏi MVP; không cài Codex CLI, không live test ở phạm vi hiện tại; giữ abstraction `AgentAdapter`. Nội dung dưới chỉ là tham khảo cho sau MVP.]
+
 Khi cài Codex: `config.toml` do app sinh (`-c` flags hoặc `--config`), `sandbox_mode="workspace-write"`,
 `approval_policy="on-request"`, `[sandbox_workspace_write] network_access=false`,
 `[windows] sandbox="mxc"` nếu build hỗ trợ, fallback `elevated` (yêu cầu user chạy
@@ -348,13 +352,12 @@ JSON escape (`\u0073k-`), chunk boundary (buffer 2 KB overlap giữa các chunk 
 ## 5. Approval policy engine
 
 ### 5.1 Nguồn sự kiện cần quyết định
-1. Claude Code: PreToolUse hook (`permissionDecision: ask`) **và** permission control request
-   trong stream-json khi `--permission-prompts host` (`--permission-prompt-tool` cho MCP tool) — app
-   phải trả lời cả hai cùng một engine. 2.1.x có cả hook event `PermissionRequest`
-   (`decision.behavior allow/deny`, exit 2 không được tôn trọng) — dùng PreToolUse làm nguồn chính
-   vì có `updatedInput`.
-2. Codex: `exec_approval_request` / `apply_patch_approval_request` (JSON-RPC app-server protocol).
-3. App-level: task lifecycle (merge, deploy, delete branch) không qua CLI.
+> Viết lại theo Q-17/D-004 (OWR-2 2026-10-30), xử lý CF-013/CF-014 ở mức tài liệu; chưa có PoC nên không VERIFIED.
+
+1. **Claude (adapter chính = Claude Agent SDK)**: hai tầng dùng **chung một policy engine**: (a) callback `canUseTool` của SDK là đường quyết định chính; (b) **PreToolUse policy chạy in-process** (hook callback của SDK, không spawn script, không HTTP hook) là lớp bắt buộc, có `updatedInput` để rewrite lệnh vào container. Chế độ quyền mặc định `default` + whitelist an toàn; `acceptEdits`/`auto` chỉ theo role; không `bypassPermissions` ngoài sandbox; settings truyền qua cấu hình SDK, không ghi file settings trong worktree. Subscription authentication, API authentication và usage limits là ba thứ khác nhau; dùng SDK không đồng nghĩa được chạy số session không giới hạn (Q-17, Q-07).
+2. **Biến thể fallback (chỉ cho tác vụ phụ trợ/PoC dùng raw CLI)**: PreToolUse hook (`permissionDecision: ask`) và permission control request trong stream-json khi `--permission-prompts host` (`--permission-prompt-tool` cho MCP tool), cùng một engine; hook event `PermissionRequest` (`decision.behavior allow/deny`, exit 2 không được tôn trọng) — với CLI thì PreToolUse là nguồn chính vì có `updatedInput`. Không dùng làm kiến trúc tích hợp chính (Q-17).
+3. Codex (**hoãn khỏi MVP, D-005**): `exec_approval_request` / `apply_patch_approval_request` (JSON-RPC app-server protocol), chỉ khi đưa Codex vào sau MVP.
+4. App-level: task lifecycle (merge, deploy, delete branch) không qua provider. Agent được merge vào `integration/*` sau khi qua gate; merge `main` luôn cần Owner approval, Lead Agent không được phê duyệt thay Owner (Q-04, D-009).
 
 ### 5.2 Rule model
 ```ts
@@ -393,12 +396,11 @@ Chính sách mặc định (priority tăng dần):
 
 ### 5.3 Vòng đời approval
 ```
-approvals(id, task_id, agent_id, source{claude_hook|claude_control|codex|app}, tool, input_hash,
+approvals(id, task_id, agent_id, source{claude_sdk|claude_hook[fallback]|claude_control[fallback]|codex[hoãn]|app}, tool, input_hash,
           input_redacted jsonb, risk_tags[], rule_id, status{pending|approved|denied|expired|revoked},
           decided_by, decided_at, expires_at, scope, resolution_note, created_at)
 ```
-- Hook giữ kết nối HTTP mở (timeout hook default 600 s; app đặt 540 s) chờ quyết định; hết hạn ⇒ `deny`
-  với lý do "approval timed out", agent được thông báo và task chuyển `blocked`.
+- Thời gian chờ approval tối đa **540 giây** (Q-05/OWR-2; thống nhất với PERMISSION_MODEL §6.4). Hết 540 s: lưu approval ở trạng thái `pending` (bền vững), task chuyển `WAITING_HUMAN`, **không giữ worker**; có thể nhắc Owner sau 24 giờ (nhắc, không tự hết hạn). `prod_deploy`, `data_deletion`, `merge_main` cần approval riêng, hết hiệu lực sau **15 phút**, `scope=once`. Giá trị cũ "deny + task `blocked`" bị thay thế. [Điểm lệch còn lại: `expires_at` 7 ngày ở PERMISSION_MODEL §6.4, xem DOC_SYNC_LOG_OWR2_A.md]
 - Approve với `scope: task` tạo **cached decision** keyed by `(agent, tool, normalizedCommandPrefix)`
   hết hạn khi task kết thúc hoặc TTL; không bao giờ persist thành `permissions.allow` trong settings file
   của user.
@@ -497,7 +499,7 @@ Yêu cầu:
   `%LOCALAPPDATA%\aiw\audit\spool\` rồi replay; không bao giờ bỏ qua ghi audit để tiếp tục chạy lệnh nguy hiểm.
 - Hash chain kiểm tra được bằng `aiw audit verify`; export bundle ký (HMAC key trong keychain).
 - Secret access: mỗi lần giải mã secret ghi `secret_access(secretId, purpose, process)`; không ghi value.
-- Retention: 180 ngày audit, 30 ngày transcript đầy đủ (đã redact), tool_result > 64 KB lưu object store local
+- Retention: audit online **365 ngày** + signed export giữ **2 năm** (Q-06/OWR-2; trước đây ghi 180 ngày), 30 ngày transcript đầy đủ (đã redact), tool_result > 64 KB lưu object store local
   theo hash, có thể purge.
 - Config change: ConfigChange hook + file watcher trên thư mục policy; mọi thay đổi policy ghi diff.
 - Người dùng xem được timeline per task: "agent muốn X → rule Y → user approved lúc Z → chạy trong container C → exit 0".
@@ -540,7 +542,7 @@ owner security; coverage ≥ 90 % cho các module đó.
 | R7 | **Dependency install chạy code của bên thứ ba** (postinstall) trong container có network registry | Cần thiết để build | `--ignore-scripts` mặc định (bật scripts chỉ với approval `dependency_add`), tuổi package ≥ 14 ngày, audit | Chấp nhận |
 | R8 | **Hook/`--settings` là policy runtime của chính tiến trình CLI**; `--bare` hoặc lỗi settings ⇒ hooks không chạy; `ConfigChange` hook có thể chặn thay đổi settings file nhưng không chặn managed/`policy_settings` | Thiết kế CLI | App truyền settings qua `--settings` (không file trong worktree), verify qua `--include-hook-events` thấy `SessionStart` hook đã chạy trước khi gửi prompt; thiếu ⇒ kill | Chấp nhận |
 | R9 | **Transcript/history của CLI trên host** (`~/.claude/projects/*.jsonl`, `history.jsonl` hiện ~100 KB) nằm ngoài redaction của app | CLI tự ghi | Denylist env-dump; khuyến nghị user đặt `cleanupPeriodDays` nhỏ | Chấp nhận |
-| R10 | **Codex chưa cài**: toàn bộ thiết kế Codex trong tài liệu này dựa trên docs, chưa kiểm chứng `mxc` trên build 26300 | — | Verify trước khi bật Codex trong production | Ghi nhận |
+| R10 | **Codex chưa cài, hoãn khỏi MVP (D-005, Q-10)**: toàn bộ thiết kế Codex trong tài liệu này dựa trên docs, chưa kiểm chứng `mxc` trên build 26300 | — | Verify trước khi bật Codex trong production | Ghi nhận |
 
 Top 5 cần ký xác nhận: **R1, R2, R3, R5, R6**.
 
@@ -550,10 +552,10 @@ Top 5 cần ký xác nhận: **R1, R2, R3, R5, R6**.
 
 - **M0 (trước khi có agent nào chạy thật)**: admin guard; `--settings` generator + snapshot test; denylist +
   normalizer + 300 tests; redaction middleware; REST/WS token + Origin; audit table append-only.
-- **M1**: HTTP PreToolUse hook + approvals table + UI approve/deny; rewrite executes-code → container;
+- **M1**: Claude Agent SDK `canUseTool` + PreToolUse policy in-process (Q-17; HTTP hook chỉ fallback) + approvals table + UI approve/deny; rewrite executes-code → container;
   container launcher với config tests; emergency stop (job objects).
 - **M2**: manifest + diff validation + gitleaks gate; egress proxy; secrets qua `@napi-rs/keyring`.
-- **M3**: Tier 2 image + API-key injection; Codex adapter; `aiw audit verify`; chaos tests.
+- **M3**: Tier 2 image + API-key injection; Codex adapter [hoãn khỏi MVP, D-005]; `aiw audit verify`; chaos tests.
 
 ## 12. Tham chiếu đã kiểm chứng
 - `claude --help` 2.1.312: `--permission-mode {acceptEdits,auto,bypassPermissions,manual,dontAsk,plan}`,

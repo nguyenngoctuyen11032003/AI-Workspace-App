@@ -112,7 +112,7 @@ Hệ thống tự làm bước 2–3 khi `silence_timeout` (20 phút) — operat
 
 Dấu hiệu: nhiều execution FAILED(AUTH) hoặc `api_error_status` 5xx; pool `DOWN`.
 1. Kiểm `claude auth status`; nếu `loggedIn: false` → đăng nhập lại tương tác; pool tự về OK sau health-check (chạy `claude -p "OK" --max-turns 1` nội bộ, chi phí ~1 spawn).
-2. Nếu đăng nhập OK nhưng API lỗi → chờ; task về BLOCKED(provider); **không** tự chuyển provider — nếu muốn chuyển sang Codex (khi có), bấm Approve trên approval request từng project.
+2. Nếu đăng nhập OK nhưng API lỗi → chờ; task về BLOCKED(provider); **không** tự chuyển provider (Q-08/OWR-2: không auto-failover; thông báo Owner và chờ quyết định) — Codex hoãn khỏi MVP (D-005); nếu sau này có và Owner muốn chuyển, bấm Approve trên approval request từng project.
 3. Khi pool OK → task tự quay lại READY; không cần retry tay.
 
 ### 8.3 Rate limit / hết quota
@@ -139,7 +139,7 @@ Dấu hiệu: cost/giờ project vượt 2× trung bình 7 ngày; một executio
 
 - [ ] Sáng: `claude auth status` OK; free RAM ≥ 4 GB; pool OK; không execution LOST qua đêm.
 - [ ] Rà QUEUED có `queuedReason` bất thường (NO_ELIGIBLE_AGENT → thiếu role/skill).
-- [ ] Rà WAITING_APPROVAL (SLA 24 h).
+- [ ] Rà approval đang chờ (`WAITING_HUMAN`): chờ tối đa 540 s rồi lưu và chuyển `WAITING_HUMAN` không giữ worker; nhắc sau 24 h; `prod_deploy`/`data_deletion`/`merge_main` có approval riêng hết hiệu lực sau 15 phút (Q-05/OWR-2).
 - [ ] Cost hôm qua vs budget; rate-limit events.
 - [ ] Tối: Pause scheduling nếu không muốn agent chạy qua đêm (quota 5 giờ reset tốt hơn khi dùng tập trung [Giả định]).
 
@@ -168,7 +168,7 @@ Báo cáo lưu `docs/performance/AGENT_REPORT_<sprint>.md`; dashboard có view t
 |---|---|---|
 | Progress dựa trên evidence, không tự khai | Quy tắc WORK_PLAN §3 "không COMPLETED khi chưa có bằng chứng" | [Đề xuất] |
 | STOP ALL = taskkill /T /F toàn bộ | Đơn giản, có sẵn trên Windows; Job Object để sau | [Đề xuất] |
-| Không auto-switch provider, không auto-retry khi rate-limit hàng loạt | Tiền/quota là quyết định của owner | [Đề xuất] — [Cần người dùng phê duyệt] |
+| Không auto-switch provider, không auto-retry khi rate-limit hàng loạt | Tiền/quota là quyết định của owner | Q-08 (OWR-2 2026-10-30): không auto-failover khi hết quota, thông báo Owner và chờ; phần "không auto-retry hàng loạt" vẫn [Đề xuất] |
 | Incident note bắt buộc | Tạo dữ liệu cho quyết định scale | [Đề xuất] |
 
 ## 12. Dependencies

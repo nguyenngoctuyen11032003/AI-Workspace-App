@@ -59,6 +59,8 @@ Owner chưa nêu chi tiết; BA đề xuất ba vai trò để thiết kế data
 
 ### 4.2 Các cấp permission — [Đề xuất] (Owner chưa định nghĩa số cấp)
 
+> **[OWR-2 Q-03]** Owner chấp thuận số cấp **L0..L5** dùng `permission_level` + `permission_profile` (DATABASE_DESIGN); **không hỗ trợ quyền `full`**. Bảng dưới (tên/ngữ nghĩa từng cấp) vẫn là đề xuất và **xung đột** với `architecture/AGENT_ORGANIZATION.md` §6 (L0..L4); chưa chốt bảng chuẩn, xem DOC_SYNC_LOG_OWR2_B. Merge `main` luôn cần Owner approval; Lead Agent không thay thế Owner (Q-04).
+
 | Level | Tên | Được phép | Không được phép |
 |---|---|---|---|
 | L0 | **Read-only** | Đọc file trong workspace task; đọc tài liệu; gửi message; tạo báo cáo. | Ghi file, chạy lệnh, network. |

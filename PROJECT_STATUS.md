@@ -1,34 +1,29 @@
 # PROJECT_STATUS.md — AI WORKSPACE
 
-Cập nhật: 2026-10-30 (Phase 0 Finalization)
+Cập nhật: 2026-10-30 (sau OWR-2)
 
 ## Phase hiện tại
-**Phase 0: Research, Architecture, Documentation. Các đầu việc kỹ thuật đã hoàn tất. QA lần hai: PASS WITH FIXES. Đang chờ quyết định của Owner.** Phase 1 chưa bắt đầu và không được bắt đầu khi chưa có xác nhận rõ ràng của Owner. Hoàn thành đầu việc kỹ thuật không đồng nghĩa với phê duyệt.
+**Phase 0 vẫn MỞ.** Phase 1 **chưa được Owner cho phép**. Không có mục nào được chuyển thành Completed. Chi tiết điều kiện đóng: `PHASE_0_FINAL_REPORT.md` mục G.
 
-## Đã hoàn thành
-- Phân tích 4 repo tham chiếu và herdr. Nghiên cứu Claude Code (có smoke test thật, do agent đo một lần, chưa tái hiện) và Codex (chưa live).
-- 63 tài liệu bắt buộc, 20 ADR viết lại theo cấu trúc yêu cầu, QA lần một (PASS WITH FIXES).
-- Truy vết đủ 199 FR: 109 AC đã có, 74 AC mới PROPOSED, 16 FR chờ Owner làm rõ (`PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md`).
-- Phân loại lại 55 mâu thuẫn, sổ quyết định Owner, danh mục ký duyệt bảo mật, báo cáo kiểm chứng kỹ thuật và 27 runbook, sổ rủi ro còn lại.
-- Đồng bộ 29 thay đổi tài liệu độc lập với quyết định chờ duyệt (`docs/DOC_SYNC_LOG_PHASE0.md`).
-- Đặc tả nạp skill Markdown động (D-021): `docs/architecture/DYNAMIC_SKILL_INJECTION.md`.
-
-## Đang thực hiện
-QA lần hai đã xong (PASS WITH FIXES, 0 P0, 3 P1, 8 P2, 6 P3). Các sửa sau review chưa được QA kiểm lại.
+## Đã làm
+- Nghiên cứu, 63 tài liệu bắt buộc, 21 ADR, QA lần một và hai (PASS WITH FIXES).
+- OWR-2: ghi nhận quyết định Q-02..Q-20 và D-001..D-021 (16 APPROVED, 5 APPROVED_CONDITIONAL, không mục nào VERIFIED) trong `PHASE_0_OWNER_DECISION_REGISTER.md`, `DECISION_LOG.md`, ADR.
+- Đồng bộ tài liệu theo OWR-2: 44 thay đổi (nhóm A) và 30 thay đổi (nhóm B), có log và danh sách xung đột để lại.
+- Truy vết đủ 199 FR: 109 AC_DEFINED, 74 AC_ADDED_PHASE0, 4 AC_PROPOSED_PENDING_CLARIFICATION (FR-122, 181, 182, 183), 12 NEEDS_OWNER_CLARIFICATION.
+- PoC được phép: Drizzle (9 PASS, 1 FAIL, 1 BLOCKED, trên PGlite), Dynamic Skill/Resume (SK-01, 02, 03, 05 PASS ở mức script, SK-04 SIMULATED). Docker: BLOCKED.
 
 ## Đang bị block
 | Việc | Chờ gì |
 |---|---|
-| Đồng bộ các giá trị còn lại vào tài liệu nguồn | Owner duyệt D-xxx và Q-xx |
-| Bắt đầu Phase 1 | Owner xác nhận |
-| Test Codex thật, test Docker sandbox, test concurrency | Owner cho phép và cài Codex CLI, bật Docker |
-| Viết AC cho 16 FR | Owner trả lời câu hỏi làm rõ |
+| Docker sandbox validation | Owner tự mở Docker Desktop (OWR-2 5.3) |
+| Conductor PoC (Q-20) | Owner cho phép phạm vi PoC |
+| Test qua Agent SDK, SK-04 với agent thật, tích hợp Approval Center | Owner cho phép, sau cổng an ninh |
+| Làm rõ FR-122, 181, 182, 183 và 12 FR khác | Câu trả lời của Owner |
+| Đóng băng event schema | Owner cung cấp hoặc xác nhận danh sách event gốc (mục 8.4) |
+| Phase 1 | Xác nhận rõ ràng của Owner |
 
-## Quyết định đã phê duyệt
-Đã duyệt ngày 2026-10-30: D-001 (trừ khung frontend, Q-16), D-002, D-007 (có điều kiện), D-010 (Q-07 còn mở). Các quyết định còn lại PENDING_OWNER_APPROVAL; xem `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8.
-
-## Vấn đề chưa giải quyết
-Xem `KNOWN_ISSUES.md`, `PHASE_0_REMAINING_RISKS.md`, `PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md`.
+## Cần Owner xác nhận
+Xem `PHASE_0_FINAL_REPORT.md` mục A đến G, và `PHASE_0_OWNER_DECISION_REGISTER.md` mục 9 đến 12.
 
 ## Task tiếp theo
-Owner đọc `PHASE_0_FINAL_REPORT.md` và `PHASE_0_OWNER_DECISION_REGISTER.md`, trả lời các quyết định. Chi tiết: `NEXT_SESSION.md`.
+Owner xem báo cáo, trả lời các mục PENDING_OWNER_CLARIFICATION, tự mở Docker nếu muốn kiểm chứng sandbox. Chi tiết `NEXT_SESSION.md`.

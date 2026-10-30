@@ -232,3 +232,9 @@ Quy ước: **ACCEPTABLE_IF_OWNER_ACKNOWLEDGES** = chỉ chấp nhận khi Owner
 1. Thiết kế bảo mật gốc **đủ sâu và trung thực** về giới hạn (R1–R10), tuân thủ chính sách credential. Nhưng **mọi kiểm soát đều là thiết kế chưa kiểm thử**, và boundary duy nhất (Docker) chưa chứng minh được vì daemon không chạy.
 2. Ba điểm nguy hiểm nhất chưa được tài liệu gốc xử lý: (a) thứ tự roadmap cho agent live trước M0; (b) quyền duyệt/approval có thể lấy qua token trên đĩa; (c) host-side lỗ hổng phân loại (git config thực thi, PowerShell/`wsl`/`docker`, allowlist theo tên lệnh).
 3. Không có hạng mục nào ở mục 2 nên được Owner tick trước khi các mục tương ứng ở 5.2 có bằng chứng. Phase 1 chưa được bắt đầu theo yêu cầu.
+
+## Cập nhật theo OWR-2 (2026-10-30)
+- Owner chấp nhận có điều kiện các rủi ro Tier 1 (OWR-1) và nêu lại các cổng an ninh ở OWR-2 mục 8: không chạy arbitrary code trên host Windows khi chưa có sandbox đạt chuẩn; không mount thư mục credential hay Docker socket vào agent; fail closed; không đưa agent chạy thật vào trước khi authn, authz, permission model, credential isolation, audit, sandbox và emergency stop hoàn thành; Phase 2 chỉ ở chế độ mock/sandbox nếu các cổng chưa đạt.
+- Các ô ký của từng mục **chưa được tick**: do Owner tự ký.
+- Bằng chứng mới: SK-04 mới SIMULATED (agent thật bị chặn quyền ghi), Docker chưa kiểm chứng (daemon tắt). Hai điều này không làm giảm mức rủi ro đã ghi.
+- Không có mục nào chuyển sang "Tested with evidence" trừ phần SK-01..SK-03 và SK-05 ở mức script (`docs/poc/POC_DYNAMIC_SKILL.md`).

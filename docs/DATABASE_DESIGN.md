@@ -167,7 +167,8 @@ export const agentStatus = pgEnum('agent_status', [
   'created', 'idle', 'available', 'assigned', 'running', 'waiting',
   'blocked', 'reviewing', 'completed', 'failed', 'paused', 'disabled',
 ]);
-export const permissionLevel = pgEnum('permission_level', ['read_only', 'standard', 'elevated', 'full']);
+// OWR-2 Q-03: KHÔNG có giá trị 'full' (đã xóa). L0..L5 ánh xạ qua cột permission_profile (§4, agents).
+export const permissionLevel = pgEnum('permission_level', ['read_only', 'standard', 'elevated']);
 export const providerKind = pgEnum('provider_kind', [
   // Sửa sau QA-001 (P0-2): thêm codex, openhands, generic_cli, mock theo PROVIDER_INTEGRATION.md mục adapter.
   // 'mock' chỉ dùng trong CI/test, bị chặn ở môi trường sản phẩm. Các kind API (anthropic_api...) giữ cho phương án API key.
@@ -201,7 +202,7 @@ export const notificationLevel = pgEnum('notification_level', ['info', 'success'
 export const auditSeverity = pgEnum('audit_severity', ['info', 'notice', 'warning', 'critical']);
 ```
 
-Lưu ý: `task_status` giữ UPPERCASE theo spec; các enum khác lowercase snake. **[CẦN DUYỆT]** nếu muốn thống nhất casing toàn hệ thống.
+Lưu ý: `task_status` giữ UPPERCASE; các enum khác lowercase snake. **[OWR-2 Q-13: ĐÃ DUYỆT]** (không còn cần duyệt casing). `permission_level` không chứa `full` (OWR-2 Q-03). Enum `provider_kind` giữ `codex`/`openhands` chỉ để mở rộng qua `AgentAdapter`; OWR-2 D-005/D-006 hoãn hai provider này khỏi MVP (không seed/không dùng trong MVP).
 
 ---
 
@@ -321,7 +322,7 @@ export const providerConfigs = pgTable('provider_configs', {
   defaultModel: text('default_model'),
   availableModels: jsonb('available_models').$type<string[]>().notNull().default([]),
   pricing: jsonb('pricing').$type<ProviderPricing>().notNull().default({}), // {model:{inputPerM,outputPerM,cacheReadPerM,cacheWritePerM}}
-  maxConcurrent: integer('max_concurrent').notNull().default(5), // D-010: mặc định 5; seed Claude 5, Codex 3
+  maxConcurrent: integer('max_concurrent').notNull().default(5), // D-010/Q-07: mặc định 5 (không phải xác nhận subscription); seed Claude 5; Codex hoãn (D-005)
   rateLimitRpm: integer('rate_limit_rpm'),
   isEnabled: boolean('is_enabled').notNull().default(true),
   ...timestamps, ...softDelete,
@@ -344,6 +345,9 @@ export const agents = pgTable('agents', {
   providerId: uuid('provider_id').references(() => providerConfigs.id, { onDelete: 'set null' }),
   model: text('model'),
   permissionLevel: e.permissionLevel('permission_level').notNull().default('standard'),
+  // [OWR-2 Q-03, đề xuất cột] permission_profile = hồ sơ quyền chi tiết ánh xạ L0..L5 (ví dụ 'L0'..'L5'); KHÔNG hỗ trợ quyền 'full'.
+  // CHECK (permission_profile IN ('L0','L1','L2','L3','L4','L5')) và CHECK ràng buộc nhất quán permission_level <-> permission_profile (bảng ánh xạ chốt ở USER_ROLES_AND_PERMISSIONS / AGENT_ORGANIZATION; Owner xác nhận).
+  permissionProfile: text('permission_profile').notNull().default('L1'),
   workingDirectory: text('working_directory'),
   maxTokenBudget: integer('max_token_budget').notNull().default(500_000),
   maxExecutionTimeSec: integer('max_execution_time_sec').notNull().default(1800),
@@ -1189,6 +1193,8 @@ CREATE TRIGGER trg_audit_logs_ro BEFORE UPDATE OR DELETE ON audit_logs FOR EACH 
 
 ### 5.2 Event types (tiền tố theo aggregate)
 
+> **[OWR-2 Q-12/Q-19/D-014]** Tên event trong DB là `lowercase.dot.notation` (danh sách dưới đây). `UPPER_SNAKE_CASE` chỉ là ánh xạ API/compat qua MỘT hàm xác định (`EVENT_SYSTEM.md` đầu tài liệu); không có hệ thống đặt tên thứ hai. Danh sách dưới là **đề xuất, chưa phải danh sách gốc của Owner** (mục 8.4 gốc chưa có trong repo: PENDING_OWNER_CLARIFICATION, xem `EVENT_SYSTEM.md`). Cần chốt: phân đoạn có `_` (`status_changed`) hay tách chấm (`status.changed`).
+
 ```
 session.started | session.heartbeat | session.suspended | session.resumed | session.exited | session.crashed
 llm.request | llm.response | llm.stream_chunk (chỉ khi bật debug) | llm.error
@@ -1222,17 +1228,38 @@ END $$ LANGUAGE plpgsql;
 ```
 
 - BullMQ repeatable job `partition-maintainer` hàng ngày gọi `ensure_month_partitions('agent_events', 2)` và `ensure_month_partitions('usage_records', 2)`. Không phụ thuộc extension `pg_partman` để image dev nhẹ; production có thể thay bằng pg_partman.
-- Retention (system_settings `events.retention_days`, mặc định 90 desktop / 365 server): job `event-retention` chạy `ALTER TABLE agent_events DETACH PARTITION ... CONCURRENTLY` rồi `DROP` (hoặc export ra `.jsonl.gz` trước khi drop nếu `events.archive_on_drop = true`).
+- **[OWR-2 Q-06 — retention mặc định audit]** `audit_logs`: giữ **365 ngày online**; **signed export giữ 2 năm**. Không xóa/ghi đè dữ liệu audit (OWR-2 §7).
+- Retention (system_settings `events.retention_days`, mặc định 90 desktop / 365 server; áp cho `agent_events`, KHÔNG thay Q-06 cho audit): job `event-retention` chạy `ALTER TABLE agent_events DETACH PARTITION ... CONCURRENTLY` rồi `DROP` (hoặc export ra `.jsonl.gz` trước khi drop nếu `events.archive_on_drop = true`).
 - `usage_records` **không** bị drop theo retention (dữ liệu chi phí), chỉ roll-up; partition cũ > 24 tháng được archive.
 
 ### 5.4 UI replay
 
 1. Client mở session → `GET /sessions/:id/events?afterSeq=0&limit=500` đọc từ DB theo index `(session_id, sequence)`.
-2. Đồng thời subscribe Redis channel `aiw:ch:session:{id}`; server publish mỗi event sau khi `COMMIT`. Hai phương án: (a) transactional outbox (insert `agent_events` + `outbox` cùng tx, worker publish rồi xoá) — bền; (b) publish-after-commit — đơn giản, mất event nếu process chết giữa chừng nhưng client tự bù qua bước 3. **[CẦN DUYỆT]**: (a) cho server mode, (b) cho desktop.
+2. Đồng thời subscribe Redis channel `aiw:ch:session:{id}`; server publish mỗi event sau khi `COMMIT`. Hai phương án: (a) transactional outbox (insert `agent_events` + `outbox` cùng tx, worker publish rồi xoá) — bền; (b) publish-after-commit — đơn giản, mất event nếu process chết giữa chừng nhưng client tự bù qua bước 3. **[CẦN DUYỆT]**: (a) cho server mode, (b) cho desktop. **[OWR-2 D-014: ĐÃ DUYỆT hướng Transactional Outbox; phương án (b) không còn là lựa chọn mặc định, xem §5.5]**
 3. Client merge: bỏ qua event có `sequence <= lastSeq` đã có; nếu phát hiện gap (`sequence > lastSeq + 1`) thì gọi lại REST với `afterSeq`.
 4. Reconnect < 10 phút: đọc Redis Stream `aiw:evt:session:{id}:buffer` trước, chỉ fallback DB khi stream đã trim.
 5. Timeline toàn cục (dashboard) dùng `global_seq` tương tự, channel `aiw:ch:org:{orgId}:events`.
 6. "Time travel" debug: `node_runs.checkpoint.cursorEventSeq` trỏ tới sequence trong session stream, UI replay từ đầu tới cursor để tái hiện trạng thái.
+
+---
+
+### 5.5 Bảng `event_outbox` [Đề xuất, đồng bộ OWR-2 D-014 — cần Owner duyệt chi tiết cột]
+
+Bảng này **chưa có** trong bản thiết kế gốc (44 bảng); được thêm như đề xuất nhất quán với `EVENT_SYSTEM.md` §7.1.
+
+```ts
+export const eventOutbox = pgTable('event_outbox', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  eventId: uuid('event_id').notNull(),              // tham chiếu logic tới agent_events.id (agent_events partition nên không FK cứng)
+  globalSeq: bigint('global_seq', { mode: 'number' }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  attempts: integer('attempts').notNull().default(0),
+}, (t) => [index('event_outbox_global_seq_idx').on(t.globalSeq)]);
+```
+
+- Ghi cùng transaction với `agent_events`; **một relay leader** (advisory lock) đọc theo `global_seq`, publish Redis Pub/Sub hoặc Streams, xóa dòng sau khi publish; at-least-once, consumer idempotent theo `event_id`.
+- Replay bằng `lastEventId` (client gửi id event cuối đã nhận; server đọc `agent_events` theo `global_seq` > cursor của id đó).
+- Role relay được `DELETE` trên bảng này (khác `agent_events` append-only).
 
 ---
 
@@ -1315,7 +1342,7 @@ export default defineConfig({
    `start → pm.requirements (agent_task) → approval.prd (approval) → techlead.design → parallel[backend.impl, frontend.impl] → join → qa.test → condition(testsPassed) → [true] devops.release → approval.deploy → end ; [false] → backend.fix → qa.test`. Mỗi node `data.roleSelector = { jobTitle: 'Backend Developer', departmentSlug: 'engineering' }` để bind agent lúc run; `position` xếp theo lưới 260x140 để mở React Flow là đẹp ngay.
 5. **Default approval policies**: `git-push` (require admin), `shell-destructive` (reject by default), `spend-over-5usd`, `deploy`.
 6. **Default office layout**: 40x24 tiles, 1 room mỗi department (grid 2x3), 4 desks/room, lobby + meeting room, furniture cơ bản; `character_positions` tạo cho mỗi agent seeded, gán desk theo department.
-7. **system_settings** mặc định & `resource_limits` org-level (`max_concurrent_agents = 5` theo D-010, trần cấu hình 18; `max_cost_usd_per_day = 20`). Seed `provider_configs.max_concurrent`: `claude_code` 5, `codex` 3 (D-010 APPROVED).
+7. **system_settings** mặc định & `resource_limits` org-level (`max_concurrent_agents = 5` theo D-010 / OWR-2 Q-07, trần cấu hình 18; `max_cost_usd_per_day = 20`). **Comment seed: "không phải xác nhận subscription"** (5 là giới hạn mặc định của ứng dụng, không phải xác nhận subscription cho phép 5 session đồng thời; không tự tăng lên 10/18 khi chưa xác minh điều khoản provider). Seed `provider_configs.max_concurrent`: `claude_code` 5; ~~`codex` 3~~ **[OWR-2 D-005: Codex hoãn khỏi MVP, không seed `codex` trong MVP; giá trị 3 chỉ còn là gợi ý cho tương lai, chưa xác nhận]**. **[OWR-2 D-016]** 18 agent role là **seed data, không hardcode**; Agent Identity, Provider Identity, User Identity là ba khái niệm tách biệt (không dùng chung khóa/bảng).
 
 Dev fixtures (demo project, vài task, event mẫu) nằm ở `seeds/dev/` chỉ chạy với `pnpm db:seed --dev`.
 
@@ -1472,4 +1499,4 @@ EVENTS_RETENTION_DAYS=90
 5. **RLS** ở Postgres từ v1 hay chỉ app-level scoping.
 6. Desktop distribution: yêu cầu Docker Desktop hay bundle embedded Postgres/Redis.
 7. Bảng phụ `event_sequences` cho aggregate không phải session (task/run/agent) — hoặc chỉ dùng session stream + `global_seq`.
-8. Retention mặc định: events 90 ngày (desktop) / 365 ngày (server); usage không xoá.
+8. Retention mặc định: events 90 ngày (desktop) / 365 ngày (server); usage không xoá. **[OWR-2 Q-06 ĐÃ DUYỆT cho audit: 365 ngày online + signed export 2 năm]**.

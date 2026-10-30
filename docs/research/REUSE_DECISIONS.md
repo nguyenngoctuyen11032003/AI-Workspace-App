@@ -3,6 +3,7 @@
 > Tác giả: Technical Research Lead (tổng hợp Phase 0). Ngày: 2026-10-30.
 > Nguồn: các bảng "Tổng hợp" của `CHATDEV_ANALYSIS.md` §12, `PIXEL_AGENTS_ANALYSIS.md` §9, `MY_VIRTUAL_OFFICE_ANALYSIS.md` §11.3, `OPENHANDS_ANALYSIS.md` §12; `LICENSE_AND_REUSE.md` §3–4; `DECISION_LOG.md` (D-001…D-016).
 > Đây là tài liệu kỹ thuật, không phải tư vấn pháp lý.
+> **[OWR-2 Q-15 / D-012]** Asset mặc định chỉ CC0; font OFL được phép nếu lưu license/NOTICE; CC-BY chỉ khi Owner phê duyệt từng package; asset MIT nguồn gốc không rõ (ví dụ Pixel Agents furniture/tile, RD-033) không bundle mặc định, chặt hơn các dòng "ALLOW-COND/Dùng tạm" bên dưới. Tái dùng code Apache-2.0/MIT sau khi xác minh license và attribution không đổi. My Virtual Office (AGPL) chỉ tham khảo ý tưởng; không sao chép code, prompt, layout, asset.
 
 ---
 
@@ -96,7 +97,7 @@ Attribution MIT: giữ dòng `Copyright (c) 2026 Pablo De Lucca` và nội dung 
 | E2E: `e2e/fixtures/mock-claude-runner.cjs`, `e2e/helpers/mock-claude.ts` | Pixel Agents | Mã | Đổi đường dẫn | | ALLOW | RD-032 | MIT header | Đã xác minh |
 | Asset tools `scripts/asset-manager.html`, `wall-tile-editor.html`, `jsonl-viewer.html` | Pixel Agents | Công cụ nội bộ | | | ALLOW | RD-032 | MIT | Đề xuất |
 | **Sprite nhân vật** `characters/char_0..5.png` (dựa trên JIK-A-4 MetroCity) | Pixel Agents | Chỉ sau khi xác minh | | Vẽ chibi riêng (RD-034) | ALLOW-COND | RD-033 | Nếu CC0 xác nhận: ghi credit tự nguyện; nếu không: không dùng | **Đề xuất — mâu thuẫn C-2** (README chỉ credit, LICENSE_AND_REUSE nói CC0 từ trang itch.io) |
-| Sprite furniture/floor/wall/carpet/pet (post-#117) | Pixel Agents | Dùng tạm | Thay dần bằng asset riêng | | ALLOW-COND (MIT theo repo, không có tuyên bố art riêng) | RD-033 | MIT + `CREDITS.json` | Đề xuất; chưa có xác nhận bằng văn bản của tác giả |
+| Sprite furniture/floor/wall/carpet/pet (post-#117) | Pixel Agents | ~~Dùng tạm~~ **Không bundle mặc định (OWR-2 Q-15)** | Thay bằng asset CC0/tự vẽ | | ~~ALLOW-COND~~ DENY mặc định cho tới khi tác giả xác nhận nguồn gốc và Owner duyệt (MIT theo repo, không có tuyên bố art riêng) | RD-033 | MIT + `CREDITS.json` | Đề xuất; chưa có xác nhận bằng văn bản của tác giả |
 | Font `FSPixelSansUnicode-Regular.ttf` | Pixel Agents | **Không bundle** | | Thay bằng Press Start 2P/Pixelify Sans (OFL) | DENY cho tới khi xác minh (license mâu thuẫn OFL vs personal-use) | RD-035 | — | Đề xuất |
 | `claudeTeamProvider.ts`, `subagentWatch.ts`, `docs/research/claude-harness-spawn-formats.md` | Pixel Agents | Tài liệu format spawn sub-agent (Claude Code 2.1.x) | | Domain team/task riêng | REF-ONLY | RD-022 | Không | Đã xác minh (tồn tại) |
 | `ptySessionManager.ts` + xterm mirror | Pixel Agents | Ý tưởng terminal trong web | Nếu dùng: Windows cần xử lý PTY riêng | | REF-ONLY | RD-022 | Không | Đề xuất |
@@ -229,7 +230,7 @@ Thống kê chỉ để định hướng; nguồn sự thật là các bảng �
 | Mục font | Press Start 2P (OFL 1.1), IBM Plex Mono (OFL 1.1); font design hiện chọn Inter + JetBrains Mono (D-015) cũng cần thêm vào | Khi bundle font | Designer |
 | Mục JIK-A-4 MetroCity | Chỉ thêm khi đã chụp bằng chứng CC0; ghi tên tác giả dù không bắt buộc | Sau khi xác minh C-2 | Asset owner |
 | Mục Agent Server / client OpenHands | Thêm khi RD-037/RD-039 được xác minh và được phân phối cùng sản phẩm | Trước khi phát hành D-006 | Tech lead |
-| CI gate | Chặn dependency `AGPL*`, `GPL*`, `SSPL`, `BUSL`, `UNKNOWN`; chặn asset thiếu `CREDITS.json` hoặc license ngoài allowlist (CC0-1.0, MIT, CC-BY-4.0, OFL-1.1) | Khi có CI (`docs/development/CI_CD.md`) | DevOps |
+| CI gate | Chặn dependency `AGPL*`, `GPL*`, `SSPL`, `BUSL`, `UNKNOWN`; chặn asset thiếu `CREDITS.json` hoặc license ngoài allowlist (OWR-2 Q-15: mặc định CC0-1.0; OFL-1.1 chỉ font kèm NOTICE; CC-BY-4.0 chỉ package Owner đã duyệt; MIT asset không rõ nguồn không nằm trong allowlist mặc định) | Khi có CI (`docs/development/CI_CD.md`) | DevOps |
 | Kiểm tra apache NOTICE | Nếu ChatDev thêm file `NOTICE` về sau, chép vào mục ChatDev (hiện không có) | Mỗi lần cập nhật tham chiếu | Tech lead |
 
 Trạng thái: **Đề xuất**. Chưa có file `THIRD_PARTY_NOTICES.md` hay `licenses/` nào được tạo trong Phase 0 (Phase 0 chỉ có tài liệu).

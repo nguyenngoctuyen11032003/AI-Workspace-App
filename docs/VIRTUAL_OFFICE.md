@@ -2,6 +2,8 @@
 
 Tác giả: Agent Virtual Office — Phase 0, chỉ tài liệu. Ngày: 2026-10-30. Trạng thái: DRAFT chờ phê duyệt.
 Nhãn: **[Đã xác minh]** (có trong research/spec), **[Đề xuất]**, **[Giả định]**, **[Cần người dùng phê duyệt]**.
+> **[OWR-2 — cập nhật Phase 0, chưa phải Phase 0 hoàn tất]** D-011: Phaser 3.90 qua abstraction **`OfficeRenderer`**; **benchmark trước khi khóa implementation**; animation và trạng thái nhân vật chỉ phản ánh event thực tế. Q-14: agent idle **không** tự động đi Coffee/Relax mặc định; chỉ là setting tùy chọn (mặc định tắt). Q-15: asset mặc định **chỉ CC0**; font OFL được phép nếu lưu đầy đủ license/NOTICE; CC-BY chỉ dùng khi Owner phê duyệt **từng package**; asset MIT không rõ nguồn gốc (ví dụ furniture/tile Pixel Agents) **không bundle mặc định** (chặt hơn đề xuất cũ "MIT/OFL được phép"). Việc tái dùng **code** MIT/Apache-2.0 không bị ảnh hưởng (D-012). **Kích thước tile 16 vs 32 KHÔNG được OWR-2 quyết định**: giữ cờ chờ Owner (xem §21 mục 3).
+
 Nguồn: `DECISION_LOG.md` (D-011, D-012, D-014), `research/PIXEL_AGENTS_ANALYSIS.md` (MIT), `research/MY_VIRTUAL_OFFICE_ANALYSIS.md` (AGPL, chỉ ý tưởng), `research/LICENSE_AND_REUSE.md`, `design/SCREEN_SPECIFICATION.md` §3.3, `design/DESIGN_TOKENS.md`, `product/FUNCTIONAL_REQUIREMENTS.md` FR-151..FR-165, `DATABASE_DESIGN.md` §4.12, `PROVIDER_INTEGRATION.md` (event chuẩn hóa).
 
 ## 1. Mục đích
@@ -227,7 +229,7 @@ Toolbar: Select, Floor, Wall, Door, Furniture, Desk, Room/Area, Label, Eraser; t
 1. **Cổng duy nhất**: `office-core` chỉ nhận `OfficeInput` sinh từ `agent_events`/stream do backend phát; frontend **không** tự sinh domain/provider event. Mọi lệnh animation/di chuyển nội bộ mang `causedByEventId` (bắt buộc ở kiểu TypeScript); thiếu → ném lỗi ở dev/CI, ở production bị loại bỏ và tăng `office_unbacked_transition_total` (alert > 0).
 2. **Cấm ngẫu nhiên hành vi**: không `Math.random`, không `setInterval/setTimeout` trực tiếp trong `office-core`/`office-phaser` cho hành vi (ESLint rule tùy biến + test grep). PRNG có seed chỉ dùng cho palette ngoại hình (seed = hash `agentId`).
 3. **Ngoại lệ có phạm vi hẹp**: chu kỳ khung hình của animation hiện tại (vd `idle` 2 frame) là cách vẽ trạng thái đã có căn cứ, không phải chuyển trạng thái; timer decay §7.4 chỉ là hệ quả tất định của event cha.
-4. **Không "hoạt động giả"**: loại pet, thời tiết, ngày/đêm, TV, ném máy bay giấy, oẳn tù tì, phi tiêu, đi uống cà phê ngẫu nhiên, họp giả lập (§15). Relax/Coffee chỉ dùng theo các event ở §7.2 và **mặc định tắt** (`idleToRelax=false`, `coffeeOnCooldown=false`) cho tới khi Owner bật **[Cần người dùng phê duyệt — SCREEN §3.3 nói idle không đi cà phê, FR-164 cho phép, xem §21]**.
+4. **Không "hoạt động giả"**: loại pet, thời tiết, ngày/đêm, TV, ném máy bay giấy, oẳn tù tì, phi tiêu, đi uống cà phê ngẫu nhiên, họp giả lập (§15). Relax/Coffee chỉ dùng theo các event ở §7.2 và **mặc định tắt** (`idleToRelax=false`, `coffeeOnCooldown=false`) cho tới khi Owner bật. **[OWR-2 Q-14 ĐÃ DUYỆT: idle không tự động chuyển Coffee/Relax mặc định; có thể có setting tùy chọn. FR-164 phải đồng bộ (agent khác sở hữu).]**
 5. **Mất kết nối**: đóng băng toàn bộ + banner "Mất kết nối — trạng thái tại hh:mm"; khi nối lại replay từ `lastEventId`, nhân vật chuyển thẳng tới trạng thái hiện tại (không phát lại chuỗi di chuyển cũ nếu cách > 60 s — snap có đánh dấu, ghi `reason:'resync'`).
 6. **Kiểm toán**: ring buffer `office_transition_log` (500 mục: `tick, agentId, from→to, causedByEventId`) xem được ở chế độ Debug và xuất được; AC của SCREEN §3.3 "mọi animation transition có event id" được kiểm bằng log này.
 7. **Harness demo/test không phải sản phẩm**: kiểm 13 animation (AC-096) chạy ở route dev `/__office-harness` và Storybook, bị loại khỏi build production (CI scan chuỗi), nhãn "HARNESS" cố định trên màn hình; không dùng cho trạng thái rỗng (empty = sàn trống + ghế "Create your first agent").
@@ -264,7 +266,7 @@ Thang suy giảm (tự động khi `perf.sample` dưới ngưỡng liên tục 5
 ## 15. Asset và giấy phép
 
 ### 15.1 Chính sách gói mặc định
-Theo yêu cầu của chủ sở hữu: **chỉ asset CC0 được đóng gói trong bản cài/ repo/ docker image/ CDN**. Mỗi thư mục asset có `CREDITS.json` `{author, source, spdx, modified}` + `LICENSE.txt`; CI fail nếu thiếu hoặc SPDX ∉ allowlist (`CC0-1.0`); mục này **chặt hơn** `LICENSE_AND_REUSE.md` §3.2 và D-012 (cho phép cả MIT/OFL/CC-BY có file license) — xem §21 **[Cần người dùng phê duyệt]**. Font UI Inter/JetBrains Mono (D-015, OFL) là UI ngoài canvas, không thuộc "asset office"; font trong canvas dùng Kenney (CC0) hoặc không dùng font bitmap.
+Theo yêu cầu của chủ sở hữu: **chỉ asset CC0 được đóng gói trong bản cài/ repo/ docker image/ CDN**. Mỗi thư mục asset có `CREDITS.json` `{author, source, spdx, modified}` + `LICENSE.txt`; CI fail nếu thiếu hoặc SPDX ∉ allowlist (`CC0-1.0`); mục này **chặt hơn** `LICENSE_AND_REUSE.md` §3.2 và D-012 đối với **asset** (cho phép cả MIT/OFL/CC-BY có file license). **[OWR-2 Q-15 ĐÃ DUYỆT]**: mặc định CC0; OFL font cho phép khi lưu license/NOTICE; CC-BY chỉ khi Owner phê duyệt từng package; MIT-asset nguồn gốc không rõ không bundle mặc định. Allowlist SPDX của CI cần mở rộng có kiểm soát cho `OFL-1.1` (chỉ font, kèm NOTICE) và `CC-BY-4.0` (chỉ package đã được Owner phê duyệt). Font UI Inter/JetBrains Mono (D-015, OFL) là UI ngoài canvas, không thuộc "asset office"; font trong canvas dùng Kenney (CC0) hoặc không dùng font bitmap.
 
 | Nhóm | Nguồn | Giấy phép | Gói mặc định? |
 |---|---|---|---|
@@ -326,13 +328,13 @@ Kích hoạt khi **bất kỳ** điều kiện: viewport < `md` 768 px (DESIGN_T
 
 | # | Quyết định | Lý do | Nhãn |
 |---|---|---|---|
-| V1 | Phaser 3.90, `office-core` tách khỏi view | D-011; test tất định không cần GPU | Đề xuất (theo D-011) |
-| V2 | Art 16 px, zoom nguyên (mặc định 2×) | khớp mọi nguồn tái dùng; pixel-perfect | Đề xuất — Cần phê duyệt |
+| V1 | Phaser 3.90 sau abstraction `OfficeRenderer`, `office-core` tách khỏi view; benchmark trước khi khóa | D-011 (OWR-2); test tất định không cần GPU | Đã chọn (OWR-2 D-011), chưa khóa implementation cho tới khi benchmark |
+| V2 | Art 16 px, zoom nguyên (mặc định 2×) | khớp mọi nguồn tái dùng; pixel-perfect | Đề xuất — Cần phê duyệt. **[OWR-2 không quyết định tile 16 vs 32; CHƯA CHỐT, không chọn]** |
 | V3 | 14 phòng cố định, map 64×40, 4 desk/phòng ban | FR-151; 40 desk ≥ 18 agent | Đề xuất |
 | V4 | Mô phỏng 4 trục → 13 animation | tránh bùng nổ trạng thái, rõ căn cứ | Đề xuất |
 | V5 | Bỏ wander ngẫu nhiên; Relax/Coffee chỉ theo event và mặc định tắt | FR-160/164, SCREEN §3.3 | Cần phê duyệt |
 | V6 | Bubble bằng DOM overlay, text đã redact | i18n/a11y, an toàn dữ liệu | Đề xuất |
-| V7 | Gói mặc định CC0-only; BYO cho pack trả phí | yêu cầu Owner; LICENSE_AND_REUSE | Cần phê duyệt (chặt hơn D-012) |
+| V7 | Gói mặc định CC0-only; font OFL kèm NOTICE; CC-BY từng package cần Owner duyệt; BYO cho pack trả phí | OWR-2 Q-15; LICENSE_AND_REUSE | Đã duyệt (OWR-2 Q-15) |
 | V8 | Tái dùng logic MIT của Pixel Agents có attribution; MVO clean-room | D-012 | Đề xuất (theo D-012) |
 | V9 | Fallback danh sách dùng chung store | Office không là single point of failure | Đề xuất |
 | V10 | Layout JSON riêng `aiw-office-layout`, không nhận `.mvo-layout.json` | AGPL | Đề xuất |
@@ -357,7 +359,7 @@ Kích hoạt khi **bất kỳ** điều kiện: viewport < `md` 768 px (DESIGN_T
 
 ## 21. Vấn đề chưa giải quyết và mâu thuẫn phát hiện
 
-1. **CC0-only vs D-012**: yêu cầu hiện tại "chỉ CC0"; D-012 và LICENSE_AND_REUSE §6.2 cho phép MIT/OFL/CC-BY có file license (Pixel Agents furniture MIT, font OFL). Cần Owner chốt.
+1. **CC0-only vs D-012**: **[ĐÃ GIẢI QUYẾT bởi OWR-2 Q-15]** CC0 mặc định; OFL font cho phép với license/NOTICE; CC-BY từng package cần Owner duyệt; MIT-asset không rõ nguồn gốc không bundle; code MIT/Apache vẫn tái dùng được (D-012). (Còn lại: Pixel Agents asset không bundle trừ khi tác giả xác nhận nguồn gốc.)
 2. **Giấy phép sprite JIK-A-4**: PIXEL_AGENTS_ANALYSIS §0/§5.3 ghi "chưa rõ, cần xác minh"; LICENSE_AND_REUSE §1.3/§6.1 ghi CC0 đã xác minh. Cần chụp lại trang license làm bằng chứng.
 3. **Kích thước tile**: DB `tile_size` mặc định 32 và SCREEN "32px tiles" vs nguồn tái dùng 16 px (§5). Kèm kích thước map mặc định DB 40×24 vs thiết kế 64×40.
 4. **Số animation**: DB `character_positions.animation` 7 giá trị (có `sleeping`) vs FR-158 13 giá trị (không có `sleeping`).

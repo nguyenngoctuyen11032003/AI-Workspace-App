@@ -61,8 +61,8 @@ Verification Status: AC_DEFINED (AC có sẵn) · AC_ADDED_PHASE0 (AC mới ở 
 | FR-067 | S | AC-218 | Gọi tool ngoài allowed tools khi áp dụng skill | Tool ngoài danh sách bị chặn, audit ghi | AC_ADDED_PHASE0 |
 | FR-068 | M | AC-082 | Gỡ skill ở tab Knowledge | Task tiếp theo không nạp skill đó | AC_DEFINED |
 | FR-076 | M | AC-021 | Connect Claude Code đã login | Connected, ListModels ≥ 1, PROVIDER_CONNECTED | AC_DEFINED |
-| FR-077 | M | AC-022 | Connect Codex đã login | Connected như Claude (UNVERIFIED nếu chưa cài Codex) | AC_DEFINED |
-| FR-078 | C | (không có) | Hỏi Owner: cơ chế tích hợp OpenHands | Chưa xác định (Q-78) | NEEDS_OWNER_CLARIFICATION |
+| FR-077 | M | AC-022 | Connect Codex đã login | Connected như Claude (UNVERIFIED nếu chưa cài Codex) **[Ghi chú OWR-2 D-005: FR hoãn khỏi MVP; AC-022 chưa áp dụng cho MVP, chờ Owner xác nhận điều chỉnh nhóm B]** | AC_DEFINED |
+| FR-078 | C | (không có) | Hỏi Owner: cơ chế tích hợp OpenHands | Chưa xác định (Q-78) **[Ghi chú OWR-2 D-006/Q-02: hoãn đến sau Phase 4]** | NEEDS_OWNER_CLARIFICATION |
 | FR-079 | S | AC-219 | Adapter generic CLI với binary giả | Lệnh đúng tham số; output thành đúng event chuẩn | AC_ADDED_PHASE0 |
 | FR-080 | M | AC-021, AC-022 | Connect bằng CLI đã login, không có API key | Kết nối thành công, không yêu cầu API key | AC_DEFINED |
 | FR-081 | M | AC-021, AC-025, AC-034 | Gọi operation hỗ trợ và không hỗ trợ | Hoạt động đúng; không hỗ trợ trả NOT_SUPPORTED | AC_DEFINED |

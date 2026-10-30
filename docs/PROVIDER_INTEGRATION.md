@@ -12,7 +12,7 @@ Nguồn chính: `DECISION_LOG.md` (D-004..D-008, D-010, D-014), `research/CLAUDE
 
 - Trong: interface TypeScript, event chuẩn hóa, capability flags, thiết kế 4 adapter, luồng kết nối/đăng nhập, quy tắc xác thực, concurrency/rate-limit, usage/cost, lỗi/retry, cancel/resume, cầu nối approval, credential, Windows, chiến lược test, bảng đã xác minh vs giả định.
 - Ngoài: thuật toán chọn agent (`AGENT_SCHEDULER.md`), policy engine chi tiết (`SECURITY.md` §5), sandbox Docker (`SECURITY.md` §2), schema DB (`DATABASE_DESIGN.md`; chỉ nêu delta cần thiết ở §24).
-- Chỉ Claude Code, Codex, OpenHands, Generic CLI. API key provider (Anthropic API, OpenAI API...) là FR-098, **chưa chốt (OI-06)** nên chỉ để chỗ gắn (§18.4).
+- Chỉ Claude Code, Codex, OpenHands, Generic CLI (phạm vi thiết kế). **[OWR-2 2026-10-30: MVP chỉ Claude qua Claude Agent SDK (Q-17/D-004). Codex hoãn khỏi MVP, giữ abstraction `AgentAdapter`, không cài Codex CLI/live test (D-005, Q-10). OpenHands hoãn đến sau Phase 4, không phải provider thứ ba của MVP, ACP tắt (Q-02, D-006). Ở Phase 2, nếu security gate chưa đạt, adapter chỉ được xây ở mock/sandbox mode.]** API key provider (Anthropic API, OpenAI API...) là FR-098, **chưa chốt (OI-06)** nên chỉ để chỗ gắn (§18.4).
 
 ## 3. Kiến trúc tổng thể
 
@@ -189,7 +189,7 @@ export interface ProviderCapabilities {
 
 ## 7. ClaudeCodeAdapter (D-004)
 
-**Cơ chế [Đã xác minh]**: `@anthropic-ai/claude-agent-sdk` (đã test 0.3.314; SDK bundle binary `claude` cùng version), kế thừa OAuth login của CLI (`apiKeySource: "none"`, không cần `ANTHROPIC_API_KEY`). Raw CLI (`claude -p --output-format stream-json`) chỉ làm healthcheck/fallback (`RawCliClaudeAdapter`, cùng `mapMessage`).
+**Cơ chế [Đã xác minh]**: `@anthropic-ai/claude-agent-sdk` (đã test 0.3.314; SDK bundle binary `claude` cùng version), kế thừa OAuth login của CLI (`apiKeySource: "none"`, không cần `ANTHROPIC_API_KEY`). Raw CLI (`claude -p --output-format stream-json`) chỉ làm healthcheck/fallback (`RawCliClaudeAdapter`, cùng `mapMessage`). **[Q-17/OWR-2]** Agent SDK là adapter chính; raw CLI chỉ cho tác vụ hỗ trợ, kiểm tra hoặc PoC được cấp phép, không là kiến trúc tích hợp chính. Phải phân biệt subscription authentication (kế thừa login CLI), API authentication (API key/billing) và usage limits (quota 5 giờ/tuần); dùng SDK **không** đồng nghĩa được chạy số session không giới hạn. Production nhiều Agent cần provider contract/API billing hợp lệ; không chia sẻ credential, không dùng một tài khoản cá nhân làm backend multi-user trái điều khoản (OWR-2 mục 5.1).
 
 Cấu hình `Options` bắt buộc cho mọi session **[Đề xuất, dựa trên CLAUDE_CODE_INTEGRATION §9.2]**:
 
@@ -214,6 +214,8 @@ Vòng đời: 1 agent = 1 process sống lâu (streaming input) trong lúc làm 
 
 ## 8. CodexAdapter (D-005)
 
+> **[D-005/OWR-2: Codex HOÃN khỏi MVP; giữ abstraction `AgentAdapter`; không cài Codex CLI, không live test ở phạm vi hiện tại (Q-10). Mục này là thiết kế tham khảo, chưa kiểm chứng.]**
+
 **Chính: `codex app-server` stdio JSON-RPC** (1 process, nhiều thread = nhiều AI employee). **Dự phòng: `codex exec --json`** (SDK `@openai/codex-sdk` chỉ làm implementation của fallback/batch; không approval callback, không interrupt mềm). **Phụ: rollout watcher** (`~/.codex/sessions/**/*.jsonl`) chỉ để quan sát session ngoài app, không làm nguồn chính (3 format khác nhau: snake_case exec / camelCase app-server / PascalCase rollout) **[Đã xác minh]**.
 
 Chuỗi gọi **[Đã xác minh từ docs + bindings 0.164, chưa chạy live vì CLI chưa cài]**:
@@ -236,6 +238,8 @@ Quy tắc thiết kế **[Đề xuất]**:
 - Đọc `thread/tokenUsage/updated` cho usage; **không có cost** → ước lượng bằng `provider_configs.pricing` và gắn `estimated:true`.
 
 ## 9. OpenHandsAdapter (D-006)
+
+> **[D-006/Q-02 OWR-2: OpenHands HOÃN đến sau Phase 4, không phải provider thứ ba của MVP; ACP tắt trong MVP. Mục này là thiết kế tham khảo.]**
 
 ### 9.1 Bản chất **[Đã xác minh]**
 Repo `OpenHands/OpenHands` hiện là **Agent Canvas** (UI); agent/runtime là **Agent Server** Python (`openhands-agent-server`, repo `software-agent-sdk`, MIT) chạy như dịch vụ ngoài. Adapter chỉ nói REST/WS với nó qua `@openhands/typescript-client` (pin 1.59.0). **Không vendor mã nguồn, không nhúng Python vào backend**. Không dùng tên/logo OpenHands (trademark).
@@ -327,7 +331,7 @@ Quy trình chung: `connect` (phát hiện) → `authenticate` (đọc trạng th
 
 ## 13. Concurrency và rate-limit theo provider
 
-Thứ tự kiểm slot theo `RESOURCE_MANAGEMENT.md` §4.1: global (mặc định **5**, tối đa 18 — D-010) → pool provider → project → agent → host guard. Giá trị mặc định pool **[Đề xuất]**:
+Thứ tự kiểm slot theo `RESOURCE_MANAGEMENT.md` §4.1: global (mặc định **5**, tối đa 18 — D-010; **Q-07/OWR-2: 5 là giới hạn mặc định của ứng dụng, KHÔNG xác nhận subscription cho phép chạy đồng thời 5 session; chưa xác minh ToS; không tự tăng lên 10 hoặc 18 khi chưa xác minh điều khoản provider; không tuyên bố 18 agent đã được kiểm thử**) → pool provider → project → agent → host guard. Giá trị mặc định pool **[Đề xuất]**:
 
 | Provider | Pool mặc định | Căn cứ | Phản ứng rate-limit |
 |---|---|---|---|
@@ -336,7 +340,7 @@ Thứ tự kiểm slot theo `RESOURCE_MANAGEMENT.md` §4.1: global (mặc địn
 | OpenHands | theo LLM provider (mặc định 2) + giới hạn container (`OH_CONVERSATION_CONTAINER_MEMORY/CPUS/PIDS_LIMIT`) | tài nguyên host | lỗi 429 từ LLM qua `ServerErrorEvent` |
 | Generic CLI | 1 | không có thông tin | theo exit code/stderr pattern cấu hình |
 
-Quy tắc chung: (1) Một `RateLimitGuard` giữ `QuotaSnapshot` mới nhất/provider (nguồn `rate_limit.updated`); (2) `RATE_LIMITED(until)`: pool vào trạng thái, task về QUEUED(reason `PROVIDER_RATE_LIMITED`), **không tự chuyển provider** (RESOURCE §9; auto-switch mặc định tắt, **[Cần người dùng phê duyệt]**); (3) tăng concurrency chỉ làm cạn quota nhanh hơn, không tăng tổng công việc; (4) cách ly: Claude dùng chung một `~/.claude` → race file giữa nhiều process chưa quan sát thấy lỗi trong 5 process, **cần đo ở 10/18** **[Giả định]**; (5) OpenHands ACP cùng provider trong một container chia sẻ HOME (race auth/lock) — lý do phụ để tắt ACP ở MVP.
+Quy tắc chung: (1) Một `RateLimitGuard` giữ `QuotaSnapshot` mới nhất/provider (nguồn `rate_limit.updated`); (2) `RATE_LIMITED(until)`: pool vào trạng thái, task về QUEUED(reason `PROVIDER_RATE_LIMITED`), **không tự chuyển provider** (RESOURCE §9; không auto-failover khi hết quota: thông báo Owner và chờ quyết định, Q-08/OWR-2); (3) tăng concurrency chỉ làm cạn quota nhanh hơn, không tăng tổng công việc; (4) cách ly: Claude dùng chung một `~/.claude` → race file giữa nhiều process chưa quan sát thấy lỗi trong 5 process, **cần đo ở 10/18** **[Giả định]**; (5) OpenHands ACP cùng provider trong một container chia sẻ HOME (race auth/lock) — lý do phụ để tắt ACP ở MVP.
 Lưu ý xung đột: `DATABASE_DESIGN.md` `provider_configs.max_concurrent` mặc định **2**, khác các số trên; xem §25.
 
 ## 14. Usage / cost capture (FR-096)
@@ -367,7 +371,7 @@ export interface ProviderErrorInfo { code: ProviderErrorCode; message: string; r
 | `NOT_INSTALLED`, `VERSION_UNSUPPORTED`, `NOT_AUTHENTICATED`, `UNSUPPORTED_AUTH` | connect/authenticate | không | trạng thái provider + hướng dẫn |
 | `AUTH_EXPIRED` | 401/403, `account/updated` | không tự động | pool → `auth_error`, thông báo, chờ người dùng đăng nhập lại |
 | `RATE_LIMITED` | Claude `api_error_status 429/529`, `status!=allowed`; Codex `-32001`/`willRetry` | có, **sau reset** nếu biết `resetsAt`; không thì 15 phút, ×2 mỗi lần liên tiếp, trần 5 giờ (RESOURCE §8.3) | CLI tự retry nội bộ (`system/api_retry`) là thông tin, không tính retry của ta |
-| `QUOTA_EXHAUSTED` | "usage limit reached", Codex hard ceiling | không tới `resetsAt` | queue, không burn retry |
+| `QUOTA_EXHAUSTED` | "usage limit reached", Codex hard ceiling | không tới `resetsAt` | queue, không burn retry; **không tự động failover sang provider khác: thông báo Owner và chờ quyết định (Q-08/OWR-2)** |
 | `OVERLOADED`, `NETWORK`, `TIMEOUT` | 529/ECONN/spawn_timeout 60 s/silence 20 min | có, tối đa 3, backoff 2→4→8 s + jitter ±30% | rồi `FAILED` → handover (FR-111) |
 | `SPAWN_FAILED`, `PROCESS_CRASHED` | exit ≠ 0 không do cancel, app-server chết | có 1–3 lần, resume cùng `sessionId` | `CLAUDE_CODE_RESUME_INTERRUPTED_TURN=1` nếu muốn tiếp turn dang dở **[Đã xác minh biến]**; app-server: `thread/resume` |
 | `PROTOCOL_ERROR` | JSON hỏng, field lạ bắt buộc | không (1 lần reconnect) | bỏ frame, tăng metric; >N lỗi/phút → provider `degraded` + chuyển exec fallback (Codex) |
@@ -408,7 +412,7 @@ Luồng: adapter nhận yêu cầu → phát `approval.requested` → `ApprovalB
 
 Quy tắc **[Đề xuất]**:
 - Phân tầng Claude: `PreToolUse` in-process hook = **policy cứng** (deny/rewrite, `updatedInput`); `canUseTool` = **hỏi người**. Việc `SECURITY.md` §5.1 gọi PreToolUse là "nguồn chính" và research gọi `canUseTool` là "chính" chỉ là hai tầng của cùng một engine (xem §25).
-- Timeout approval mức tool: mặc định 10 phút → `decline` + `APPROVAL_TIMEOUT`, task `BLOCKED`; (SECURITY dùng 540 s cho hook HTTP, research dùng 30 phút cho `canUseTool`, RESOURCE dùng 24 h cho approval cấp workflow; hợp nhất: tool-level 10 phút, workflow-level không giới hạn mặc định theo FR-106).
+- Timeout approval (Q-05/OWR-2, thống nhất mọi tài liệu): chờ tối đa **540 giây**; hết thời gian thì lưu approval `pending` bền vững, chuyển task `WAITING_HUMAN`, **không giữ worker/process**; nhắc Owner sau 24 giờ; `prod_deploy`, `data_deletion`, `merge_main` cần approval riêng, hết hiệu lực sau **15 phút**. Các giá trị cũ bị thay thế: 10 phút → `decline` + `BLOCKED`, 30 phút của research cho `canUseTool`, 24 h của RESOURCE như hạn chót.
 - Trong lúc chờ, process/turn vẫn sống và **chiếm slot** (khác với RESOURCE §4.1 giả định `WAITING_APPROVAL` không chiếm slot). Nếu muốn nhả slot: `interrupt` + `close` rồi resume sau khi duyệt — **[Cần người dùng phê duyệt]**.
 - `inputHash` được so lại ngay trước khi trả `allow` (chống đổi lệnh sau khi duyệt). "accept for session" không bao giờ ghi vào `permissions.allow`/`config.toml` của user.
 - Mọi quyết định (kể cả auto) vào audit; UI chỉ hiện input đã redact (nút "show raw" theo SECURITY §5.3).
@@ -472,7 +476,7 @@ Quy tắc **[Đề xuất]**:
 | P1 | Một interface 13 op, thay `BrainAdapter`/`AgentAdapter` | FR-081, NFR-101; hai research dùng hai interface khác nhau | Đề xuất |
 | P2 | Claude = Agent SDK; raw CLI chỉ fallback | in-process approval/hook, types, version deterministic (D-004) | Đề xuất (theo D-004) |
 | P3 | Codex = app-server chính, exec dự phòng | nhiều thread/1 process, approval tương tác, interrupt (D-005) | Đề xuất (theo D-005) |
-| P4 | OpenHands = service ngoài, MVP chỉ native + LLM key, ACP tắt | tránh mâu thuẫn D-008, giảm bề mặt | Cần người dùng phê duyệt |
+| P4 | OpenHands = service ngoài, hoãn đến sau Phase 4, ACP tắt trong MVP | tránh mâu thuẫn D-008, giảm bề mặt | Theo Q-02/D-006 (OWR-2 2026-10-30); chưa VERIFIED |
 | P5 | Event chuẩn có `seq` + durable/transient | resume/replay rẻ, Office deterministic | Đề xuất |
 | P6 | Mock chỉ CI với 6 lớp chặn | bảo vệ nguyên tắc "không dữ liệu giả" | Đề xuất |
 | P7 | Không đọc credential, không nhập mật khẩu, login luôn ngoài app (lệnh hiển thị) | D-008, FR-084/085 | Đã chốt theo FR |

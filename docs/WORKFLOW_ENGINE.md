@@ -6,6 +6,9 @@ Anh em: `AGENT_ARCHITECTURE.md`, `MULTI_AGENT_ORCHESTRATION.md`, `EVENT_SYSTEM.m
 
 Nhãn: **[Đã xác minh]** · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**.
 
+> **[OWR-2 Q-20 / D-003 — ĐỊNH HƯỚNG ĐƯỢC DUYỆT, CHƯA KHÓA IMPLEMENTATION CHO TỚI KHI PoC ĐẠT]** Owner chấp thuận hướng BullMQ + PostgreSQL, nhưng chưa khóa implementation cho đến khi PoC chứng minh: crash recovery; idempotency; không chạy lặp node ngoài ý muốn (no duplicate node runs); retry an toàn; trạng thái approval lưu bền vững; worker không bị giữ trong lúc chờ Owner approval. Nếu PoC không đạt, báo cáo phương án thay thế **Temporal** hoặc **LangGraph** để Owner quyết định (WE-01 "không dùng LangGraph/Temporal" chỉ còn hiệu lực trong chừng mực PoC đạt).
+> **[OWR-2 Q-11]** 9 loại node UI và 11 engine kind (xem §3). **[OWR-2 Q-05]** thời hạn chờ approval: xem §7.
+
 ---
 
 ## 1. Mục đích
@@ -50,7 +53,7 @@ Nhãn: **[Đã xác minh]** · **[Đề xuất]** · **[Giả định]** · **[C
 
 Quy ước handle: `approved`/`rejected` (approval), tên handle khai báo trong `rules[].handle` + `defaultHandle` (condition), `null` (các node còn lại). `edge.data`: `carry` (output nào đi xuống, mặc định `['*']`), `loopBack` (cạnh quay lại), `maxIterations` (ghi đè mặc định 3).
 
-Bảng ánh xạ `type` giữa A07 và DB: DB (`workflow_nodes.type`) ghi comment `start|agent_task|approval|condition|parallel|join|end`, A07 dùng `agent` và `merge`, FR-113 liệt kê 8 loại (Agent, Approval, Condition, Parallel, Merge, Tool, Test, Deployment). **Chuẩn mới (Đề xuất)**: `start`, `end`, `agent`, `task`, `approval`, `condition`, `parallel`, `merge`, `tool`, `test`, `deployment` (9 kind có cấu hình + start/end). Cột `type` là `text` nên không cần migration; chỉ cần sửa comment. `task` là kind bổ sung so với FR-113 (xem M-W2).
+Bảng ánh xạ `type` giữa A07 và DB: DB (`workflow_nodes.type`) ghi comment `start|agent_task|approval|condition|parallel|join|end`, A07 dùng `agent` và `merge`, FR-113 liệt kê 8 loại (Agent, Approval, Condition, Parallel, Merge, Tool, Test, Deployment). **Chuẩn mới (Đề xuất)**: `start`, `end`, `agent`, `task`, `approval`, `condition`, `parallel`, `merge`, `tool`, `test`, `deployment` (9 kind có cấu hình + start/end). Cột `type` là `text` nên không cần migration; chỉ cần sửa comment. `task` là kind bổ sung so với FR-113 (xem M-W2). **[OWR-2 Q-11 ĐÃ DUYỆT]**: **9 UI node types** (loại người dùng kéo thả/cấu hình trên canvas; suy ra = 9 kind có cấu hình: `agent`, `task`, `approval`, `condition`, `parallel`, `merge`, `tool`, `test`, `deployment`) và **11 engine kinds** (9 kind trên + `start` + `end`). Ánh xạ cụ thể 9 UI types là suy luận từ tài liệu này, chưa được Owner liệt kê: cần Owner xác nhận; FR-113 phải đồng bộ (thuộc agent khác).
 
 ## 4. Node kinds và trường cấu hình
 
@@ -96,7 +99,7 @@ Node động có `nodeKey='dyn:<ulid>'`, chỉ thêm hàng `node_runs`, **không
 | `policyId` | uuid? | null | Liên kết `approval_policies` |
 | `reviewArtifacts` | string[] | [] | Khóa upstream hiển thị cho reviewer |
 | `mandatory` | bool | false | `true` → validator cấm xóa/vô hiệu hóa (FR-199) |
-| `timeoutMs` | int\|null | null | null = chờ vô hạn (FR-106) |
+| `timeoutMs` | int\|null | null | ~~null = chờ vô hạn (FR-106)~~ **[OWR-2 Q-05]** Chờ trong tiến trình tối đa **540 000 ms (540 s)**; hết hạn thì lưu trạng thái và chuyển `WAITING_HUMAN`, không giữ worker; `null` không còn nghĩa "giữ worker vô hạn" mà nghĩa "`WAITING_HUMAN` bền vững, nhắc Owner sau 24 giờ". Xem §7 |
 | `onTimeout` | `fail`\|`auto_approve`\|`escalate`\|`reject` | `fail` | `auto_approve` bị cấm cho gate `mandatory` |
 | `onReject` | `{ mode: 'revision_loop'\|'fail', maxRevisions, target: 'pm_triage'\|'fixed', fixedTargets[] }` | `revision_loop`, 3, `pm_triage` | Xem `MULTI_AGENT_ORCHESTRATION.md` §9 |
 | `collect` | `('comment'\|'rejectItems'\|'screenshotMarkup')[]` | `comment, rejectItems` | FR-127, FR-130 |
@@ -198,7 +201,7 @@ Event-driven: node kết thúc, approval quyết định, semaphore nhả (tick 
 3. Quyết định: `UPDATE approvals SET status=..., decision=..., decided_by_user_id=..., decided_at=now() WHERE id=? AND status='pending' RETURNING *` (chống quyết định đôi); cùng transaction cập nhật node_run (`SUCCEEDED` với `output.handle`), ghi outbox, enqueue tick.
 4. `approved` → cạnh `approved` active. `rejected` → nếu có cạnh `rejected`, đi theo đó; nếu không và `onReject.mode='revision_loop'` thì RevisionService xử lý (§9 của `MULTI_AGENT_ORCHESTRATION.md`); `fail` → run `FAILED`.
 5. **Hết hạn**: một BullMQ delayed job cho mỗi approval (`approval-expiry`, DB §10) **và** cron quét an toàn mỗi phút (A07 dùng cron thuần); chọn kết hợp cả hai, mọi mốc tính theo `now()` của Postgres (M-W7). `onTimeout='escalate'` gửi notification cho owner và giữ `pending` (gia hạn `expires_at`).
-6. Approval không có timeout (`timeoutMs=null`) chờ vô hạn; sau restart vẫn còn nguyên vì là dữ liệu Postgres.
+6. Approval không có timeout (`timeoutMs=null`) chờ vô hạn; sau restart vẫn còn nguyên vì là dữ liệu Postgres. **[OWR-2 Q-05 ĐÃ DUYỆT, ghi đè các ý trên khi mâu thuẫn]**: (a) thời gian chờ approval tối đa **540 giây**; hết thời gian thì lưu trạng thái và chuyển `WAITING_HUMAN`, **không giữ worker**; (b) có thể nhắc Owner sau **24 giờ**; (c) **production deploy, data deletion và merge `main` cần approval riêng**, approval cho các hành động này **hết hiệu lực sau 15 phút**. Lưu ý: dòng `expires_at` ở bước 1/5 nay có hai nghĩa tách biệt (nhắc 24 giờ với approval thường; hiệu lực 15 phút với ba hành động nhạy cảm): cần Owner/Architect chốt tên cột (`reminder_at` vs `expires_at`), xem DOC_SYNC_LOG_OWR2_B (Conflicts).
 7. Quyền quyết định: người dùng có `org_role` thỏa `approverRoles` (M-W5); mọi quyết định ghi audit (FR-201).
 
 ## 8. Versioning
@@ -378,10 +381,10 @@ Giấy phép ChatDev Apache-2.0: tái sử dụng nội dung prompt/ý tưởng 
 
 | # | Quyết định | Lý do | Nhãn |
 |---|---|---|---|
-| WE-01 | Tự xây Conductor (D-003), không dùng LangGraph/Temporal | A07 §1-2: R8 graph JSON user-editable, R3 approval nhiều ngày, cap xuyên replica | [Đề xuất] (đã vào DECISION_LOG, chờ duyệt) |
+| WE-01 | Tự xây Conductor (D-003), không dùng LangGraph/Temporal | A07 §1-2: R8 graph JSON user-editable, R3 approval nhiều ngày, cap xuyên replica | **Định hướng được duyệt (OWR-2 Q-20), chưa khóa implementation cho tới khi PoC đạt**; PoC thất bại thì báo Temporal/LangGraph để Owner quyết |
 | WE-02 | Postgres là nguồn sự thật; BullMQ chỉ transport | Mất Redis không mất state | [Đề xuất] |
 | WE-03 | Dòng bảng nodes/edges là lưu trữ chuẩn, JSON là interchange | Khớp `DATABASE_DESIGN.md`, vẫn export React Flow | [Đề xuất] |
-| WE-04 | 11 `type` (9 kind cấu hình + start/end); thêm `task` | WBS động cần kind riêng | [Đề xuất] — [Cần người dùng phê duyệt] |
+| WE-04 | 11 `type` (9 kind cấu hình + start/end); thêm `task` | WBS động cần kind riêng | **Đã duyệt số lượng (OWR-2 Q-11: 9 UI node types, 11 engine kinds)**; ánh xạ cụ thể chờ Owner xác nhận |
 | WE-05 | Test sai vẫn `SUCCEEDED` với `passed=false` | Cho condition rẽ nhánh; FAILED dành cho lỗi hạ tầng | [Đề xuất] |
 | WE-06 | Approval reject = `SUCCEEDED` + `handle='rejected'` | Node hoàn thành việc của nó (A07) | [Đề xuất] |
 | WE-07 | Cấm chu trình tự do; chỉ `loopBack` có giới hạn 3 | Dễ validate; chống vòng vô hạn | [Đề xuất] |

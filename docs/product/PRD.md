@@ -175,7 +175,7 @@ Chi tiết tại `USER_FLOWS.md`. Các luồng cốt lõi: Onboarding & kết n�
 | Nhóm | Tiêu chí MVP [Owner] | Subsystem liên quan |
 |---|---|---|
 | A — Agent | Tạo/sửa/xóa agent; lifecycle sync; profile; pause/resume/disable | 5.2 |
-| B — Provider | Kết nối Claude Code & Codex qua CLI login; standard ops hoạt động; luật bảo mật | 5.4 |
+| B — Provider | Kết nối Claude (Claude Agent SDK, OWR-2 Q-17) qua adapter; standard ops hoạt động; luật bảo mật. **Codex hoãn khỏi MVP (OWR-2 D-005), OpenHands hoãn đến sau Phase 4 (D-006)**; giữ abstraction `AgentAdapter`. [Đã sửa: trước đây ghi "Claude Code & Codex"; FR-xxx liên quan do agent khác đồng bộ] | 5.4 |
 | C — Workflow | Template SDLC 8 giai đoạn chạy end-to-end với approval gate; reject → revision | 5.5, 5.8 |
 | D — Skill | Library, custom skill, Teach Agent, gán & verify | 5.3 |
 | E — Virtual Office | 14 phòng, nhân vật, animation theo event thật, click-to-interact | 5.6 |

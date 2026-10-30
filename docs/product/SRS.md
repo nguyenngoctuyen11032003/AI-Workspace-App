@@ -25,7 +25,7 @@ Hệ thống phần mềm chạy trên máy người dùng (Windows 11, single-u
 | Company / Workspace | Đơn vị tổ chức chứa phòng ban, agent, project, skill. |
 | Department | Phòng ban; ánh xạ tới một phòng trong Virtual Office. |
 | Agent | Thực thể AI có cấu hình (provider, model, prompt, skill...) thực thi task. |
-| Provider | Nguồn mô hình AI truy cập qua adapter (Claude Code, Codex, OpenHands, generic CLI). |
+| Provider | Nguồn mô hình AI truy cập qua adapter. MVP: Claude (OWR-2 Q-17). Codex hoãn khỏi MVP (D-005), OpenHands hoãn đến sau Phase 4 (D-006); generic CLI chỉ là mở rộng qua `AgentAdapter`. |
 | Adapter | Lớp trừu tượng hóa provider với 13 operation chuẩn. |
 | Session | Phiên làm việc với provider (có thể resume). |
 | Project | Dự án phần mềm được tạo từ prompt; có workspace/repo riêng. |

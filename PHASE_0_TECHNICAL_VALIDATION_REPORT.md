@@ -300,3 +300,18 @@ Rollback chung: cancel toàn bộ execution, kill cây process còn lại, xóa 
 - Chưa tái hiện: toàn bộ số đo runtime trong 4 tài liệu (một nguồn đo duy nhất, do agent báo cáo).
 - Chưa kiểm chứng: Codex runtime, Docker sandbox, concurrency > 3.
 - Trạng thái: **không APPROVED**; các runbook trên là điều kiện để chuyển trạng thái, đợi hành động owner ở mục 4.
+
+## Phụ lục: kết quả PoC được cấp phép (OWR-2 mục 5, ngày 2026-10-30)
+Chỉ ba nhóm được cấp phép. Không chạy 27 runbook, không cài Codex, không bật Docker.
+| PoC | Báo cáo | PASS | FAIL | BLOCKED | NOT RUN / SIMULATED | Mức bằng chứng |
+|---|---|---|---|---|---|---|
+| Drizzle (OWR-2 5.4) | `docs/poc/POC_DRIZZLE.md` | 9 | 1 | 1 | 0 | Partial: PGlite 0.5.13 (báo PostgreSQL 18.6), không phải PG16 |
+| Dynamic Skill/Resume SK-01..05 (OWR-2 5.5) | `docs/poc/POC_DYNAMIC_SKILL.md` | SK-01, SK-02, SK-03 (có điều kiện), SK-05 (mức guard/CLI) | 0 | 0 | SK-04 SIMULATED (agent thật bị chặn quyền hai lần); SDK NOT TESTED | Partial |
+| Docker sandbox (OWR-2 5.3) | `docs/poc/POC_DOCKER_SANDBOX.md` | 0 | 0 | 9 (VAL-DOCKER-01..09) | 0 | Không có. Daemon chưa chạy, chờ Owner tự mở Docker Desktop |
+| Conductor PoC (Q-20) | không | 0 | 0 | 0 | NOT RUN | Không nằm trong phạm vi được cấp phép; D-003 giữ APPROVED_CONDITIONAL |
+
+Chi tiết đáng chú ý:
+- **Drizzle:** pin `drizzle-orm@0.45.4`, `drizzle-kit@0.31.11` (tôi kiểm lại bằng `npm view`: 0.45.4 là `latest`). FAIL duy nhất: `generate` và `check` không phát hiện thay đổi thủ công trong DB, `pull` có. Giới hạn: unique index trên bảng phân vùng phải chứa khóa phân vùng, nên unique theo `(aggregate_type, aggregate_id, sequence)` phải do ứng dụng bảo đảm. Chưa thử `postgres.js`.
+- **Skill/Resume:** `--resume` với file mới trả marker cũ (snapshot được dùng lại). `--system-prompt-snapshot off` trả marker mới. Hash-check cộng session mới trả marker mới và ghi audit. 8 lần gọi model (haiku), tổng 0,006283 USD. SK-04: guard (audit, pause, quarantine) chỉ được thử bằng ghi tệp qua script, chưa bằng agent thật. Hạn chế theo Owner: cùng OS user nên guard chỉ biết thay đổi, thời điểm, phiên thực thi, không biết ai sửa.
+- **Docker:** `docker version` cho client 29.8.1 nhưng không kết nối được daemon (pipe `dockerDesktopLinuxEngine` không tồn tại), kiểm tra lúc 13:39. RAM trống 4,04 GB trên 15,77 GB.
+- Các PoC kiểm chứng độc lập một phần: tôi chạy lại `npm view` cho phiên bản Drizzle và xác nhận các file đầu ra tồn tại trong thư mục scratch, nhưng **chưa tái chạy** PoC.

@@ -95,6 +95,8 @@ Quy tắc xung đột: khi hai pattern chồng lấn (ví dụ `docs` và `resea
 
 ## 6. Permission level [Đề xuất] — [Cần người dùng phê duyệt]
 
+> **[OWR-2 Q-03]** Owner chấp thuận L0..L5 qua `permission_level` + `permission_profile`; không có quyền `full`. **XUNG ĐỘT CHƯA GIẢI QUYẾT:** bảng dưới có L0..L4, còn `product/USER_ROLES_AND_PERMISSIONS.md` §4.2 có L0..L5 với ngữ nghĩa khác (L5 = PM/Orchestrator). Chưa chọn chuẩn; xem DOC_SYNC_LOG_OWR2_B. 18 agent role là seed data, không hardcode; Agent Identity, Provider Identity, User Identity tách biệt (OWR-2 D-016).
+
 | Level | Quyền | Cơ chế thực thi (phối hợp A09) |
 |---|---|---|
 | L0 | Đọc workspace | CLI chạy với `--permission-mode plan` hoặc tool allowlist chỉ Read/Grep/Glob |

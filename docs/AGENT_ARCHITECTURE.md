@@ -145,14 +145,16 @@ Skill theo chuẩn Agent Skills, nạp qua `--add-dir` (Claude) hoặc junction 
 
 ### 3.6 Permission [Đề xuất] — [Cần người dùng phê duyệt]
 
-Hai nguồn chưa khớp (xem §8): `AGENT_ORGANIZATION.md` có 5 mức L0..L4; `DATABASE_DESIGN.md` enum `permission_level` có 4 giá trị (`read_only, standard, elevated, full`). Đề xuất ánh xạ để không đổi enum DB:
+Hai nguồn chưa khớp (xem §8): `AGENT_ORGANIZATION.md` có 5 mức L0..L4; `DATABASE_DESIGN.md` enum `permission_level` có 3 giá trị (`read_only, standard, elevated`; giá trị `full` đã bị xóa theo OWR-2 Q-03). Đề xuất ánh xạ:
 
 | DB enum | Mức A13 | Quyền | Cơ chế thực thi (D-004, D-007, D-009) |
 |---|---|---|---|
 | read_only | L0 | Đọc workspace | `--permission-mode plan`/allowlist Read/Grep/Glob |
 | standard | L1-L2 | Ghi file khớp ownership manifest; ghi code trong worktree riêng | PreToolUse hook kiểm glob; `canUseTool` từ chối ngoài manifest |
 | elevated | L3 | Chạy test/build trong Docker | Bash allowlist theo lệnh; timeout per command |
-| full | L4 | Lệnh infra, git push/tag, deploy | **Mỗi lệnh L4 tạo approval**; `full` **không** nghĩa là bỏ approval |
+| ~~full~~ (đã xóa) | L4 | Lệnh infra, git push/tag, deploy | **[OWR-2 Q-03: KHÔNG hỗ trợ quyền `full`; enum `permission_level` chỉ có `read_only, standard, elevated`]** L4 (và L5) đi qua `elevated` + `permission_profile` (cột mới ở DATABASE_DESIGN §4 agents); **mỗi lệnh L4 tạo approval** |
+
+**[OWR-2 Q-03]** Owner chấp thuận permission level **L0 đến L5**, dùng `permission_level` + `permission_profile`. Xung đột định nghĩa còn mở (ghi ở DOC_SYNC_LOG_OWR2_B): `AGENT_ORGANIZATION.md` §6 định nghĩa L0..L4 (L1 = ghi docs, L2 = ghi code, L3 = chạy test/build, L4 = infra), còn `product/USER_ROLES_AND_PERMISSIONS.md` §4.2 định nghĩa L0..L5 (L1 = write-own, L2 = Developer, L3 = Lead/Reviewer, L4 = Operator, L5 = PM/Orchestrator). Chưa chọn bên nào là chuẩn; cần Owner/Architect chốt bảng L0..L5 duy nhất. Bảng ánh xạ enum ở trên là tạm thời.
 
 Nguyên tắc: instance không vượt template; user hạ được per-instance/per-task; production deploy luôn cần approval không tắt được (FR-199). Hook là lớp **chính sách**, không phải ranh giới bảo mật; lệnh build/test/run chạy trong Docker (D-007). Docker daemon chưa chạy lúc kiểm tra nên mọi giả định về cgroup/ECI là [Giả định].
 

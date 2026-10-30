@@ -201,7 +201,7 @@ Quy tắc: không bao giờ **tự động** đăng nhập thay user, không lư
 
 | Quyết định | Lý do | Trạng thái |
 | --- | --- | --- |
-| Không đọc credential CLI; chỉ `auth status` | Giảm bề mặt, tôn trọng D-008 | Đề xuất (D-008 chờ duyệt) |
+| Không đọc credential CLI; chỉ `auth status` | Giảm bề mặt, tôn trọng D-008 | D-008 (OWR-2 2026-10-30): ứng dụng không tự ý đọc `.credentials.json`/`auth.json`; không lưu plaintext token trong DB/frontend; secret khác dùng OS keychain; **không mount thư mục credential của Owner vào Agent sandbox** |
 | `SecretVault.use()` scoped + zeroize | Hạn chế secret tồn tại trong memory/log | Đề xuất |
 | Redactor duy nhất cho 5 điểm | Tránh regex lệch nhau | Đề xuất |
 | Key retired vẫn nằm trong known-secret 30 ngày | Bắt secret cũ còn xuất hiện trong output | Đề xuất |

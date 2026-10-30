@@ -27,7 +27,7 @@ Chỉ Windows 11 (máy dev hiện tại). Linux/macOS sẽ được bổ sung kh
 | npm | đi kèm Node | 11.17.0 | [Đã xác minh] |
 | pnpm | 10.x (qua corepack) | 10.34.6, corepack 0.35.0 | [Đã xác minh] |
 | Claude Code CLI | ≥ 2.1 | 2.1.312 | [Đã xác minh] |
-| Codex CLI | mới nhất | **chưa cài** | [Đã xác minh] |
+| Codex CLI (tùy chọn, hoãn D-005) | mới nhất | **chưa cài; không cài trong phạm vi hiện tại (Q-10)** | [Đã xác minh] |
 | trivy, gitleaks | mới nhất (tuỳ chọn ở dev, bắt buộc trong CI) | chưa cài | [Đã xác minh] |
 | VS Code (khuyến nghị) | mới nhất | – | [Giả định] |
 
@@ -206,6 +206,8 @@ Lưu ý: login lưu ở `%USERPROFILE%\.claude` (và Credential Manager trên Wi
 
 ## 6. Codex CLI
 
+> **[D-005, Q-10, OWR-2 2026-10-30: TÙY CHỌN / HOÃN. Codex hoãn khỏi MVP; Codex CLI chưa cài trong giai đoạn này; KHÔNG chạy `npm i -g @openai/codex` khi chưa có cho phép của Owner. Các bước dưới chỉ để tham khảo cho sau MVP. Docker Desktop cần cho sandbox validation (Q-10): Owner tự mở Docker Desktop, `docker version`, `docker info`, ghi RAM trước/sau; không tự động khởi động Docker cùng ứng dụng; không đổi cấu hình WSL/`wsl --shutdown` khi chưa có phê duyệt riêng (OWR-2 mục 5.3).]**
+
 ```powershell
 npm i -g @openai/codex
 codex --version
@@ -243,7 +245,7 @@ Script `scripts/doctor.ts` kiểm tra và in bảng PASS/FAIL:
 | Git autocrlf | `git config --get core.autocrlf` | false (repo hoặc global) |
 | WORKSPACE_ROOT | tạo/xoá file thử | writable, free ≥ 20 GB |
 | Claude CLI | `claude --version`, `claude auth status` | OK, logged in |
-| Codex CLI | `codex --version`, `codex login status` | OK (warning nếu thiếu) |
+| Codex CLI (tùy chọn, hoãn khỏi MVP, D-005) | `codex --version`, `codex login status` | Bỏ qua (không bắt buộc, không cài) |
 | gh | `gh auth status` | logged in (warning nếu thiếu) |
 | gitleaks/trivy | `--version` | warning nếu thiếu |
 

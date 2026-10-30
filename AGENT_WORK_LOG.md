@@ -52,3 +52,14 @@ Số agent chạy đồng thời tối đa trong đợt này: 7. Chưa từng đ
 
 ## Hoàn tất công việc của 3 agent bị ngắt
 Sau khi đối chiếu, 3 agent (BA, 18-agent, UX) không còn nội dung thiếu. Hai mục theo mẫu đã được Orchestrator bổ sung (NFR Acceptance Criteria, checklist usability Rủi ro). Trạng thái đỏ trên giao diện chỉ phản ánh lần dừng do hạn mức, không phải nội dung thiếu.
+
+## Đợt 6: OWR-2 (6 agent song song, model sonnet)
+| Agent | Phạm vi | Kết quả |
+|---|---|---|
+| Decision Records | register, DECISION_LOG, ADR, CONFLICTS | Hoàn thành: 16 APPROVED, 5 APPROVED_CONDITIONAL, 9 mục chờ làm rõ, 12 xung đột |
+| Sync A | bảo mật, provider, git, roadmap | Hoàn thành: 44 thay đổi, 10 xung đột để dấu |
+| Sync B | DB, event, workflow, thiết kế | Hoàn thành: 30 thay đổi, 6 xung đột |
+| BA | AC cho FR-122/181/182/183, FR-109/113/164, D-021 | Hoàn thành: 4 đề xuất, 12 chờ Owner |
+| Drizzle PoC | scratch, PGlite | 9 PASS, 1 FAIL, 1 BLOCKED |
+| Skill/Resume PoC | scratch, 8 lần gọi haiku | SK-01/02/03/05 PASS mức script, SK-04 SIMULATED |
+Số agent chạy đồng thời tối đa: 6. Chưa từng đạt 18.

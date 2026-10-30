@@ -6,6 +6,8 @@
 > Môi trường test thực tế: Windows 11, Claude Code CLI **2.1.312** tại `C:\Users\TUYEN\.local\bin\claude`,
 > Agent SDK `@anthropic-ai/claude-agent-sdk@0.3.314`. Ngày test: 2026-10-30.
 > Tất cả output bên dưới là output thật (đã redact thông tin nhạy cảm / cắt ngắn mảng dài).
+>
+> **[Ghi chú 2026-10-30, OWR-2 (Q-17/D-004, Q-07, Q-08, Q-05)]**: tài liệu nghiên cứu, giữ nguyên làm lịch sử. Claude Agent SDK là adapter chính; raw CLI chỉ cho tác vụ phụ trợ/PoC. Phải phân biệt subscription authentication, API authentication và usage limits; SDK không đồng nghĩa được chạy số session không giới hạn. "Tới 10 session song song" là mục tiêu nghiên cứu cũ, không phải xác nhận ToS: mặc định ứng dụng 5, không tự tăng lên 10/18. Không tự động failover provider khi hết quota. Chờ approval tối đa 540 s rồi `WAITING_HUMAN` (giá trị 30 phút của `canUseTool` trong research bị thay thế).
 
 ---
 

@@ -91,8 +91,8 @@ Toàn bộ 12 nhóm năng lực do Owner liệt kê. Không bao gồm NFR (xem `
 | ID | Yêu cầu | Pri | Phase | Nguồn |
 |---|---|---|---|---|
 | FR-076 | Adapter Claude Code (CLI-based). | M | MVP | [Owner] |
-| FR-077 | Adapter Codex (CLI-based). | M | MVP | [Owner] |
-| FR-078 | Adapter OpenHands. | C | P2 | [Owner]; cơ chế chưa rõ |
+| FR-077 | Adapter Codex (CLI-based). **[HOÃN khỏi MVP]** Không tích hợp, không cài Codex CLI, không live test trong phạm vi hiện tại; giữ abstraction `AgentAdapter` (FR-081) để mở rộng sau. | M (gốc) | Hoãn — ngoài MVP (trước đây MVP) | [Owner]; Nguồn: OWR-2 D-005 (và Q-10). Xung đột nhóm B, xem mục 9.2 |
+| FR-078 | Adapter OpenHands. **[HOÃN]** Không tích hợp OpenHands như provider thứ ba trong MVP; không tích hợp OpenHands ACP trong MVP. | C | Hoãn đến sau Phase 4 (trước đây P2) | [Owner]; cơ chế chưa rõ; Nguồn: OWR-2 D-006, Q-02 |
 | FR-079 | Adapter generic CLI (cấu hình lệnh, tham số, parser output). | S | P2 | [Owner] |
 | FR-080 | Adapter CLI dùng lại phiên đăng nhập CLI hiện có của người dùng; không bắt buộc API key nếu CLI auth hoạt động. | M | MVP | [Owner] |
 | FR-081 | Mọi adapter triển khai 13 operation chuẩn: Connect, Disconnect, Authenticate, CheckConnection, ListModels, CreateSession, ResumeSession, SendMessage, StreamEvents, CancelTask, GetUsage, GetError, GetSessionHistory. Operation không hỗ trợ phải trả về lỗi NOT_SUPPORTED rõ ràng. | M | MVP | [Owner]; NOT_SUPPORTED [Đề xuất] |
@@ -126,11 +126,11 @@ Toàn bộ 12 nhóm năng lực do Owner liệt kê. Không bao gồm NFR (xem `
 | FR-106 | Human approval node: workflow dừng chờ Owner approve/reject; không timeout mặc định. | M | MVP | [Owner]; timeout [Đề xuất] |
 | FR-107 | Task có đầy đủ trường: id, title, description, project, workflow/stage, assignee, status, priority, dependencies, inputs, outputs/artifacts, file ownership, token budget, time budget, retry count, parent task, version, created/updated. | M | MVP | [Owner] "full fields"; danh sách [Đề xuất] |
 | FR-108 | Task có 10 trạng thái: BACKLOG, READY, ASSIGNED, RUNNING, BLOCKED, WAITING_APPROVAL, REVIEWING, FAILED, COMPLETED, CANCELLED. | M | MVP | [Owner] |
-| FR-109 | AUTO assignment: PM agent chấm điểm ứng viên theo role, skills, tools, workload, provider availability, permissions; chọn điểm cao nhất; ghi lại lý do. | M | MVP | [Owner]; ghi lý do [Đề xuất] |
+| FR-109 | AUTO assignment: PM agent chấm điểm ứng viên theo role, skills, tools, workload, provider availability, permissions; chọn điểm cao nhất; ghi lại lý do. **Cập nhật OWR-2 Q-09:** điểm được tính bằng công thức deterministic (cùng đầu vào cho cùng kết quả), KHÔNG dùng LLM chỉ để chấm điểm; PM agent chỉ can thiệp khi task bị mắc kẹt. Công thức và trọng số cụ thể: PENDING_OWNER_CLARIFICATION (OWR-2 chưa cung cấp). | M | MVP | [Owner]; ghi lý do [Đề xuất]; Nguồn: OWR-2 Q-09 |
 | FR-110 | MANUAL assignment: Owner chọn agent cho task; ghi đè AUTO. | M | MVP | [Owner] |
 | FR-111 | Task handover khi thất bại: sau khi hết retry, task được chuyển cho agent khác đủ điều kiện kèm context/log. | M | MVP | [Owner] |
 | FR-112 | Workflow Builder dạng node-based canvas (kéo-thả node, nối cạnh). | S | P2 | [Owner] |
-| FR-113 | Hỗ trợ 8 loại node: Agent, Approval, Condition, Parallel, Merge, Tool, Test, Deployment. | S | P2 | [Owner] |
+| FR-113 | Hỗ trợ **9 loại UI node type và 11 engine kind** (thay cho "8 loại node" gốc: Agent, Approval, Condition, Parallel, Merge, Tool, Test, Deployment). Danh sách tên cụ thể của 9 UI node type và 11 engine kind: PENDING_OWNER_CLARIFICATION (OWR-2 Q-11 chỉ nêu số lượng; không tự điền tên). | S | P2 | [Owner]; Nguồn: OWR-2 Q-11 |
 | FR-114 | Lưu workflow thành template để tái sử dụng. | S | MVP | [Owner] |
 | FR-115 | Dry-run workflow: mô phỏng đường đi mà không gọi provider. | C | P2 | [Owner] |
 | FR-116 | Event system có cấu trúc: mỗi event có id, type, timestamp, actor, entity, payload, correlation id. | M | MVP | [Owner]; schema [Đề xuất] |
@@ -139,7 +139,7 @@ Toàn bộ 12 nhóm năng lực do Owner liệt kê. Không bao gồm NFR (xem `
 | FR-119 | Template mặc định "FULL SOFTWARE DEVELOPMENT LIFECYCLE" gồm 8 giai đoạn theo thứ tự. | M | MVP | [Owner] |
 | FR-120 | Giai đoạn 1 Requirement Intake: nhận prompt, tạo project, PM agent phân tích sơ bộ và thành lập team. | M | MVP | [Owner] |
 | FR-121 | Giai đoạn 2 Business Analysis: BA agent tạo tài liệu yêu cầu; có approval gate. | M | MVP | [Owner] |
-| FR-122 | Giai đoạn 3 System Design: Architect agent tạo thiết kế hệ thống. | M | MVP | [Owner] |
+| FR-122 | Giai đoạn 3 System Design: Architect agent tạo thiết kế hệ thống. *(Văn bản FR gốc, không đổi. OWR-2 §4 gọi FR này là "Workflow Deliverables" và đề xuất AC; xem mục 9.1.)* | M | MVP | [Owner]; OWR-2 §4: AC_PROPOSED_PENDING_CLARIFICATION |
 | FR-123 | Giai đoạn 4 UI/UX Design: Designer agent tạo thiết kế; có approval gate. | M | MVP | [Owner] |
 | FR-124 | Giai đoạn 5 Development: FE/BE/DB chạy song song, mỗi nhánh trên git branch riêng, có code review trước khi merge. | M | MVP | [Owner] |
 | FR-125 | Giai đoạn 6 QA & Security & Code Review & Product Evaluation: tạo bug record cho mỗi lỗi; bug → task sửa lỗi. | M | MVP | [Owner] |
@@ -171,16 +171,16 @@ Toàn bộ 12 nhóm năng lực do Owner liệt kê. Không bao gồm NFR (xem `
 | FR-161 | Click vào nhân vật mở popover: trạng thái, task hiện tại, nút Chat/Assign/Pause/Resume/Open Profile. | M | MVP | [Owner] |
 | FR-162 | Bảng ánh xạ event → animation/vị trí có thể cấu hình (ví dụ TASK_STARTED → Walk tới desk → Typing). | S | MVP | [Đề xuất] |
 | FR-163 | Phòng ban ↔ phòng ánh xạ mặc định; phòng ban tùy chỉnh được gán vào phòng hiện có hoặc phòng mới (P2). | M | MVP | [Giả định] |
-| FR-164 | Phòng Relax/Coffee: agent Idle/Available có thể ở đó chỉ khi có event tương ứng (ví dụ AGENT_STATE_CHANGED → Idle). | S | MVP | [Owner] nguyên tắc event-driven |
+| FR-164 | Phòng Relax/Coffee: agent Idle/Available có thể ở đó chỉ khi có event tương ứng (ví dụ AGENT_STATE_CHANGED → Idle). **Cập nhật OWR-2 Q-14:** mặc định agent idle KHÔNG tự chuyển sang Coffee/Relax; hành vi này chỉ có khi bật setting tùy chọn (tên và phạm vi setting: PENDING_OWNER_CLARIFICATION), và vẫn phải dựa trên event thật. | S | MVP | [Owner] nguyên tắc event-driven; Nguồn: OWR-2 Q-14 |
 | FR-165 | Click vào phòng hiển thị danh sách agent và task trong phòng. | S | MVP | [Đề xuất] |
 
 ### 3.7 Dashboards (FR-181 … FR-195)
 
 | ID | Yêu cầu | Pri | Phase | Nguồn |
 |---|---|---|---|---|
-| FR-181 | Overview dashboard: số agent theo trạng thái, project đang chạy, task theo status, approval chờ, chi phí hôm nay/tháng, sự cố. | M | MVP | [Owner]; chỉ số [Đề xuất] |
-| FR-182 | Project dashboard: tiến độ theo giai đoạn, task, bug, chi phí, thời gian. | M | MVP | [Owner] |
-| FR-183 | Agent dashboard: hiệu suất, token, cost, lỗi, thời gian làm việc. | M | MVP | [Owner] |
+| FR-181 | Overview dashboard: số agent theo trạng thái, project đang chạy, task theo status, approval chờ, chi phí hôm nay/tháng, sự cố. *(Văn bản gốc, không đổi; OWR-2 §4 gọi là "Incident Dashboard"; xem mục 9.1.)* | M | MVP | [Owner]; chỉ số [Đề xuất]; OWR-2 §4: AC_PROPOSED_PENDING_CLARIFICATION |
+| FR-182 | Project dashboard: tiến độ theo giai đoạn, task, bug, chi phí, thời gian. *(Văn bản gốc, không đổi; OWR-2 §4 gọi là "Progress Calculation"; xem mục 9.1.)* | M | MVP | [Owner]; OWR-2 §4: AC_PROPOSED_PENDING_CLARIFICATION |
+| FR-183 | Agent dashboard: hiệu suất, token, cost, lỗi, thời gian làm việc. *(Văn bản gốc, không đổi; OWR-2 §4 gọi là "Performance Metrics"; xem mục 9.1.)* | M | MVP | [Owner]; OWR-2 §4: AC_PROPOSED_PENDING_CLARIFICATION |
 | FR-184 | Workflow dashboard: workflow đang chạy, giai đoạn hiện tại, thời gian chờ approval. | S | MVP | [Owner] |
 | FR-185 | Cost dashboard: chi phí theo project/agent/phòng ban/provider theo thời gian. | M | MVP | [Owner] |
 | FR-186 | Quality dashboard: bug, test pass rate, security findings, reject rate. | S | MVP | [Owner] |
@@ -277,11 +277,26 @@ Toàn bộ 12 nhóm năng lực do Owner liệt kê. Không bao gồm NFR (xem `
 | FR-291 | Thực thi lại một step phải idempotent hoặc có cơ chế bù (compensation) để không tạo trùng artifact. | S | MVP | [Đề xuất] |
 | FR-292 | Sao lưu/xuất dữ liệu workspace. | C | P2 | [Đề xuất] |
 
+### 3.13 Đề xuất, chờ Owner duyệt (D-021 APPROVED_CONDITIONAL) — FR-293 … FR-298 (Dynamic Skill Injection)
+
+> **Trạng thái: ĐỀ XUẤT, CHƯA PHẢI FR ĐÃ DUYỆT.** Mã FR-293..FR-298 chỉ là mã tạm do `docs/architecture/DYNAMIC_SKILL_INJECTION.md` mục 7 đề xuất. Owner (OWR-2 Q-18) chỉ chấp thuận có điều kiện D-021 với ba tiêu chí OWN-AC-1..3; chưa duyệt danh sách FR này và chưa duyệt priority. Các FR này KHÔNG nằm trong tổng 199 FR và không được tính vào thống kê. Priority ở đây là đề xuất [PD] của tài liệu kiến trúc. Nguồn: OWR-2 Q-18, D-013, D-021.
+
+| ID | Yêu cầu (đề xuất) | Pri (đề xuất) | Phase | Nguồn |
+|---|---|---|---|---|
+| FR-293 | Thư mục overlay Skill theo agent (`.ai/skills/<agent_name>/`, file Markdown do Owner/Admin quản lý). | M | Chưa gán (Owner chưa cho phép Phase 1) | [Đề xuất] DYNAMIC_SKILL_INJECTION §7; OWR-2 Q-18 |
+| FR-294 | Quét và nạp overlay lúc giao task: task mới tự động nhận nội dung Skill mới, không cần restart hay recompile. | M | Chưa gán | [Đề xuất]; liên quan OWN-AC-1 |
+| FR-295 | Cấu hình agent nhận diện thư mục overlay (`skills.overlay`, gồm `applyOnResume`, `trust`). | M | Chưa gán | [Đề xuất] |
+| FR-296 | Rào chắn và audit overlay: `.ai/**` bị cấm với agent, phát hiện thay đổi nghi vấn, ghi audit, tạm dừng agent chờ xác nhận; phát hiện hash Skill/System Prompt đổi khi resume và làm mới ngữ cảnh. | M | Chưa gán | [Đề xuất]; liên quan OWN-AC-2, OWN-AC-3 |
+| FR-297 | Xem trước ngữ cảnh sẽ được tiêm cho task kế tiếp (Preview injected context). | S | Chưa gán | [Đề xuất] |
+| FR-298 | Chuyển file overlay sang Skill Library (Promote) và xuất Skill từ Library ra overlay (Export). | C | Chưa gán | [Đề xuất] |
+
+Điểm cần Owner duyệt (PENDING_OWNER_CLARIFICATION): (1) có duyệt FR-293..FR-298 và priority như trên không (DYNAMIC_SKILL_INJECTION §10 mục 5); (2) giai đoạn đưa vào (Owner xác nhận Phase 1 chưa được phép bắt đầu); (3) phương án resume (tắt snapshot hay phiên mới có tóm tắt) chờ kết quả PoC SK-03.
+
 ## 4. Thống kê
 
-- Tổng số FR: **192**.
-- Must: 131 · Should: 43 · Could: 18.
-- MVP: 167 · P2: 24 · Chưa chốt phase: 1 (FR-098).
+- Tổng số FR đã định nghĩa (đếm bằng lệnh trên các dòng `| FR-xxx |`, 2026-10-30, sau cập nhật OWR-2): **199** (con số "192" ghi trước đây là số cũ, không khớp bảng; đã sửa). Không tính 6 FR đề xuất FR-293..FR-298 ở mục 3.13 (chưa được duyệt).
+- Must: 141 · Should: 45 · Could: 13 (tổng 199).
+- MVP: 175 · P2: 21 · Hoãn ngoài MVP: 2 (FR-077 do D-005; FR-078 do D-006) · Chưa chốt phase: 1 (FR-098).
 
 ## 5. Dependencies
 
@@ -321,3 +336,36 @@ Toàn bộ 12 nhóm năng lực do Owner liệt kê. Không bao gồm NFR (xem `
 | AP-FR-05 | Network mặc định chặn FR-211 |
 | AP-FR-06 | Fallback khi không có Docker FR-216 |
 | AP-FR-07 | Giải quyết OI-FR-01 … OI-FR-10 |
+
+## 9. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Phase 0 chưa hoàn tất; Phase 1 chưa được Owner cho phép. Mọi thay đổi bên dưới có dấu "Nguồn: OWR-2 <Q/D>" ở dòng FR tương ứng.
+
+### 9.1 FR-122, FR-181, FR-182, FR-183: đề xuất của Owner không phải văn bản FR gốc
+
+OWR-2 §4 nói rõ đây là **đề xuất AC của Owner, không phải trích nguyên văn FR**. Đối chiếu với văn bản thật trong file này: tên Owner dùng (Workflow Deliverables, Incident Dashboard, Progress Calculation, Performance Metrics) không trùng tên FR gốc, nên văn bản gốc được giữ nguyên ở mục 3.5 và 3.7 và chỉ gắn nhãn tham chiếu. Phần đề xuất được diễn đạt thành AC-601..AC-614 (trạng thái PROPOSED) trong `PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md` mục "Cập nhật OWR-2". Không thêm phạm vi mới.
+
+| FR | Văn bản gốc (trích nguyên) | Đề xuất Owner (OWR-2 §4, tóm lược) | Câu hỏi mở, trạng thái PENDING_OWNER_CLARIFICATION |
+|---|---|---|---|
+| **FR-122** | "Giai đoạn 3 System Design: Architect agent tạo thiết kế hệ thống." | Workflow Run có deliverable package (node outputs, run state, logs, liên kết generated artifacts); truy xuất theo run; artifact có metadata và nguồn tạo; run lỗi xác định node gây lỗi; không đánh dấu hoàn thành nếu required nodes chưa xong. | OQ-122-1: artifact nào bắt buộc? OQ-122-2: yêu cầu export/download hay chỉ lưu và truy xuất trong workspace? (Lưu ý thêm: đề xuất nói về mọi Workflow Run, còn FR gốc chỉ nói về Stage 3; phạm vi áp dụng cần Owner xác nhận: OQ-122-3.) |
+| **FR-181** | "Overview dashboard: số agent theo trạng thái, project đang chạy, task theo status, approval chờ, chi phí hôm nay/tháng, sự cố." | Incident là sự kiện vận hành bất thường ảnh hưởng task/agent/workflow/infrastructure: execution error, timeout, provider rate limit, sandbox failure, lost connection/heartbeat, approval timeout. Mỗi incident có ID, type, severity, timestamp, target, status. Không suy diễn incident khi thiếu bằng chứng. Cần quy định grouping incident lặp lại. | OQ-181-1: approval chờ lâu là incident hay chỉ operational alert? OQ-181-2: quy tắc grouping incident lặp lại (đề xuất cụ thể ở AC-607, đánh dấu ĐỀ XUẤT của BA, chưa phải quyết định). |
+| **FR-182** | "Project dashboard: tiến độ theo giai đoạn, task, bug, chi phí, thời gian." | `Progress = 100 × (Tổng trọng số task completed / Tổng trọng số task trong baseline)`; `completed` tính; `running`, `blocked` không tính; `cancelled` cần quy tắc riêng; MVP dùng trọng số bằng nhau nếu chưa có estimate đáng tin cậy. (Lưu ý: FR gốc nói "tiến độ theo giai đoạn"; đề xuất tính theo task. Cách quy đổi cần Owner xác nhận: OQ-182-4.) | OQ-182-1: quy tắc cho task `cancelled`. OQ-182-2: chấp thuận trọng số bằng nhau không? OQ-182-3: định nghĩa "baseline" (thời điểm chốt, task thêm/bớt sau baseline). |
+| **FR-183** | "Agent dashboard: hiệu suất, token, cost, lỗi, thời gian làm việc." | Performance không đồng nhất với Progress. Gồm lead time, execution time, success rate, retry rate, throughput, token/cost nếu provider có dữ liệu; breakdown theo Agent, Task, Workflow, thời gian. (Lưu ý: đề xuất mở rộng chiều Task, Workflow; FR gốc là dashboard theo agent.) | OQ-183-1: dashboard nhiều metric hay một KPI tổng hợp? OQ-183-2: nếu KPI tổng hợp, công thức và trọng số cần Owner phê duyệt. |
+
+Trạng thái truy vết của bốn FR: **AC_PROPOSED_PENDING_CLARIFICATION** (có AC đề xuất, các câu hỏi trên chưa được trả lời).
+
+### 9.2 Xung đột cần được Owner xác nhận: hoãn Codex (D-005) so với nhóm B của tiêu chí nghiệm thu MVP gốc
+
+Tiêu chí nghiệm thu MVP gốc của Owner (nhóm B, `ACCEPTANCE_CRITERIA.md`) yêu cầu kết nối Claude Code **và Codex** (AC-021, AC-022; FR-077, FR-080). OWR-2 D-005 hoãn tích hợp Codex khỏi MVP, và Q-10 nêu Codex CLI chưa cài. Hai điều này **mâu thuẫn**: nếu giữ nhóm B nguyên văn, MVP không thể pass; nếu theo D-005, nhóm B phải được sửa. Tài liệu này **không âm thầm ghi đè**: FR-077 được đánh dấu hoãn, AC-022 chỉ thêm ghi chú, và Owner cần xác nhận rõ (PENDING_OWNER_CLARIFICATION) rằng nhóm B được điều chỉnh (bỏ AC-022 khỏi tiêu chí MVP) hay cần quyết định khác. FR-081 (abstraction `AgentAdapter`, 13 operation) giữ nguyên để mở rộng sau. FR-078 (OpenHands) hoãn theo D-006 và Q-02. FR-076 vẫn ghi "CLI-based" trong khi OWR-2 Q-17 chọn Claude Agent SDK làm adapter chính; xung đột này được ghi nhận, chưa sửa FR-076 vì ngoài phạm vi OWR-2 mục được giao cho cập nhật này (cần Owner/Architect đồng bộ).
+
+### 9.3 Tổng hợp thay đổi FR theo OWR-2
+
+| FR | Thay đổi | Nguồn |
+|---|---|---|
+| **FR-077** | Đánh dấu hoãn khỏi MVP; giữ FR-081 | OWR-2 D-005, Q-10 |
+| **FR-078** | Đánh dấu hoãn đến sau Phase 4 | OWR-2 D-006, Q-02 |
+| **FR-109** | Chấm điểm deterministic, không dùng LLM chỉ để chấm điểm; PM agent chỉ can thiệp khi task mắc kẹt | OWR-2 Q-09 |
+| **FR-113** | 9 UI node type và 11 engine kind (tên cụ thể PENDING) | OWR-2 Q-11 |
+| **FR-164** | Mặc định idle không vào Coffee/Relax; setting tùy chọn | OWR-2 Q-14 |
+| **FR-122/181/182/183** | Chỉ gắn nhãn tham chiếu; AC đề xuất ở traceability | OWR-2 §4 |
+| FR-293..FR-298 | Thêm mục 3.13 (đề xuất, chờ duyệt) | OWR-2 Q-18 (D-021 có điều kiện) |

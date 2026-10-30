@@ -5,6 +5,8 @@
 
 ---
 
+> **[Ghi chú 2026-10-30, OWR-2 (D-005, Q-10)]**: Codex HOÃN khỏi MVP; giữ abstraction `AgentAdapter`; không cài Codex CLI (không chạy `npm i -g @openai/codex`) và không live test ở phạm vi hiện tại. Toàn bộ tài liệu này là nghiên cứu tham khảo, chưa kiểm chứng. Không mặc định subscription ChatGPT cho phép nhiều session song song (OWR-2 mục 5.1).
+
 ## 0. Trạng thái máy hiện tại (QUAN TRỌNG)
 
 | Hạng mục | Kết quả kiểm tra |

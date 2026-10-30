@@ -195,3 +195,10 @@ Chỉ MVP (Phase 1). Các FR phase P2 không có AC ở đây.
 
 
 > **Bổ sung Phase 0 finalization:** 74 AC mới (PROPOSED) và bảng truy vết đủ 199 FR nằm ở `PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md`. 16 FR chưa thể viết AC vì thiếu thông tin, chờ Owner. Tệp này giữ nguyên chưa hợp nhất cho tới khi Owner duyệt.
+
+---
+
+> **Ghi chú OWR-2 (2026-10-30), chỉ bổ sung, không sửa AC đã có:**
+> - **AC-022 (Codex, nhóm B) XUNG ĐỘT với OWR-2 D-005:** Codex bị hoãn khỏi MVP và Codex CLI chưa cài (Q-10), nên GP-1 ("Codex CLI đã cài và login") và AC-022 không thực hiện được trong MVP. Giữ nguyên văn AC; cần Owner xác nhận điều chỉnh nhóm B (PENDING_OWNER_CLARIFICATION). FR-077 đã được đánh dấu hoãn.
+> - **AC-055 (FR-109):** theo OWR-2 Q-09, điểm AUTO assignment tính bằng công thức deterministic, không dùng LLM chỉ để chấm điểm, PM agent chỉ can thiệp khi task mắc kẹt. Then "lý do (điểm theo ...) được ghi lại" giữ nguyên; công thức cụ thể chưa có (PENDING).
+> - **FR-122, 181, 182, 183:** AC đề xuất AC-601..AC-614 (PROPOSED) nằm ở `traceability_parts/AC_ADDENDUM_PART4_OWR2.md`. OWN-AC-1..3 (D-021) là AC-621..AC-623 trong cùng file. Chưa AC nào được Owner duyệt.

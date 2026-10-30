@@ -344,7 +344,7 @@ Quy tắc: `sequence` tăng liên tục theo aggregate (client phát hiện gap)
 
 ### 6.3 Đối chiếu tên
 
-Đặc tả "Prompt 1 mục 8.4" mà D-014 tham chiếu **không có trong thư mục `docs/`** nên không đối chiếu được (**Giả định**: tên UPPERCASE như `AGENT_CREATED ... HUMAN_REJECTED` ở PRD §5.5). Quy ước đề xuất: `type` trong envelope là dotted lowercase; tài liệu/UX gọi theo tên UPPERCASE bằng hàm map `toLegacyName()` một chiều. **[Cần người dùng phê duyệt]**.
+**[OWR-2 Q-19 / D-014: ĐÃ DUYỆT quy ước dotted lowercase trong DB; UPPER_SNAKE chỉ là ánh xạ API qua MỘT hàm; replay bằng `lastEventId`; PENDING_OWNER_CLARIFICATION: Owner cần cung cấp/xác nhận mười sáu tên event gốc.]** Đặc tả "Prompt 1 mục 8.4" mà D-014 tham chiếu **không có trong thư mục `docs/`** nên không đối chiếu được (**Giả định**: tên UPPERCASE như `AGENT_CREATED ... HUMAN_REJECTED` ở PRD §5.5). Quy ước đề xuất: `type` trong envelope là dotted lowercase; tài liệu/UX gọi theo tên UPPERCASE bằng hàm map `toLegacyName()` một chiều. **[Cần người dùng phê duyệt]**.
 
 Phép chiếu notification (NAV §10): `approval.requested` → category `approval.requested`; `agent.status_changed (blocked)` → `agent.blocked`; `workflow.*` → `workflow.run.*`; `provider.status`, `cost.threshold`, `system`.
 
@@ -394,7 +394,7 @@ Phép chiếu notification (NAV §10): `approval.requested` → category `approv
 
 **Điều kiện freeze một module:** mọi endpoint trong §4 của module có Zod request/response; mọi event type liên quan có payload schema; mã lỗi dùng enum chung; ví dụ JSON hợp lệ qua schema; OpenAPI snapshot được tạo; mapping tới route/màn hình FE được ghi.
 
-**Hạng mục chặn freeze (chưa giải quyết):** enum `task_status` hoa/thường (DECISION_LOG mục 5), enum `agent_status` 12 trạng thái, tên provider kind, bảng `event_outbox`, quyết định tên event §6.3.
+**Hạng mục chặn freeze (chưa giải quyết):** enum `task_status` hoa/thường (DECISION_LOG mục 5), enum `agent_status` 12 trạng thái, tên provider kind, bảng `event_outbox` (nay có đề xuất ở DATABASE_DESIGN §5.5, OWR-2 D-014), quyết định tên event §6.3 (đã duyệt hướng ở OWR-2 Q-19; `task_status` hoa/thường đã chốt ở Q-13: task_status UPPERCASE).
 
 ## 11. Quyết định & lý do
 
@@ -407,7 +407,7 @@ Phép chiếu notification (NAV §10): `approval.requested` → category `approv
 | A-5 | Không có endpoint ghi vị trí office | chuyển động chỉ từ event thật (D-011/PRD §5.6) | [Đã xác minh] |
 | A-6 | Không có endpoint merge vào `main` | D-009 | [Đã xác minh] |
 | A-7 | Zod là nguồn sinh OpenAPI + event schema | một schema cho BE/FE | [Đề xuất] |
-| A-8 | Dotted lowercase cho `type` event | khớp DATABASE_DESIGN (nguồn dữ liệu thực) | [Cần người dùng phê duyệt] |
+| A-8 | Dotted lowercase cho `type` event; UPPER_SNAKE chỉ qua một hàm ánh xạ `toLegacyName()` | khớp DATABASE_DESIGN; OWR-2 Q-12/Q-19/D-014 | **Đã duyệt (OWR-2 Q-19)**; danh sách event vẫn là đề xuất, PENDING_OWNER_CLARIFICATION (mục 8.4 gốc thiếu) |
 | A-9 | Contract-first, freeze trước parallel | giảm vỡ tích hợp | [Đề xuất] |
 
 ## 12. Dependencies

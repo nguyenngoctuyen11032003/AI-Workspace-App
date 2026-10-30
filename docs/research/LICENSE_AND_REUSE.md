@@ -131,7 +131,7 @@ Khi phân phối sản phẩm (binary hoặc source) có chứa code/derivative 
 2. Thêm `THIRD_PARTY_NOTICES.md` ở root + màn hình "About → Open-source licenses" trong app (Tauri/web) render nội dung này.
 3. Thêm CI check (ví dụ `license-checker` / `pnpm licenses list`) chặn dependency có license `AGPL*`, `GPL*`, `SSPL`, `BUSL`, `UNKNOWN`.
 4. Không clone `my-virtual-office` vào trong monorepo; giữ ở thư mục tham chiếu riêng, không symlink, không import.
-5. Asset bundle mặc định: chỉ CC0 (ưu tiên) hoặc MIT/CC-BY có file `LICENSE.txt` + `CREDITS.json` nằm cạnh asset.
+5. Asset bundle mặc định: **chỉ CC0** (OWR-2 Q-15, thay thế "CC0 hoặc MIT/CC-BY"). Font **OFL** được phép nếu lưu đầy đủ license/NOTICE. **CC-BY** chỉ dùng khi Owner phê duyệt từng package. Asset MIT có nguồn gốc không rõ (ví dụ furniture/floor/wall/carpet/pet của Pixel Agents) **không bundle mặc định**. Mỗi asset có `LICENSE.txt` + `CREDITS.json` cạnh asset. Việc tái dùng **code** MIT/Apache-2.0 không đổi (D-012; xác minh license và attribution).
 
 ---
 
@@ -363,9 +363,9 @@ Fallback: nếu bundle size là ưu tiên tuyệt đối (web embed), PixiJS 8 +
 
 ### 6.2. Chiến lược
 
-1. **Bundled defaults = CC0 (hoặc MIT/OFL có file license đi kèm)**:
+1. **Bundled defaults = CC0 (OWR-2 Q-15; OFL font kèm license/NOTICE; CC-BY chỉ từng package được Owner duyệt; mục "MIT/OFL" cũ bị thay thế)**:
    - Nhân vật: MetroCity (CC0) → tự vẽ thêm biến thể màu da/tóc/trang phục (derivative CC0 → ta sở hữu phần sửa, có thể giữ proprietary hoặc release lại CC0).
-   - Nội thất/floor/wall: bộ pixel-agents (MIT) làm nền, bổ sung do designer nội bộ vẽ (style 16x16, palette thống nhất) → tài sản riêng của công ty.
+   - Nội thất/floor/wall: ~~bộ pixel-agents (MIT) làm nền~~ **[OWR-2 Q-15: KHÔNG bundle mặc định vì nguồn gốc art chưa xác nhận; chỉ dùng nếu tác giả xác nhận bằng văn bản và Owner duyệt]**; dùng asset CC0/tự vẽ; bổ sung do designer nội bộ vẽ (style 16x16, palette thống nhất) → tài sản riêng của công ty.
    - UI/icon/cursor/font: Kenney (CC0), Press Start 2P / Pixelify Sans (OFL).
    - Mỗi thư mục asset có `CREDITS.json` `{ "author", "source", "license", "modified": true/false }` và build script sinh phần "Assets" trong `THIRD_PARTY_NOTICES.md`.
    - **Không bao giờ** đưa CC-BY-SA, GPL (LPC), hoặc asset itch.io có "no redistribution" vào installer / repo / docker image / CDN.
@@ -373,7 +373,7 @@ Fallback: nếu bundle size là ưu tiên tuyệt đối (web embed), PixiJS 8 +
    - Tái dùng cơ chế của pixel-agents: thư mục ngoài (`~/.ai-workspace/assets/<pack>/`), `manifest.json` per item, hot-reload vào palette; port `scripts/import-tileset` thành wizard trong app (cắt tileset → PNG per item + manifest).
    - Cung cấp **preset manifest cho LimeZu Modern Office/Interiors** (chỉ toạ độ cắt, **không chứa pixel**) để user mua pack ($5) rồi trỏ vào file zip → app tự slice. Đây là cách hợp pháp vì ta không phân phối asset, user là licensee. Hiển thị nhắc "Credit: LimeZu" theo yêu cầu "Credits required".
    - Layout/office share giữa user chỉ gồm **tham chiếu asset id**, không nhúng pixel của pack trả phí; nếu người nhận không có pack → fallback placeholder.
-3. **Asset "marketplace" tương lai**: chỉ nhận pack có license machine-readable (SPDX id trong manifest: `CC0-1.0`, `CC-BY-4.0`, `MIT`, `OFL-1.1`); từ chối `CC-BY-NC*`, `CC-BY-SA*` cho pack mặc định (NC cấm thương mại, SA lây sang derivative).
+3. **Asset "marketplace" tương lai**: chỉ nhận pack có license machine-readable (SPDX id trong manifest: `CC0-1.0`, `CC-BY-4.0`, `MIT`, `OFL-1.1`; **OWR-2 Q-15: mặc định chỉ `CC0-1.0`, `OFL-1.1` cho font kèm NOTICE, `CC-BY-4.0` cần Owner duyệt từng package, `MIT` asset không rõ nguồn không bundle mặc định**); từ chối `CC-BY-NC*`, `CC-BY-SA*` cho pack mặc định (NC cấm thương mại, SA lây sang derivative).
 4. **Kiểm tra lịch sử git**: khi port code/asset từ pixel-agents, chỉ checkout từ commit `add749a` trở về sau; không lấy bất kỳ PNG nào trong history trước đó (tileset proprietary cũ).
 5. **Quy trình review asset**: PR thêm asset phải đính kèm link nguồn + screenshot trang license; CI fail nếu `CREDITS.json` thiếu hoặc license không thuộc allowlist.
 

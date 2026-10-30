@@ -277,7 +277,7 @@ export interface ApprovalCardProps extends BaseProps {
 #### 3.3.4 `WorkflowNode` (React Flow custom node)
 
 ```ts
-export type WorkflowNodeKind = 'agent' | 'approval' | 'condition' | 'parallel' | 'merge' | 'tool' | 'test' | 'deployment'; // 8 loại, FR-113
+export type WorkflowNodeKind = 'agent' | 'task' | 'approval' | 'condition' | 'parallel' | 'merge' | 'tool' | 'test' | 'deployment'; // 9 UI node types (OWR-2 Q-11; trước đây 8 loại theo FR-113; 'task' đồng bộ SCREEN_SPECIFICATION §6). Engine có 11 kind = 9 + start + end (WORKFLOW_ENGINE §3)
 export interface WorkflowNodeData {
   id: string; kind: WorkflowNodeKind; title: string; subtitle?: string;
   assignee?: Pick<AgentSummary, 'id' | 'name' | 'avatarSrc' | 'providerId' | 'tone'>;
@@ -469,7 +469,7 @@ export interface EmergencyStopButtonProps extends BaseProps {
 ## 7. Vấn đề chưa giải quyết
 
 1. Bảng ánh xạ trạng thái: FR-024 (12 trạng thái agent), FR-108 (10 trạng thái task), `SCREEN_SPECIFICATION.md` §2 (idle, starting, working, waiting_input, waiting_approval, blocked, paused, failed, stopped, offline...), `StatusBadge` (8 tone). Chưa có một bảng chính thức.
-2. `SCREEN_SPECIFICATION.md` §3.3 ghi canvas "PixiJS/Canvas 2D [Giả định]" trong khi D-011 đề xuất Phaser 3.90 (chờ duyệt). Tài liệu này theo D-011.
+2. `SCREEN_SPECIFICATION.md` §3.3 ghi canvas "PixiJS/Canvas 2D [Giả định]" trong khi D-011 chọn Phaser 3.90 qua `OfficeRenderer` (OWR-2 D-011; SCREEN_SPECIFICATION đã cập nhật). Tài liệu này theo D-011.
 3. Meeting room trong Office là cơ chế thật hay animation (OI-FR-06) — ảnh hưởng `OfficeHUD`/`AgentPanel`.
 4. Có dùng Storybook/Ladle không; tooling story chưa chốt.
 5. `ApprovalCard`: danh sách loại approval (`kind`) cần khớp chính sách mặc định FR-199 (chờ Owner, AP-FR-04); `stage_gate` là giả định.

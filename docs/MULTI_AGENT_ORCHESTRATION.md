@@ -4,6 +4,8 @@ Tác giả: Multi-Agent Architect — Phase 0 (chỉ tài liệu). Ngày: 2026-1
 Tổng hợp từ: `DECISION_LOG.md` (D-003, D-009, D-010, D-014, D-016), `research/ORCHESTRATION_WORKFLOW_RESEARCH.md` (A07), `architecture/AGENT_SCHEDULER.md`, `AGENT_COLLABORATION.md`, `RESOURCE_MANAGEMENT.md`, `AGENT_ORGANIZATION.md` (A13), `DATABASE_DESIGN.md`, `product/FUNCTIONAL_REQUIREMENTS.md` (FR-101..135, FR-231..245).
 Anh em: `AGENT_ARCHITECTURE.md` (lifecycle, session), `WORKFLOW_ENGINE.md` (DAG, node_run), `EVENT_SYSTEM.md` (event). Không lặp lại công thức scoring, Lua semaphore, bảng backoff đã có ở A07/A13; chỉ chốt phân vai, quy tắc và chỗ hai nguồn lệch nhau.
 
+> **[OWR-2 Q-20 / D-003]** Định hướng Conductor (BullMQ + PostgreSQL) **được duyệt, chưa khóa implementation cho tới khi PoC đạt** (crash recovery, idempotency, không chạy lặp node, retry an toàn, approval state bền vững, không giữ worker khi chờ). PoC không đạt: báo Temporal/LangGraph để Owner quyết. **[OWR-2 Q-05]** approval chờ tối đa 540 s rồi `WAITING_HUMAN`, nhắc 24 giờ; production deploy/data deletion/merge main cần approval riêng hết hạn sau 15 phút (chi tiết `WORKFLOW_ENGINE.md` §7). **[OWR-2 Q-04/D-009]** merge vào `integration/*` khi qua gate; merge `main` luôn cần Owner approval, Lead Agent không thay thế. **[OWR-2 Q-08]** không tự failover provider khi hết quota. **[OWR-2 Q-07]** concurrency mặc định 5 không phải xác nhận subscription.
+
 Nhãn: **[Đã xác minh]** · **[Đề xuất]** · **[Giả định]** · **[Cần người dùng phê duyệt]**. Các phần 3-11 là nội dung chi tiết; số mục được giữ ổn định vì các tài liệu anh em tham chiếu (§8 = completion rule, §9 = revision, §10 = recovery).
 
 ---

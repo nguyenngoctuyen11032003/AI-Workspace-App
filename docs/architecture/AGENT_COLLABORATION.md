@@ -53,7 +53,7 @@ interface AgentMessage {
 | `CONTEXT_UPDATE` | orchestrator → broadcast/role | `scope: 'global'|'project'`, `docRef`, `version`, `changeSummary` | PRD/ADR/standards đổi version; agent nên đọc lại phần liên quan |
 | `ARTIFACT_SHARED` | agent → agent/role/broadcast | `artifacts[]`, `note` | Chia sẻ file/diff/log; **tham chiếu**, không nhúng nội dung (xem §5) |
 | `MEETING_INVITE` / `MEETING_INPUT` / `MEETING_MINUTES` | orchestrator/PM → role list | xem §7 | Họp bất đồng bộ |
-| `APPROVAL_REQUEST` | agent → user (qua orchestrator) | `action`, `risk`, `command?` | L4 hoặc chuyển provider; agent PAUSED/WAITING_APPROVAL |
+| `APPROVAL_REQUEST` | agent → user (qua orchestrator) | `action`, `risk`, `command?` | L4 hoặc chuyển provider [Q-08/OWR-2: không tự động chuyển provider khi hết quota; thông báo Owner và chờ quyết định; Q-05: chờ tối đa 540 s rồi `WAITING_HUMAN`]; agent PAUSED/WAITING_APPROVAL |
 | `ACK` | agent → orchestrator | `messageId`, `status: 'read'|'accepted'|'declined'`, `reason?` | Dùng cho HANDOFF/REVIEW/MEETING |
 
 Ownership bất biến: **không message nào tự đổi owner của task**; chỉ scheduler (orchestrator) đổi và ghi `scheduler_event`.

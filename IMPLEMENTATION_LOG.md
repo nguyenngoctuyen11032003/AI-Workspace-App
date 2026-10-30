@@ -18,3 +18,10 @@
 - Không cài phần mềm, không bật Docker, không chạy prompt model. Không viết mã ứng dụng.
 
 - Theo yêu cầu "làm nốt": đối chiếu file của 3 agent bị ngắt (BA, 18-agent, UX) với yêu cầu gốc. Đủ 8 + 6 + 5 tài liệu, 199 FR, 68 NFR, 100 AC, 15 user flow, 18 vai trò, 22 màn hình, 8 hành trình. Bổ sung mục Acceptance Criteria vào NON_FUNCTIONAL_REQUIREMENTS.md và mục Rủi ro vào USABILITY_AUDIT_CHECKLIST.md. Không chạy lại agent.
+
+## 2026-10-30 (OWR-2)
+- Nhận phản hồi chính thức của Owner (OWR-2), lưu nguyên nội dung quyết định ở `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`.
+- Kiểm tra trạng thái thật: git sạch (HEAD 32e7155 do Owner commit), Docker daemon tắt, RAM trống 4,04 GB.
+- 6 agent song song: sổ quyết định và ADR, đồng bộ tài liệu A (44 thay đổi) và B (30 thay đổi), AC cho FR, Drizzle PoC, Skill/Resume PoC. Tôi viết POC_DOCKER_SANDBOX.md (BLOCKED) và ADR-0021.
+- Kiểm tra độc lập kết quả: `npm view`, file đầu ra PoC, `grep` các thay đổi chính. Chưa tái chạy PoC.
+- Không cài Codex, không bật Docker, không chạy 27 runbook, không bắt đầu Phase 1.

@@ -54,3 +54,13 @@ Giới hạn đồng thời mặc định 5, tối đa 18 (D-010, chưa duyệt)
 
 ## 7. Khi hết việc hoặc sắp hết token
 Cập nhật `NEXT_SESSION.md` theo đúng 12 mục của nó, ghi `AGENT_WORK_LOG.md`, rồi dừng. Phase 0 kết thúc bằng việc chờ chủ sở hữu xác nhận trước khi bắt đầu Phase 1.
+
+## 8. Cập nhật sau OWR-2 (2026-10-30)
+- **Đọc trước:** `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md` là nguồn quyết định của Owner. Mọi thay đổi tài liệu phải dẫn mã Q, D hoặc FR kèm OWR-2.
+- **Từ vựng trạng thái:** PENDING_OWNER_APPROVAL, PENDING_OWNER_CLARIFICATION, APPROVED, APPROVED_CONDITIONAL, REJECTED, VERIFIED. VERIFIED chỉ khi có bằng chứng kiểm thử; hiện chưa mục nào VERIFIED. AC mới là PROPOSED, không tự thành APPROVED.
+- **Phase 0 vẫn mở. Phase 1 chưa được cho phép.** Không bắt đầu Phase 1, không chuyển Phase 0 thành Completed.
+- **Cấm tự ý:** cài Codex CLI; chạy toàn bộ 27 runbook; đổi production schema; sửa WSL hoặc cấu hình Docker; dùng credential thật; tăng concurrency (mặc định 5 là giới hạn ứng dụng, không phải xác nhận điều khoản subscription); commit hoặc push khi chưa được yêu cầu.
+- **PoC được phép:** Drizzle, Dynamic Skill/Resume trong thư mục scratch, và Docker sandbox validation sau khi Owner tự mở Docker. Kết quả ở `docs/poc/`.
+- **Codex và OpenHands đã hoãn khỏi MVP** (D-005, D-006); giữ abstraction `AgentAdapter`. Claude Agent SDK là adapter chính (D-004).
+- **Event naming:** database dùng `lowercase.dot.notation`; `UPPER_SNAKE_CASE` chỉ là ánh xạ ở lớp ngoài, một hàm ánh xạ duy nhất.
+- **Khi commit được yêu cầu:** tạo branch mới, không ghi Claude vào tác giả hay trailer, không push nếu chưa được cho phép.

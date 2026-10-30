@@ -115,3 +115,17 @@ Owner chấp nhận có điều kiện 13 rủi ro bảo mật mức NOT_ACCEPTA
 - Xác thực API, hardening Docker sandbox và audit log được kiểm tra khắt khe ở đầu Phase 2, trước khi mở quyền tự trị rộng hơn.
 - Rủi ro ghi overlay qua Bash trên host chấp nhận ở Phase 0 và 1, giảm bằng checksum và audit.
 Các rủi ro vẫn chặn Phase 2 nếu các điều kiện trên chưa đạt. Danh mục ký duyệt từng mục vẫn do Owner tự tick trong `PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md`.
+
+## Cập nhật sau OWR-2 (2026-10-30)
+| ID | Rủi ro mới hoặc thay đổi | Mức | Giảm thiểu hiện có | Chặn Phase 1 |
+|---|---|---|---|---|
+| RR-OWR2-01 | Quyết định kiến trúc đã APPROVED nhưng bằng chứng chỉ Partial hoặc Unverified (ADR-0001..0020). Duyệt không làm chúng thành VERIFIED | Cao | Ghi mức bằng chứng ở ADR README; PoC trước khi khóa | Không, nhưng chặn "khóa implementation" |
+| RR-OWR2-02 | Conductor (D-003) chưa có PoC: crash recovery, idempotency, retry an toàn, approval bền vững | Cao | Chỉ duyệt định hướng; phương án thay thế Temporal hoặc LangGraph nếu PoC không đạt | Có, trước khi khóa engine |
+| RR-OWR2-03 | Drizzle chỉ kiểm trên PGlite, không PG16. Unique theo `sequence` trên bảng phân vùng không ép được ở DB | Trung bình | Ứng dụng tự bảo đảm; lặp PoC trên PG16 khi có Docker | Không |
+| RR-OWR2-04 | Resume giữ system prompt cũ theo mặc định. Cách làm mới tốn thêm chi phí (một mẫu +47%) | Trung bình | OWN-AC-3 yêu cầu hash-check và refresh; chọn cơ chế sau khi đo thêm | Không |
+| RR-OWR2-05 | SK-04 mới SIMULATED; agent thật bị chặn ghi nên chưa chứng minh phát hiện trên agent thật. Không phân biệt được Owner và agent (cùng OS user) | Cao | Guard dựa trên băm và thời điểm; trung thực về giới hạn danh tính | Không (Phase 1 không có agent chạy thật) |
+| RR-OWR2-06 | Docker sandbox chưa kiểm chứng (daemon chưa chạy; RAM trống 4,04 GB có thể không đủ) | Cao | Fail closed; chờ Owner mở Docker; dừng nếu thiếu RAM | Không, nhưng chặn Phase 2 |
+| RR-OWR2-07 | D-005 hoãn Codex khỏi MVP làm đổi nhóm chấp nhận MVP B của yêu cầu gốc (kết nối Codex) | Trung bình | Ghi nhận xung đột, giữ abstraction AgentAdapter | Cần Owner xác nhận |
+| RR-OWR2-08 | Điều khoản subscription cho nhiều phiên song song chưa xác minh (Q-07). Mặc định 5 chỉ là giới hạn của ứng dụng | Cao | Không tăng 10 hoặc 18; không claim | Không |
+| RR-OWR2-09 | Tier 2 (container hóa agent) dựa trên OpenHands, nhưng OpenHands bị hoãn sau Phase 4 | Trung bình | Chỉ Tier 1 cộng Docker cho lệnh build/test; làm rõ Tier 2 | Cần làm rõ |
+| RR-OWR2-10 | Danh sách event gốc (mục 8.4 Prompt 1) chưa nằm trong repo. Owner yêu cầu không tự tạo | Thấp | PENDING_OWNER_CLARIFICATION; Owner cung cấp hoặc xác nhận bản chép | Chặn đóng băng event schema |

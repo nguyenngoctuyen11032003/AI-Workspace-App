@@ -52,7 +52,7 @@ Các phase không nối tiếp tuyệt đối: Phase 6 (Office, màn hình) bắ
 | ID | Điều kiện | Trạng thái hiện tại | Chặn task | Người xử lý |
 |---|---|---|---|---|
 | EXT-1 | Phê duyệt D-001…D-016 và giải quyết 5 mâu thuẫn trong `DECISION_LOG.md` | Chờ duyệt | P1-01 trở đi (D-001, D-002), P4 (D-007) | Owner |
-| EXT-2 | Cài Codex CLI (`npm i -g @openai/codex`) và `codex login` | Chưa cài | P2-11, P2-12, P4-11, AC-022 | Owner |
+| EXT-2 | [HOÃN, D-005/OWR-2: không cài Codex CLI trong phạm vi hiện tại] Cài Codex CLI (`npm i -g @openai/codex`) và `codex login` | Chưa cài; không được cài | P2-11, P2-12, P4-11, AC-022 | Owner |
 | EXT-3 | Docker daemon đang chạy (Docker Desktop 29.8.1 đã cài; daemon chưa chạy lúc kiểm tra) | Chưa chạy | P1-20, P1-62 (integration), mọi P4 sandbox | Owner |
 | EXT-4 | Phê duyệt quota chạy benchmark T1-T4 (≈ 89 spawn nhẹ, ≈ 33 USD list) | Chờ | P2-13, P7-01 | Owner |
 | EXT-5 | Ký xác nhận rủi ro còn lại R1, R2, R3, R5, R6 (`SECURITY.md` §10) | Chưa | P4 exit | Owner |
@@ -508,7 +508,7 @@ Con số trên chưa hiệu chuẩn; sẽ cập nhật sau Phase 1 từ tốc đ
 | IR-5 | Task provider không được COMPLETED khi chỉ có mock | `TESTING.md` §3.5 | [Đề xuất] |
 | IR-6 | Template SDLC là dữ liệu seed, không hardcode | FR-114, D-003, D-016 | [Đề xuất] |
 | IR-7 | 18-concurrency là exit criterion Phase 7, nhưng benchmark CLI thô chạy sớm ở Phase 2 | Có số liệu sớm để điều chỉnh thiết kế, không chờ scheduler | [Đề xuất] |
-| IR-8 | Codex không chặn thoát phase, chỉ ghi UNVERIFIED nếu Owner chấp nhận | CLI chưa cài [Đã xác minh] | [Cần người dùng phê duyệt] |
+| IR-8 | Codex không chặn thoát phase, chỉ ghi UNVERIFIED nếu Owner chấp nhận | CLI chưa cài [Đã xác minh] | D-005 (OWR-2): Codex hoãn khỏi MVP; không còn là điều kiện exit của MVP |
 | IR-9 | Tauri/OpenHands/generic CLI là P2 (sau MVP) | FR phase P2 (24 FR); giảm phạm vi MVP | [Đề xuất] |
 
 ## 5. Dependencies
@@ -560,16 +560,21 @@ Rủi ro cấp lộ trình (chi tiết, owner và trigger ở `PROJECT_RISKS.md`
 - [ ] Owner duyệt thứ tự phase và các cổng EXT.
 
 ## Phụ lục theo quyết định Owner (2026-10-30)
-Nguồn: `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8. Các điều kiện này là chỉ thị của Owner và áp dụng cho lộ trình ở trên. Khi có mâu thuẫn, phụ lục này thắng.
+Nguồn: `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8 và `owner-responses/OWR-2_2026-10-30_phase0_finalization.md` mục 8 (bản viết lại theo OWR-2, thay cách diễn đạt lỏng hơn trước đó; xem `DOC_SYNC_LOG_OWR2_A.md`). Các điều kiện này là chỉ thị của Owner và áp dụng cho lộ trình ở trên. Khi có mâu thuẫn, phụ lục này thắng. **Phase 0 vẫn đang mở. Phase 1 chưa được Owner cho phép bắt đầu** (OWR-2 mục 8); kế hoạch Phase 1 trong tài liệu này chỉ là kế hoạch.
 
 **Phase 1 (Foundation): không cho agent chạy thật.** Agent không được thực thi lệnh ghi dữ liệu hệ thống hay gọi external API thực. Chỉ mô phỏng, dry-run, hoặc kiểm thử thủ công theo runbook trong `PHASE_0_TECHNICAL_VALIDATION_REPORT.md`. Mock adapter vẫn chỉ dùng trong CI, không thay luồng sản phẩm.
 
-**Cổng vào Phase 2 (Provider Integration), phải đạt trước khi cấp quyền tự trị rộng hơn cho agent:**
-1. Xác thực API (token cục bộ, kiểm tra nguồn gốc) đã được cài đặt và kiểm thử.
-2. Hardening Docker sandbox đã được kiểm chứng trên máy có Docker chạy (test SB-00..SB-17), fail-closed khi daemon tắt.
-3. Audit log (ghi ý định trước khi thực thi, append-only) đã hoạt động, có phát hiện thay đổi overlay bằng checksum.
-4. Policy engine và cổng phê duyệt (Human-in-the-loop) cho hành động quan trọng đã hoạt động.
-Hạng mục 1 đến 4 trước đây nằm ở Phase 4 theo roadmap gốc; cần kéo các task tương ứng lên đầu Phase 2 hoặc cuối Phase 1. Việc xếp lại task chi tiết do Owner duyệt khi mở Phase 1.
+**Security gates và phạm vi phase (OWR-2 mục 8):**
+1. Không cho Agent thực thi arbitrary code trên Windows host khi chưa có sandbox đạt chuẩn.
+2. Không mount thư mục credential của host hoặc Docker socket vào Agent (D-008: không mount thư mục credential của Owner vào Agent sandbox).
+3. Nếu sandbox không hoạt động, fail closed.
+4. Không đưa production-capable Agent execution vào trước khi authentication, authorization, permission model, credential isolation, audit, sandbox và emergency stop hoàn thành.
+5. **Phase 2 chỉ được xây provider adapter ở mock/sandbox mode nếu các security gate chưa đạt.**
+6. Không tuyên bố 18 Agent concurrent đã được kiểm thử. Concurrency mặc định 5 là giới hạn của ứng dụng, không xác nhận subscription cho phép song song; không tăng lên 10/18 khi chưa xác minh điều khoản provider (Q-07). Exit criterion 18 đồng thời ở Phase 7 vẫn chỉ là mục tiêu cần chứng minh và cần Owner phê duyệt riêng khi chạy.
+7. Không giả lập Agent hoạt động hoặc workflow thành công khi không có execution evidence.
+8. Agent CLI/API (D-019) chỉ triển khai ở Phase 3 sau Security Review: token ngắn hạn least-privilege, có redaction, chặn nested execution trái phép.
+9. Phạm vi provider: MVP chỉ Claude qua Claude Agent SDK (Q-17/D-004). Codex hoãn khỏi MVP, giữ abstraction `AgentAdapter`, không cài Codex CLI (D-005, Q-10); OpenHands hoãn đến sau Phase 4, không phải provider thứ ba của MVP, ACP tắt (Q-02, D-006). EXT-2 (cài Codex) và các task P2-11, P2-12, P4-11, P5-14 vì vậy bị hoãn, không phải điều kiện của MVP.
+Ghi chú sắp xếp: các hạng mục xác thực, hardening Docker sandbox (SB-00..SB-17, chạy trên máy có Docker, Q-10), audit log, policy engine/approval và emergency stop trước đây nằm ở Phase 4; cần kéo lên trước khi có production-capable Agent execution. Việc xếp lại task chi tiết do Owner duyệt khi mở Phase 1.
 
 **Rủi ro chấp nhận có điều kiện:** rủi ro agent ghi vào thư mục overlay qua Bash trên host (Tier 1, Windows không có sandbox cấp hệ điều hành) được chấp nhận ở Phase 0 và 1, giảm bằng checksum và audit để phát hiện, trước khi chuyển sang môi trường Linux/Docker ở phase sau.
 
