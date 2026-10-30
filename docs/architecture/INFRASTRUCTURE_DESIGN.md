@@ -2,7 +2,7 @@
 
 > **Tác giả:** Agent 14 (DevSecOps & Infrastructure) · **Phase:** 0 · **Trạng thái:** Draft v0.1 · **Ngày:** 2026-10-30
 >
-> Liên quan: `docs/security/SECURITY.md` (A09), `docs/architecture/DATABASE_DESIGN.md` (A08), `docs/architecture/WORKSPACE_AND_GIT_ISOLATION.md`, `docs/development/ENVIRONMENT_SETUP.md`, `docs/development/DEPLOYMENT.md`, `docs/operations/DEVSECOPS_GUIDE.md`.
+> Liên quan: `docs/SECURITY.md` (A09), `docs/DATABASE_DESIGN.md` (A08), `docs/architecture/WORKSPACE_AND_GIT_ISOLATION.md`, `docs/development/ENVIRONMENT_SETUP.md`, `docs/development/DEPLOYMENT.md`, `docs/operations/DEVSECOPS_GUIDE.md`.
 >
 > Nhãn: **[Đã xác minh]** / **[Đề xuất]** / **[Giả định]** / **[Cần người dùng phê duyệt]**.
 
@@ -148,7 +148,7 @@ Images được build bởi platform (`infra/images/<stack>/Dockerfile`), scan T
 | disk (volume quota) | 5 GB | 5 GB | 2 GB |
 | ulimit nofile | 65536 | 65536 | 16384 |
 
-Timeout: worker gọi `container.stop({ t: 10 })` rồi `kill`; ghi `timedOut=true`. OOM đọc từ `inspect.State.OOMKilled`. Tổng sandbox đồng thời trên dev box: 3 (cấu hình `SANDBOX_MAX_CONCURRENCY`) – Docker Desktop VM mặc định chia sẻ CPU/RAM theo `.wslconfig` (khuyến nghị `memory=12GB`, `processors=6` trên máy 32 GB; cần người dùng chỉnh) [Cần người dùng phê duyệt].
+Timeout: worker gọi `container.stop({ t: 10 })` rồi `kill`; ghi `timedOut=true`. OOM đọc từ `inspect.State.OOMKilled`. Tổng sandbox đồng thời trên dev box: 3 (cấu hình `SANDBOX_MAX_CONCURRENCY`) – Docker Desktop VM mặc định chia sẻ CPU/RAM theo `.wslconfig` (giá trị theo RAM máy: máy tham chiếu đo được 15.77 GB RAM nên đề xuất `memory` khoảng 6–8GB; máy 32 GB mới cân nhắc `memory=12GB`, `processors=6`; cần người dùng chỉnh) [Cần người dùng phê duyệt].
 
 ### 6.6 Network modes
 
@@ -182,7 +182,7 @@ Timeout: worker gọi `container.stop({ t: 10 })` rồi `kill`; ghi `timedOut=tr
 ## 8. Monitoring & logging
 
 - **Logs:** pino (NestJS `nestjs-pino`), JSON, trường bắt buộc: `ts, level, service, reqId, taskId, agentSlug, jobId`. Dev: `pino-pretty`. Redaction paths: `req.headers.authorization`, `*.apiKey`, `*.token`, `env.*_KEY`.
-- **Audit log** riêng (bảng `audit_events` – A08): spawn agent, hook deny, diff validation fail/override, merge, preview start/stop, secret access. Retention: xem DEVSECOPS_GUIDE §9.
+- **Audit log** riêng (bảng `audit_logs` – A08): spawn agent, hook deny, diff validation fail/override, merge, preview start/stop, secret access. Retention: xem DEVSECOPS_GUIDE §9.
 - **Metrics:** `@opentelemetry/sdk-node` tuỳ chọn (`OTEL_ENABLED=false` mặc định); exporter OTLP → `otel-collector` → Prometheus/Grafana trong profile `observability` của compose. Metrics tối thiểu: queue depth BullMQ, job duration theo kind, sandbox OOM/timeout count, worktree count, disk usage.
 - **Health:** `GET /health` (liveness), `GET /ready` (Postgres, Redis, Docker daemon reachable, `WORKSPACE_ROOT` writable, `claude --version`).
 - **BullMQ dashboard:** `@bull-board` ở `/admin/queues` chỉ dev/self-hosted với auth.
@@ -209,7 +209,7 @@ Timeout: worker gọi `container.stop({ t: 10 })` rồi `kill`; ghi `timedOut=tr
 
 ## 11. Dependencies
 
-- A08: bảng `sandbox_jobs`, `test_results`, `previews`, `audit_events`.
+- A08: bảng `sandbox_jobs`, `test_results`, `previews`, `audit_logs`.
 - A09: threat model cho sandbox escape, prompt injection từ output, egress.
 - WORKSPACE_AND_GIT_ISOLATION.md: worktree path, cleanup hook để xoá volume `aiw-nm-<taskId>`.
 - CI_CD.md: build + scan sandbox images.

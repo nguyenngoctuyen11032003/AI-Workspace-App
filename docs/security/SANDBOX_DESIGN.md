@@ -303,7 +303,7 @@ Emergency stop không gọi bất kỳ đường nào có thể bị agent chặ
 | CH-05 | emergency stop | giết 18 job + container | `killed_clean` < 5 s | Giả định |
 | SB-17 | seccomp mặc định | `docker inspect … SecurityOpt` không có `unconfined`; `unshare -U` trong container | bị chặn | Giả định |
 
-Mọi mục chuyển từ "Giả định" sang "Đã xác minh" phải ghi lệnh, output và ngày vào `docs/security/VERIFICATION_LOG.md` (file do Phase 1 tạo khi có daemon).
+Mọi mục chuyển từ "Giả định" sang "Đã xác minh" phải ghi lệnh, output và ngày vào `docs/security/SANDBOX_VERIFICATION_LOG.md` [file chưa tạo; sẽ tạo ở Phase 1 khi có daemon].
 
 ## 12. Dependencies
 
@@ -336,7 +336,7 @@ Mọi mục chuyển từ "Giả định" sang "Đã xác minh" phải ghi lện
 ## 15. Acceptance Criteria
 
 - [ ] `assertSafeSpec` có unit test từ chối mọi khoá cấm (Privileged, CapAdd, Binds, PidMode, NetworkMode=host…) và chạy lại trên `inspect` trước mỗi exec.
-- [ ] Toàn bộ SB-00..SB-17, EG-01..03, CH-05 chạy tự động trên máy có daemon và pass; kết quả ghi vào VERIFICATION_LOG.
+- [ ] Toàn bộ SB-00..SB-17, EG-01..03, CH-05 chạy tự động trên máy có daemon và pass; kết quả ghi vào SANDBOX_VERIFICATION_LOG [file chưa tạo].
 - [ ] Hook rewrite: 100 % lệnh `executes-code` trong corpus (≥ 300) được bọc `aiw-exec`; lệnh ghép host+container bị từ chối; hook lỗi ⇒ deny (fail-closed).
 - [ ] `docker inspect` mọi container label `aiw=1` thoả policy as code (conftest) trong CI.
 - [ ] Emergency stop: 18 agent giả lập + container + tiến trình `start /b` dừng hoàn toàn < 5 s, audit đủ intent + outcome.

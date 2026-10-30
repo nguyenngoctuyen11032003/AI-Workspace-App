@@ -26,7 +26,7 @@
 
 ### 1.1 Bảng so sánh
 
-| Tiêu chí | Prisma (v6/v7) | Drizzle (v1.x) | Kết luận |
+| Tiêu chí | Prisma (v6/v7) | Drizzle (v1.x [cần xác minh phiên bản trước khi pin: npm latest 0.45.x, 1.0 đang beta]) | Kết luận |
 |---|---|---|---|
 | Migrations | `prisma migrate` tốt, nhưng mọi object không mô tả được trong `schema.prisma` (partial index, partitioned table, trigger, `CHECK`) phải viết tay bằng `--create-only`; migrate diff có thể **drop** index lạ trên bảng nó quản lý | `drizzle-kit generate` sinh SQL thuần, editable; hỗ trợ custom migration `drizzle-kit generate --custom`; không xoá object nó không biết | Drizzle |
 | JSONB | `Json` type, không typed; filter JSON path giới hạn | `jsonb().$type<T>()` typed, query JSON bằng `sql` operator tự do | Drizzle |
@@ -169,7 +169,10 @@ export const agentStatus = pgEnum('agent_status', [
 ]);
 export const permissionLevel = pgEnum('permission_level', ['read_only', 'standard', 'elevated', 'full']);
 export const providerKind = pgEnum('provider_kind', [
-  'claude_code', 'anthropic_api', 'openai', 'gemini', 'ollama', 'openrouter', 'custom',
+  // Sửa sau QA-001 (P0-2): thêm codex, openhands, generic_cli, mock theo PROVIDER_INTEGRATION.md mục adapter.
+  // 'mock' chỉ dùng trong CI/test, bị chặn ở môi trường sản phẩm. Các kind API (anthropic_api...) giữ cho phương án API key.
+  'claude_code', 'codex', 'openhands', 'generic_cli', 'mock',
+  'anthropic_api', 'openai', 'gemini', 'ollama', 'openrouter', 'custom',
 ]);
 export const connectionStatus = pgEnum('connection_status', ['unverified', 'ok', 'error', 'revoked']);
 export const skillCategory = pgEnum('skill_category', [

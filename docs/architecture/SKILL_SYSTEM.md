@@ -695,3 +695,6 @@ Virtual Office có thể lắng nghe `AGENT_TAUGHT` để hiện animation "đan
 | AC-D5-2 | Test Skill: chạy 1 probe trên Claude Code và Codex, trả bảng rule × pass/fail với evidence; chi phí ≤ `budget_usd` | D5 Verify |
 | AC-M-1 | Memory: cuối task có đề xuất `proposed`; không được inject cho đến khi approve; approve → xuất hiện trong `AIW_MEMORY.md` của session kế tiếp; reject/delete hoạt động | Memory |
 | AC-S-1 | Skill import có `scripts/` → script không thực thi được cho đến khi owner bật; lint L09 chặn file chứa secret giả | Security |
+
+
+> **Phụ lục sửa đổi (D-021, PROPOSED):** nạp skill Markdown động theo từng agent, quét lúc giao task, xem `docs/architecture/DYNAMIC_SKILL_INJECTION.md`. Phụ lục này bổ sung nguồn skill trên đĩa và rào chắn `.ai/**`; phần còn lại của tài liệu này giữ nguyên cho đến khi Owner duyệt.

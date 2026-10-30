@@ -317,7 +317,7 @@ Mô tả từng màn hình đủ chi tiết để Agent frontend dựng UI, Agen
 - **Component:** `Stepper`, `TemplateCard`, `Form` + validation inline, `Select` searchable, `Monaco` (system prompt), `Preview` pane cố định phải, `Toast`.
 - **Dữ liệu:** `GET /api/agent-templates` · `GET /api/providers?status=connected` · `GET /api/providers/:id/models` · `POST /api/providers/:id/test-prompt` · `GET /api/skills` · `POST /api/agents` · `POST /api/agents/:id/seat` (hoặc tự động).
 - **Hành động:** Continue / Back / Save draft (lưu `localStorage` + server draft) / Create. Secondary: Duplicate from existing agent.
-- **Trạng thái:** provider chưa kết nối → bước 3 hiển thị EmptyState "Connect provider" (link Provider Hub, quay lại giữ draft); test prompt lỗi → hiển thị lỗi thật, không cho Continue nếu chưa test thành công (có "Skip test" với cảnh báo `[Đề xuất]`); đã đạt 18 agent → header cảnh báo "Giới hạn 18 agent đồng thời" nhưng vẫn cho tạo ở trạng thái offline `[Cần người dùng phê duyệt]`.
+- **Trạng thái:** provider chưa kết nối → bước 3 hiển thị EmptyState "Connect provider" (link Provider Hub, quay lại giữ draft); test prompt lỗi → hiển thị lỗi thật, không cho Continue nếu chưa test thành công (có "Skip test" với cảnh báo `[Đề xuất]`); đã đạt số agent tối đa theo cấu hình `max_concurrent_agents` → header cảnh báo "Giới hạn {max_concurrent_agents} agent đồng thời" nhưng vẫn cho tạo ở trạng thái offline `[Cần người dùng phê duyệt]`.
 - **Quyền:** Owner.
 - **AC:** [ ] Hoàn tất 6 bước với template < 3 phút (đo trong usability test). [ ] Preview cập nhật theo mỗi field. [ ] Không có "Est. cost" khi chưa có dữ liệu (hiển thị "—"). [ ] Agent tạo xong xuất hiện trong Office và Agents ≤ 2s. [ ] Thoát giữa chừng → quay lại đúng bước.
 

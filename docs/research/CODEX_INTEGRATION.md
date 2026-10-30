@@ -558,6 +558,8 @@ Ghi chú:
 
 ### 11.2 Interface sketch (TypeScript / NestJS)
 
+> Ghi chú: AgentBrain là tên nghiên cứu; tên chính thức là AgentAdapter/AgentEvent (PROVIDER_INTEGRATION §P1, packages/agent-core).
+
 ```ts
 // packages/agent-core/src/agent-adapter.ts
 export type AgentBrain = 'codex' | 'claude';

@@ -349,7 +349,7 @@ Fallback: nếu bundle size là ưu tiên tuyệt đối (web embed), PixiJS 8 +
 
 | Pack | Nguồn | License (đã xác minh) | Chibi/office? | Bundle mặc định? |
 |---|---|---|---|---|
-| **MetroCity – Free Top Down Character Pack** (JIK-A-4) | itch.io | **CC0 1.0** (hiển thị trên trang), tác giả xác nhận commercial OK | Chibi top-down, hiện đại, 16x16-ish; pixel-agents đã dùng | **Có** |
+| **MetroCity – Free Top Down Character Pack** (JIK-A-4) | itch.io | **CC0 1.0 [chưa lưu bằng chứng: cần ảnh chụp trang itch.io trong PR]**, tác giả xác nhận commercial OK | Chibi top-down, hiện đại, 16x16-ish; pixel-agents đã dùng | **Có** |
 | **MetroCity – Environment / Cars** (JIK-A-4) | itch.io | CC0 1.0 | Môi trường ngoài trời (bổ sung) | Có |
 | **pixel-agents furniture/floors/walls/pets/carpets** (post-#117) | GitHub (MIT repo) | MIT theo repo; commit nói "original" | Office nội thất 16x16 | **Có** (ghi credit Pablo De Lucca) |
 | **LimeZu Modern Office** | itch.io ($5) | EULA riêng: commercial OK, **credits required**, **"CAN'T resell or distribute the asset to others"**, "CAN'T edit and resell" | Rất đẹp, chuẩn chibi office, là "chuẩn ngành" | **Không** — chỉ cho phép user tự mua và import |

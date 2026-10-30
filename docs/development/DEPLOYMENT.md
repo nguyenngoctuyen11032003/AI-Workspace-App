@@ -2,7 +2,7 @@
 
 > **Tác giả:** Agent 14 (DevSecOps & Infrastructure) · **Phase:** 0 · **Trạng thái:** Draft v0.1 · **Ngày:** 2026-10-30
 >
-> Liên quan: `docs/architecture/INFRASTRUCTURE_DESIGN.md`, `docs/development/CI_CD.md`, `docs/development/ENVIRONMENT_SETUP.md`, `docs/operations/DEVSECOPS_GUIDE.md`, `docs/security/SECURITY.md` (A09), `docs/architecture/DATABASE_DESIGN.md` (A08).
+> Liên quan: `docs/architecture/INFRASTRUCTURE_DESIGN.md`, `docs/development/CI_CD.md`, `docs/development/ENVIRONMENT_SETUP.md`, `docs/operations/DEVSECOPS_GUIDE.md`, `docs/SECURITY.md` (A09), `docs/DATABASE_DESIGN.md` (A08).
 >
 > Nhãn: **[Đã xác minh]** / **[Đề xuất]** / **[Giả định]** / **[Cần người dùng phê duyệt]**.
 
@@ -122,7 +122,7 @@ Nguyên tắc: cấu hình qua env (12-factor), validate bằng zod khi khởi �
 | Worktree/workspace hỏng | Tái tạo worktree từ branch trong `repo.git`; `repo.git` khôi phục từ `git bundle` backup |
 | Redis mất | Job đang chạy fail → orchestrator đánh dấu task `interrupted`, người dùng re-run; không mất dữ liệu nghiệp vụ |
 
-Quy trình: ghi `audit_events` loại `deployment` với version trước/sau; rollback cũng là một deployment event.
+Quy trình: ghi `audit_logs` loại `deployment` với version trước/sau; rollback cũng là một deployment event.
 
 ## 8. Health checks & logs
 
@@ -140,7 +140,7 @@ Cụ thể:
 
 1. Agent không có quyền `git push` (WORKSPACE doc §7); platform chỉ push/tạo PR khi người dùng bấm xác nhận, và chỉ tới remote đã cấu hình.
 2. Preview (INFRASTRUCTURE_DESIGN §7) chỉ chạy container cục bộ bind `127.0.0.1` (hoặc sau Caddy có auth ở server mode); không có tích hợp Vercel/Netlify/Fly/AWS ở MVP.
-3. Nếu sau này thêm "Deploy to X", tính năng phải: yêu cầu xác nhận có mô tả đích + diff, lưu `audit_events`, có kill-switch cấu hình (`FEATURE_EXTERNAL_DEPLOY=false` mặc định), và không bao giờ được kích hoạt bởi agent qua tool call.
+3. Nếu sau này thêm "Deploy to X", tính năng phải: yêu cầu xác nhận có mô tả đích + diff, lưu `audit_logs`, có kill-switch cấu hình (`FEATURE_EXTERNAL_DEPLOY=false` mặc định), và không bao giờ được kích hoạt bởi agent qua tool call.
 4. Secrets deploy của người dùng (cloud tokens) không bao giờ được truyền vào tiến trình agent hay sandbox.
 
 ## 10. Deployment checklist
@@ -160,7 +160,7 @@ Cụ thể:
 - [ ] `claude auth status` trong worker OK.
 
 **Sau deploy**
-- [ ] Ghi `audit_events` deployment (tự động) và cập nhật `CHANGELOG`/ops log.
+- [ ] Ghi `audit_logs` deployment (tự động) và cập nhật `CHANGELOG`/ops log.
 - [ ] Theo dõi log lỗi 30 phút; kiểm tra queue BullMQ không tồn job stuck.
 - [ ] Xoá image cũ hơn 2 phiên bản (`docker image prune` có chọn lọc).
 
@@ -179,7 +179,7 @@ Cụ thể:
 
 ## 12. Dependencies
 
-- A08: công cụ migration, bảng `audit_events`, chiến lược expand/contract trong schema.
+- A08: công cụ migration, bảng `audit_logs`, chiến lược expand/contract trong schema.
 - A09: auth server mode, session token desktop mode, điều khoản dùng CLI login.
 - CI_CD.md: artifact `compose-bundle.tgz`, image tags, cosign.
 - INFRASTRUCTURE_DESIGN.md: compose, docker-socket-proxy, backup.

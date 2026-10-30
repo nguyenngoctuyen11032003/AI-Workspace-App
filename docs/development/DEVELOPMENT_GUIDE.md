@@ -95,7 +95,7 @@ Quy tắc ranh giới (enforce bằng ESLint `no-restricted-imports` + `dependen
 
 Nguyên tắc đồng bộ với `WORK_PLAN.md` §3 và `WORKSPACE_AND_GIT_ISOLATION.md`: mỗi task một worktree một branch, không hai agent ghi cùng file.
 
-3.4.1 **Vai trò (18 role seed, `AGENT_ORGANIZATION.md` §4):** `pm, ba, architect, uiux, frontend, backend, db_infra, qa, security, reviewer, research, integration, performance, devsecops, docs, ux_research, test_automation, release`. Trong giai đoạn xây nền tảng, các role này được dùng như **nhãn trách nhiệm** gắn cho task trong roadmap; agent thực tế là các Claude Code subagent do Orchestrator khởi chạy (giới hạn 10 đồng thời, WORK_PLAN đầu trang) [Đã xác minh]. Codex chưa cài nên chưa agent nào dùng Codex. [Đã xác minh]
+3.4.1 **Vai trò (18 role seed, `AGENT_ORGANIZATION.md` §4):** `pm, ba, architect, uiux, frontend, backend, db_infra, qa, security, reviewer, research, integration, performance, devsecops, docs, ux_research, test_automation, release`. Trong giai đoạn xây nền tảng, các role này được dùng như **nhãn trách nhiệm** gắn cho task trong roadmap; agent thực tế là các Claude Code subagent do Orchestrator khởi chạy (giới hạn 10 đồng thời, WORK_PLAN đầu trang) [Nhất quán với WORK_PLAN.md]. Codex chưa cài nên chưa agent nào dùng Codex. [Đã xác minh]
 
 3.4.2 **File ownership theo glob.** Mỗi task có manifest đơn giản trong mô tả task:
 
@@ -142,7 +142,7 @@ Bảng ownership mặc định theo role (rút gọn, chi tiết `AGENT_ORGANIZA
 
 3.4.7 **Credential và dữ liệu nhạy cảm:** agent không đọc `~/.claude/.credentials.json` hay `auth.json` của Codex, không in biến môi trường vào log, không dán token vào PR (D-008). Hook `gitleaks` pre-commit là bắt buộc. [Đề xuất]
 
-3.4.8 **Giới hạn song song khi phát triển:** tối đa 10 subagent đồng thời (giới hạn hiện tại của Orchestrator [Đã xác minh]). Chi phí và quota là hạn chế thực (`MULTI_AGENT_SCALABILITY.md` §6); do đó roadmap đánh dấu song song/tuần tự và Orchestrator không khởi chạy quá giới hạn.
+3.4.8 **Giới hạn song song khi phát triển:** tối đa 10 subagent đồng thời (giới hạn hiện tại của Orchestrator [Nhất quán với WORK_PLAN.md]). Chi phí và quota là hạn chế thực (`MULTI_AGENT_SCALABILITY.md` §6); do đó roadmap đánh dấu song song/tuần tự và Orchestrator không khởi chạy quá giới hạn.
 
 3.4.9 **Phân biệt hai thứ "18 agent":** (a) 18 role trong sản phẩm là **dữ liệu seed** cho người dùng cuối (D-016); (b) agent AI đang xây repo này. Mã nguồn không được chứa danh sách 18 role hardcode; chúng nằm trong `seed/` và DB.
 
@@ -233,7 +233,7 @@ Báo cáo ≤ 150 từ: (1) file đã tạo/sửa (đường dẫn tuyệt đố
 | DG-4 | Squash merge, history tuyến tính | Dễ revert theo task, khớp `CI_CD.md` §5 | [Đề xuất] |
 | DG-5 | DoD yêu cầu bằng chứng và trạng thái `IMPLEMENTED-UNVERIFIED` | Tránh báo hoàn thành sai khi Codex chưa cài/Docker chưa chạy | [Đề xuất] |
 | DG-6 | `AGENTS.md` là điểm vào duy nhất cho agent | Giảm lệch chỉ dẫn giữa các agent | [Đề xuất] |
-| DG-7 | Giới hạn 10 subagent đồng thời khi phát triển | Giới hạn hiện tại của Orchestrator + quota chung | [Đã xác minh] |
+| DG-7 | Giới hạn 10 subagent đồng thời khi phát triển | Giới hạn hiện tại của Orchestrator + quota chung | [Nhất quán với WORK_PLAN.md] |
 
 ## 5. Dependencies
 

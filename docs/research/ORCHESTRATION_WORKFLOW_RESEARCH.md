@@ -648,6 +648,8 @@ Rewind thủ công: `POST /runs/:id/rewind?seq=N` → restore snapshot; mọi No
 
 ## 9. Default Template: FULL SOFTWARE DEVELOPMENT LIFECYCLE
 
+[LỖI THỜI] Template chính thức theo WORKFLOW_ENGINE.md §10 (FR-119..127); không auto-deploy production.
+
 8 stage: 1 Requirements → 2 Architecture → 3 Planning (PM) → 4 Implementation (parallel FE/BE/DB) → 5 Integration & Review → 6 QA/Test → 7 Deployment Staging → 8 Release. Approval gate sau stage 1, 2, 5, 6, 7. `position` chỉ để React Flow render.
 
 ```json
@@ -731,7 +733,7 @@ Rewind thủ công: `POST /runs/:id/rewind?seq=N` → restore snapshot; mọi No
       "data": { "kind": "approval", "label": "Gate 7 · UAT Approve Release", "stage": "7-staging", "approverRoles": ["owner"], "reviewArtifacts": ["s7_deploy.summary"], "timeoutMs": null } },
 
     { "id": "s8_release", "type": "deployment", "position": { "x": 3940, "y": 300 },
-      "data": { "kind": "deployment", "label": "S8 · Release Production", "stage": "8-release", "target": "production", "script": "scripts/release.sh", "requiresPermission": "deploy:production" } },
+      "data": { "kind": "deployment", "label": "S8 · Release Production [minh họa, bị cấm bởi FR-126]", "stage": "8-release", "target": "production", "script": "scripts/release.sh", "requiresPermission": "deploy:production" } },
     { "id": "s8_notes", "type": "agent", "position": { "x": 4160, "y": 300 },
       "data": { "kind": "agent", "label": "S8 · Release Notes", "stage": "8-release", "role": "pm", "provider": "any",
         "promptTemplate": "Viết CHANGELOG từ decisions + summary các stage.", "inputs": ["s3_pm.summary", "s5_review.summary", "s8_release.summary"], "timeoutMs": 600000 } },

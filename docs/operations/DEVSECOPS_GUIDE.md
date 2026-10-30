@@ -2,7 +2,7 @@
 
 > **Tác giả:** Agent 14 (DevSecOps & Infrastructure) · **Phase:** 0 · **Trạng thái:** Draft v0.1 · **Ngày:** 2026-10-30
 >
-> Liên quan: `docs/security/SECURITY.md` (A09 – threat model, auth, trust boundaries: tài liệu này **không** lặp lại), `docs/architecture/DATABASE_DESIGN.md` (A08 – bảng `secrets`, `audit_events`), `docs/architecture/INFRASTRUCTURE_DESIGN.md`, `docs/development/CI_CD.md`, `docs/development/DEPLOYMENT.md`.
+> Liên quan: `docs/SECURITY.md` (A09 – threat model, auth, trust boundaries: tài liệu này **không** lặp lại), `docs/DATABASE_DESIGN.md` (A08 – bảng `secrets`, `audit_logs`), `docs/architecture/INFRASTRUCTURE_DESIGN.md`, `docs/development/CI_CD.md`, `docs/development/DEPLOYMENT.md`.
 >
 > Nhãn: **[Đã xác minh]** / **[Đề xuất]** / **[Giả định]** / **[Cần người dùng phê duyệt]**.
 
@@ -103,7 +103,7 @@ Báo cáo từ bên ngoài: `SECURITY.md` (A09) quy định kênh; thời gian p
 2. **Thu hồi ngay (≤ 1 giờ):** revoke/rotate khoá tại nhà cung cấp (Anthropic Console, OpenAI dashboard, GitHub token settings); đổi `POSTGRES_PASSWORD`/`SESSION_SECRET` và restart; `claude logout`/`codex logout` nếu credential CLI bị lộ rồi login lại.
 3. **Cập nhật hệ thống:** `pnpm aiw secrets set` khoá mới; server: cập nhật secrets store, `docker compose up -d`.
 4. **Dọn vết:** nếu trong git history: `git filter-repo` (hoặc BFG) trên repo, force-push sau khi thông báo, invalidate cache GitHub (liên hệ GitHub Support nếu repo public); xoá log/artifact chứa secret (`artifacts/<task>/`), xoá Docker image layer nếu có.
-5. **Đánh giá ảnh hưởng:** kiểm tra usage/billing bất thường tại nhà cung cấp trong khoảng thời gian lộ; audit log `audit_events` cho truy cập bất thường.
+5. **Đánh giá ảnh hưởng:** kiểm tra usage/billing bất thường tại nhà cung cấp trong khoảng thời gian lộ; audit log `audit_logs` cho truy cập bất thường.
 6. **Khắc phục gốc:** vì sao gitleaks/redaction không bắt? Thêm rule, test hồi quy.
 7. **Postmortem (≤ 5 ngày):** blameless, ghi timeline, root cause, action items, cập nhật tài liệu này.
 
@@ -113,7 +113,7 @@ Checklist "ai làm gì" ở MVP (solo dev): người dùng chính là incident o
 
 | Loại dữ liệu | Nơi lưu | Retention mặc định [Đề xuất] |
 |---|---|---|
-| `audit_events` (spawn agent, hook deny, validation fail/override, merge, deploy, secret set/use, login) | Postgres (A08) | 365 ngày; sau đó export JSONL mã hoá vào `aiw_backups` thêm 2 năm, rồi xoá |
+| `audit_logs` (spawn agent, hook deny, validation fail/override, merge, deploy, secret set/use, login) | Postgres (A08) | 365 ngày; sau đó export JSONL mã hoá vào `aiw_backups` thêm 2 năm, rồi xoá |
 | Application log (pino) | file/Loki | 14 ngày desktop; 30 ngày server |
 | Agent transcript / stream-json | `artifacts/<task>/` | theo vòng đời task + 30 ngày; người dùng có thể xoá sớm |
 | Sandbox log | `artifacts/<task>/` | 30 ngày hoặc đến khi project xoá |
@@ -139,12 +139,12 @@ Audit event là **append-only** (không có UPDATE/DELETE qua app role; retentio
 
 - [ ] `cwd` = worktree của task; path đã canonicalize, nằm trong `WORKSPACE_ROOT/worktrees/`.
 - [ ] Env whitelist: `PATH`, `HOME`/`USERPROFILE`, `TEMP`/`TMP`, `SystemRoot`, biến CLI cần (`CLAUDE_CONFIG_DIR` nếu dùng); mọi biến khác bị loại; log tên biến bị loại ở mức debug.
-- [ ] `.claude/settings.json` và hook script được ghi đè từ template platform **trước mỗi lần spawn**; checksum lưu `audit_events`.
+- [ ] `.claude/settings.json` và hook script được ghi đè từ template platform **trước mỗi lần spawn**; checksum lưu `audit_logs`.
 - [ ] Không bao giờ truyền `--dangerously-skip-permissions` ngoài container sandbox.
 - [ ] `--max-turns`, timeout session (`AGENT_SESSION_TIMEOUT_SEC`), giới hạn kích thước stdout (stream-json) 50 MB; vượt → kill + task `failed`.
 - [ ] stdin đóng sau khi gửi prompt (tránh CLI chờ tương tác); `GIT_TERMINAL_PROMPT=0`.
 - [ ] Nội dung task brief/prompt được render từ template, dữ liệu người dùng và nội dung repo được đặt trong delimiter rõ ràng (prompt-injection mitigation – A09).
-- [ ] Sau khi agent dừng: Lớp 3 diff validation + gitleaks trước bất kỳ merge nào; kết quả ghi `audit_events`.
+- [ ] Sau khi agent dừng: Lớp 3 diff validation + gitleaks trước bất kỳ merge nào; kết quả ghi `audit_logs`.
 - [ ] Process tree bị kill hoàn toàn khi huỷ task (Windows: `taskkill /T /F` hoặc Job Object; Linux: process group).
 
 ## 10c. Checklist bảo mật trước mỗi release
@@ -171,7 +171,7 @@ Audit event là **append-only** (không có UPDATE/DELETE qua app role; retentio
 
 ## 12. Dependencies
 
-- A08: schema `secrets`, `audit_events` (append-only, role tách biệt), job retention.
+- A08: schema `secrets`, `audit_logs` (append-only, role tách biệt), job retention.
 - A09: threat model, kênh báo cáo lỗ hổng, auth.
 - CI_CD.md: các job security và release SBOM.
 - INFRASTRUCTURE_DESIGN.md: tham số hardening sandbox.
@@ -204,4 +204,4 @@ Audit event là **append-only** (không có UPDATE/DELETE qua app role; retentio
 - [ ] Dependabot cấu hình 3 ecosystem, grouped; `pnpm audit` CI với allowlist có hạn dùng.
 - [ ] Release `v0.1.0` có SBOM CycloneDX + SPDX; `trivy sbom` chạy được trên file đó.
 - [ ] Diễn tập incident lộ khoá hoàn thành trong ≤ 1 giờ theo §8, có biên bản.
-- [ ] Job retention xoá `audit_events` > 365 ngày sau khi export; role app không có quyền DELETE trên bảng này.
+- [ ] Job retention xoá `audit_logs` > 365 ngày sau khi export; role app không có quyền DELETE trên bảng này.

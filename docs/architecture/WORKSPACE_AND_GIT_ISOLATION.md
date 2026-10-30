@@ -2,7 +2,7 @@
 
 > **Tác giả:** Agent 14 (DevSecOps & Infrastructure) · **Phase:** 0 (documentation only) · **Trạng thái:** Draft v0.1 · **Ngày:** 2026-10-30
 >
-> Tài liệu liên quan: `docs/security/SECURITY.md` (A09 – threat model), `docs/architecture/DATABASE_DESIGN.md` (A08 – schema cho `tasks`, `workspaces`, `worktrees`), `docs/architecture/INFRASTRUCTURE_DESIGN.md` (A14 – sandbox executor).
+> Tài liệu liên quan: `docs/SECURITY.md` (A09 – threat model), `docs/DATABASE_DESIGN.md` (A08 – schema cho `tasks`, `workspaces`, `worktrees`), `docs/architecture/INFRASTRUCTURE_DESIGN.md` (A14 – sandbox executor).
 >
 > Nhãn trạng thái dùng trong tài liệu: **[Đã xác minh]** (đã chạy lệnh trên máy dev), **[Đề xuất]** (thiết kế do A14 đề xuất), **[Giả định]** (chưa kiểm chứng), **[Cần người dùng phê duyệt]**.
 
@@ -333,3 +333,6 @@ Thực thi git: gọi binary `git` qua `execa` với `GIT_TERMINAL_PROMPT=0`, ti
 - [ ] Cleanup job xoá worktree mồ côi và prune; `worktree remove` retry khi file bị khoá.
 - [ ] Preflight khi khởi động app báo rõ nếu `core.longpaths`/LongPathsEnabled chưa bật, `core.autocrlf` không được override.
 - [ ] Mọi commit do platform tạo đều có trailer `Task-Id` và `Agent`.
+
+
+> **Phụ lục sửa đổi (D-021, PROPOSED):** nạp skill Markdown động theo từng agent, quét lúc giao task, xem `docs/architecture/DYNAMIC_SKILL_INJECTION.md`. Phụ lục này bổ sung nguồn skill trên đĩa và rào chắn `.ai/**`; phần còn lại của tài liệu này giữ nguyên cho đến khi Owner duyệt.

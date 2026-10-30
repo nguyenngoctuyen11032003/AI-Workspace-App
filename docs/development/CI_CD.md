@@ -2,7 +2,7 @@
 
 > **Tác giả:** Agent 14 (DevSecOps & Infrastructure) · **Phase:** 0 · **Trạng thái:** Draft v0.1 · **Ngày:** 2026-10-30
 >
-> Liên quan: `docs/development/ENVIRONMENT_SETUP.md`, `docs/development/DEPLOYMENT.md`, `docs/operations/DEVSECOPS_GUIDE.md`, `docs/architecture/INFRASTRUCTURE_DESIGN.md`, `docs/security/SECURITY.md` (A09).
+> Liên quan: `docs/development/ENVIRONMENT_SETUP.md`, `docs/development/DEPLOYMENT.md`, `docs/operations/DEVSECOPS_GUIDE.md`, `docs/architecture/INFRASTRUCTURE_DESIGN.md`, `docs/SECURITY.md` (A09).
 >
 > Nhãn: **[Đã xác minh]** / **[Đề xuất]** / **[Giả định]** / **[Cần người dùng phê duyệt]**.
 

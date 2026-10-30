@@ -1,6 +1,6 @@
 # WORK_PLAN.md — AI WORKSPACE
 
-Cập nhật: 2026-10-30 (Phase 0 đang chạy)
+Cập nhật: 2026-10-30 (Phase 0 nội dung hoàn tất, chờ chủ sở hữu duyệt. Nguồn trạng thái chính: TASK_BACKLOG.md)
 Orchestrator: Chief Orchestrator / AI Technical Director (Claude Code session chính)
 Giới hạn đồng thời: tối đa 10 agent (Claude Code subagents) — thực thi song song thật qua Agent tool.
 
@@ -21,18 +21,18 @@ Giới hạn đồng thời: tối đa 10 agent (Claude Code subagents) — th�
 
 | ID | Task | Agent | Output (file ownership — chỉ agent đó ghi) | Trạng thái |
 |---|---|---|---|---|
-| P0-01 | Phân tích ChatDev 1.0/2.0 | A01 ChatDev Analyst | docs/research/CHATDEV_ANALYSIS.md | RUNNING |
-| P0-02 | Phân tích Pixel Agents | A02 Pixel Agents Analyst | docs/research/PIXEL_AGENTS_ANALYSIS.md | RUNNING |
-| P0-03 | Phân tích My Virtual Office (AGPL) | A03 MVO Analyst | docs/research/MY_VIRTUAL_OFFICE_ANALYSIS.md | RUNNING |
-| P0-04 | Phân tích OpenHands | A04 OpenHands Analyst | docs/research/OPENHANDS_ANALYSIS.md | RUNNING |
-| P0-05 | Tích hợp Claude Code (CLI/SDK, smoke test thật) | A05 Claude Integration | docs/research/CLAUDE_CODE_INTEGRATION.md | RUNNING |
-| P0-06 | Tích hợp Codex (App Server, exec --json) | A06 Codex Integration | docs/research/CODEX_INTEGRATION.md | RUNNING |
-| P0-07 | Orchestration + Workflow Engine | A07 Orchestration Architect | docs/research/ORCHESTRATION_WORKFLOW_RESEARCH.md | RUNNING |
-| P0-08 | Database design | A08 DB Engineer | docs/DATABASE_DESIGN.md | RUNNING |
-| P0-09 | Security & sandbox | A09 Security Engineer | docs/SECURITY.md | RUNNING |
-| P0-10 | License & frontend stack | A10 License/Stack Analyst | docs/research/LICENSE_AND_REUSE.md | RUNNING |
-| P0-11 | UI/UX Design Research + Design System spec (Prompt 3) | A11 UI/UX Designer | docs/design/DESIGN_PRINCIPLES.md, docs/design/DESIGN_SYSTEM.md | QUEUED (chờ slot) |
-| P0-12 | Tổng hợp: ARCHITECTURE_COMPARISON, REUSE_DECISIONS, SYSTEM_ARCHITECTURE, ADR, roadmap | Orchestrator | docs/research/ARCHITECTURE_COMPARISON.md, docs/research/REUSE_DECISIONS.md, docs/SYSTEM_ARCHITECTURE.md, docs/ADR/* | BLOCKED by P0-01..P0-11 |
+| P0-01 | Phân tích ChatDev 1.0/2.0 | A01 ChatDev Analyst | docs/research/CHATDEV_ANALYSIS.md | DONE |
+| P0-02 | Phân tích Pixel Agents | A02 Pixel Agents Analyst | docs/research/PIXEL_AGENTS_ANALYSIS.md | DONE |
+| P0-03 | Phân tích My Virtual Office (AGPL) | A03 MVO Analyst | docs/research/MY_VIRTUAL_OFFICE_ANALYSIS.md | DONE |
+| P0-04 | Phân tích OpenHands | A04 OpenHands Analyst | docs/research/OPENHANDS_ANALYSIS.md | DONE |
+| P0-05 | Tích hợp Claude Code (CLI/SDK, smoke test thật) | A05 Claude Integration | docs/research/CLAUDE_CODE_INTEGRATION.md | DONE |
+| P0-06 | Tích hợp Codex (App Server, exec --json) | A06 Codex Integration | docs/research/CODEX_INTEGRATION.md | DONE |
+| P0-07 | Orchestration + Workflow Engine | A07 Orchestration Architect | docs/research/ORCHESTRATION_WORKFLOW_RESEARCH.md | DONE |
+| P0-08 | Database design | A08 DB Engineer | docs/DATABASE_DESIGN.md | DONE |
+| P0-09 | Security & sandbox | A09 Security Engineer | docs/SECURITY.md | DONE |
+| P0-10 | License & frontend stack | A10 License/Stack Analyst | docs/research/LICENSE_AND_REUSE.md | DONE |
+| P0-11 | UI/UX Design Research + Design System spec (Prompt 3) | A11 UI/UX Designer | docs/design/DESIGN_PRINCIPLES.md, docs/design/DESIGN_SYSTEM.md | DONE |
+| P0-12 | Tổng hợp: ARCHITECTURE_COMPARISON, REUSE_DECISIONS, SYSTEM_ARCHITECTURE, ADR, roadmap | Orchestrator | docs/research/ARCHITECTURE_COMPARISON.md, docs/research/REUSE_DECISIONS.md, docs/SYSTEM_ARCHITECTURE.md, docs/ADR/* | DONE (xem TASK_BACKLOG.md) |
 
 Dependency: P0-12 ← tất cả. P0-01..P0-11 độc lập.
 
@@ -40,11 +40,11 @@ Dependency: P0-12 ← tất cả. P0-01..P0-11 độc lập.
 
 Nhóm song song (mỗi nhóm một worktree/branch, file ownership riêng):
 - F1 Backend foundation (NestJS skeleton, config, logging, event bus, WS gateway)
-- F2 Database foundation (Prisma/Drizzle schema, migrations, seed)
+- F2 Database foundation (Drizzle schema theo D-002, migrations, seed)
 - F3 Frontend foundation (Vite+React+TS+Tailwind+shadcn, app shell, design tokens)
 - F4 Provider adapters (ClaudeCodeAdapter thật; CodexAdapter sau khi user cài CLI)
 - F5 Agent/Org/Department modules (CRUD + API contract)
-- F6 Testing infrastructure (vitest/jest, playwright, CI)
+- F6 Testing infrastructure (Vitest, Playwright, CI)
 Shared contracts (OpenAPI + event schema) do Architect chốt TRƯỚC khi F3/F5 chạy.
 
 ## 3. Quy tắc phối hợp

@@ -32,7 +32,7 @@
 
 | Tài sản | Vị trí | Mức nhạy cảm |
 | --- | --- | --- |
-| OAuth token Claude (`%USERPROFILE%\.claude\.credentials.json`, 617 bytes, mode 644) | Host FS | CRITICAL |
+| OAuth token Claude (`%USERPROFILE%\.claude\.credentials.json`, file người dùng đọc được bởi tiến trình cùng user, kiểm soát bằng ACL) | Host FS | CRITICAL |
 | Codex auth (`%USERPROFILE%\.codex\auth.json`) | Host FS | CRITICAL |
 | API key provider khác (OpenAI, Gemini…) nếu app cần | Credential Manager | CRITICAL |
 | Source code các project của user (worktree) | `D:\...\projects\<p>\worktrees\<agent>` | HIGH |
@@ -481,8 +481,10 @@ Pipeline `validateDiff(taskId)` chạy trong container, bắt buộc pass trư�
 
 ## 8. Audit log
 
-Bảng `audit_events` **append-only** (Postgres: REVOKE UPDATE/DELETE cho role app; trigger từ chối UPDATE/DELETE;
+Bảng `audit_logs` **append-only** (Postgres: REVOKE UPDATE/DELETE cho role app; trigger từ chối UPDATE/DELETE;
 partition theo tháng):
+
+> Ghi chú đồng bộ: bảng này từng tên `audit_events`, nay là `audit_logs` theo `security/AUDIT_LOGGING.md` mục 4. Danh sách cột dưới đây là ý định thiết kế ban đầu; cột chuẩn xem AUDIT_LOGGING mục 4.2 và 4.3.
 ```
 id bigserial, ts timestamptz, actor{user|agent:<id>|system}, session_id, task_id, project_id,
 category{auth|approval|tool_call|tool_result|policy_deny|rewrite|file_change|git|container|secret_access|
@@ -530,7 +532,7 @@ owner security; coverage ≥ 90 % cho các module đó.
 | # | Rủi ro | Vì sao không loại bỏ được | Giảm nhẹ hiện có | Yêu cầu user |
 | --- | --- | --- | --- | --- |
 | R1 | **Tier 1 không có OS-level sandbox cho CLI**: Claude Code trên native Windows chạy lệnh unsandboxed; file tools chạy quyền user. Một lệnh vượt qua denylist/hook (obfuscation chưa biết, bug parser) chạy với toàn quyền user TUYEN trên `C:\` và `D:\` | Anthropic chưa hỗ trợ sandbox native Windows; không thể tách cred OAuth khỏi user | Denylist + hook + rewrite interpreter vào container; `blockReadsOutsideWorkingDirectories`; audit | Chấp nhận, hoặc chọn Tier 2 (API key, mất subscription) hoặc chạy toàn bộ app trong WSL2 (bật được `sandbox.enabled`) |
-| R2 | **Credential OAuth nằm trên FS dạng file mode 644** (`.credentials.json`) do CLI quản lý; mọi process cùng user (kể cả code chạy trên host lọt qua R1, malware, extension) đọc được | Thiết kế của CLI; app không được can thiệp | Read deny rules + denylist path; không mount home vào container; khuyến nghị user bật BitLocker, không cài extension lạ | Chấp nhận; cân nhắc `claude setup-token` scoped cho app nếu Anthropic cho phép |
+| R2 | **Credential OAuth nằm trên FS dạng file (file người dùng đọc được bởi tiến trình cùng user, kiểm soát bằng ACL)** (`.credentials.json`) do CLI quản lý; mọi process cùng user (kể cả code chạy trên host lọt qua R1, malware, extension) đọc được | Thiết kế của CLI; app không được can thiệp | Read deny rules + denylist path; không mount home vào container; khuyến nghị user bật BitLocker, không cài extension lạ | Chấp nhận; cân nhắc `claude setup-token` scoped cho app nếu Anthropic cho phép |
 | R3 | **Prompt injection không thể chặn triệt để**: agent đọc content untrusted; policy chỉ chặn *hành động* nguy hiểm đã biết, không chặn hành động "hợp lệ nhưng sai" (ví dụ sửa logic auth trong file thuộc `writable`, commit backdoor tinh vi) | Bản chất LLM | Manifest + diff validation + review trước merge; untrusted project ⇒ Tier 2 + network none | Chấp nhận; cam kết **human review mọi merge vào protected branch** |
 | R4 | **Cách ly giữa agent chỉ ở mức logical** (cùng user OS): agent A có thể chạm worktree B qua Bash path tuyệt đối nếu lọt qua R1 | Không có per-agent OS user vì OAuth gắn user chính | Worktree riêng, manifest, hook path check, diff validation | Chấp nhận |
 | R5 | **Docker Desktop daemon = root của VM, mount được toàn bộ ổ đĩa**; nếu app bị lỗi cấu hình container (hoặc user tự chỉnh) thì boundary Tier 1/2 vô hiệu. Docker Desktop hiện **không chạy** lúc khảo sát (npipe không tồn tại) ⇒ fail-closed: không có container thì không chạy code | Docker Desktop không có rootless mode trên Windows | Container config tests (§9), label kiểm soát, app từ chối exec khi inspect không đạt chuẩn, không expose docker API cho agent | Chấp nhận; không cấp quyền `docker` cho agent; bật "Enhanced Container Isolation" nếu có Docker Business |

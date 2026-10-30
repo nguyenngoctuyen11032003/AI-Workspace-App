@@ -21,7 +21,7 @@
 
 | ID | Tài sản | Vị trí | C | I | A | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- |
-| A-01 | OAuth token Claude `.credentials.json` | `%USERPROFILE%\.claude` (mode 644) [Đã xác minh] | Crit | Med | Med | CLI sở hữu; app không đọc |
+| A-01 | OAuth token Claude `.credentials.json` | `%USERPROFILE%\.claude` (file người dùng đọc được bởi tiến trình cùng user, kiểm soát bằng ACL) [Đã xác minh] | Crit | Med | Med | CLI sở hữu; app không đọc |
 | A-02 | Codex `auth.json` | `%USERPROFILE%\.codex` | Crit | Med | Med | CLI chưa cài [Đã xác minh] |
 | A-03 | Secret do app giữ (API key, GitHub token, DB password, HMAC key) | Windows Credential Manager | Crit | Crit | Med | Xem CREDENTIAL_MANAGEMENT §3 |
 | A-04 | Source code project (worktree, `repo.git`) | `D:\aiw\...` hoặc `<root>\projects\...` | High | Crit | High | Backdoor tinh vi là rủi ro chính |

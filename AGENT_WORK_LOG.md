@@ -35,3 +35,17 @@ Kiểm tra môi trường, DECISION_LOG, phân tích herdr theo yêu cầu bổ 
 - Tối đa 10 agent chạy đồng thời trong đợt 1 (đạt đúng 10). Chưa từng chạy 18 agent đồng thời, nên **chưa có bằng chứng** hệ thống hỗ trợ 18.
 - Heredoc dài lỗi ENAMETOOLONG trên Windows, nhiều agent chuyển sang công cụ Write.
 - Hạn mức tài khoản là ràng buộc thật khi chạy nhiều agent.
+
+## Đợt 5: Finalization (7 agent song song, model sonnet) + 1 agent đồng bộ
+| Agent | Phạm vi | Kết quả |
+|---|---|---|
+| BA phần 1 | AC cho FR-001..100 (76 FR) | Hoàn thành |
+| BA phần 2 | AC cho FR-101..199 (62 FR) | Hoàn thành |
+| BA phần 3 (thêm sau khi phát hiện bỏ sót) | AC cho FR-200..292 (61 FR) | Hoàn thành |
+| Decision Analyst | Sổ quyết định, phân loại 55 mâu thuẫn | Hoàn thành |
+| System Architect | Viết lại 20 ADR | Hoàn thành |
+| Security Reviewer | Danh mục ký duyệt, rủi ro còn lại | Hoàn thành |
+| Technical Validation | Lệnh đọc, 27 runbook | Hoàn thành |
+| Documentation (đồng bộ có giới hạn) | 29 thay đổi, log | Hoàn thành |
+| QA độc lập lần hai | Hoàn thành: PASS WITH FIXES (0 P0, 3 P1, 8 P2, 6 P3). Sau đó Orchestrator sửa F-01 (số liệu), F-02, F-03 (đặc tả), F-04, F-05; các sửa này chưa được QA kiểm lại | |
+Số agent chạy đồng thời tối đa trong đợt này: 7. Chưa từng đạt 18.

@@ -155,7 +155,7 @@ Ngoài ra `system/init` event của mỗi session có `apiKeySource`: `'ANTHROPI
 
 ```text
 ~/.claude/
-  .credentials.json          <- OAuth tokens (617 bytes). KHÔNG BAO GIỜ đọc/log/copy. CLI tự refresh.
+  .credentials.json          <- OAuth tokens (file người dùng đọc được bởi tiến trình cùng user, kiểm soát bằng ACL). KHÔNG BAO GIỜ đọc/log/copy. CLI tự refresh.
   settings.json              <- user settings (hooks, permissions, model...)
   history.jsonl              <- prompt history
   projects/<slug>/           <- slug = cwd với ':' '\' '/' -> '-'  (vd: d--Code-Tuyen-Agent-management)
@@ -533,6 +533,8 @@ canUseTool: async (toolName, input, { signal, toolUseID }) => {
 ## 9. Đề xuất thiết kế ClaudeCodeAdapter
 
 ### 9.1 Interface (NestJS, TypeScript)
+
+> Ghi chú: BrainAdapter/BrainEvent là tên nghiên cứu; tên chính thức là AgentAdapter/AgentEvent (PROVIDER_INTEGRATION §P1, packages/agent-core).
 
 ```ts
 // src/agents/brains/brain.adapter.ts

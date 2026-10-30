@@ -57,7 +57,7 @@ src/
 | `audit` | `AuditInterceptor`, truy vấn `audit_logs`, redaction | `audit_logs` | common |
 | `notifications` / `settings` | Taxonomy thông báo (NAVIGATION §10), preferences, `system_settings` | `notifications`, `system_settings` | events |
 
-**[Đã xác minh]** tên bảng lấy từ danh sách 44 bảng ở `docs/DATABASE_DESIGN.md` §4. Ghi chú: danh sách này **không chứa bảng `outbox`** dù D-014 và ORCHESTRATION §7.3 yêu cầu outbox giao dịch, và §12 mục 4/7 coi outbox / `event_sequences` là điểm mở. Đề xuất thêm bảng `event_outbox` (xem §3.9) — **[Cần người dùng phê duyệt]** vì làm số bảng thành 45.
+**[Nhất quán với tài liệu nguồn]** tên bảng lấy từ danh sách 44 bảng ở `docs/DATABASE_DESIGN.md` §4. Ghi chú: danh sách này **không chứa bảng `outbox`** dù D-014 và ORCHESTRATION §7.3 yêu cầu outbox giao dịch, và §12 mục 4/7 coi outbox / `event_sequences` là điểm mở. Đề xuất thêm bảng `event_outbox` (xem §3.9) — **[Cần người dùng phê duyệt]** vì làm số bảng thành 45.
 
 ### 3.3 Phân lớp (layering) trong mỗi module **[Đề xuất]**
 
@@ -98,7 +98,7 @@ Một envelope duy nhất do `AllExceptionsFilter` tạo (chi tiết ở `API_DO
 ### 3.6 Config
 
 - **[Đề xuất]** `@nestjs/config` + schema Zod validate lúc boot; thiếu/sai thì process thoát với thông báo rõ. Tách `ConfigModule` có nhóm: `app` (`APP_MODE=desktop|server`, port), `db`, `redis`, `security` (token, origin allowlist, rate limit), `providers`, `workspace` (`WORKSPACE_ROOT`), `sandbox` (limits mặc định), `features`.
-- **[Đã xác minh]** `APP_MODE` và `.env.example` đã có trong `docs/DATABASE_DESIGN.md` §8, §11.
+- **[Nhất quán với tài liệu nguồn]** `APP_MODE` và `.env.example` đã có trong `docs/DATABASE_DESIGN.md` §8, §11.
 - Giới hạn runtime (concurrency, budget, retention) không nằm trong env mà trong `system_settings`/`resource_limits` để đổi lúc chạy; mặc định concurrency 5, trần 18 (D-010).
 - Secret chỉ là `credential_ref`; giá trị lấy từ OS keychain (`@napi-rs/keyring`/`keytar`) hoặc Vault/env ở server (DATABASE_DESIGN §8; D-008).
 
@@ -111,7 +111,7 @@ Một envelope duy nhất do `AllExceptionsFilter` tạo (chi tiết ở `API_DO
 
 ### 3.8 Queue (BullMQ)
 
-**[Đã xác minh]** Danh sách queue từ `DATABASE_DESIGN.md` §10 và ORCHESTRATION §2: `agent-runner`, `workflow-engine`, `usage-rollup` (5m), `partition-maintainer` (daily 02:00), `event-retention` (daily 03:00), `approval-expiry` (delayed), `presence-reaper` (30s), `office-tick` (100 ms, chỉ khi có client), cộng `scheduler` (1 job/run, `jobId = runId`), `node.tool`, `node.test`/`node.deploy`, `sandbox`.
+**[Nhất quán với DATABASE_DESIGN.md §10 và MULTI_AGENT_ORCHESTRATION.md §2]** Danh sách queue từ `DATABASE_DESIGN.md` §10 và ORCHESTRATION §2: `agent-runner`, `workflow-engine`, `usage-rollup` (5m), `partition-maintainer` (daily 02:00), `event-retention` (daily 03:00), `approval-expiry` (delayed), `presence-reaper` (30s), `office-tick` (100 ms, chỉ khi có client), cộng `scheduler` (1 job/run, `jobId = runId`), `node.tool`, `node.test`/`node.deploy`, `sandbox`.
 
 | Queue | Processor | Ghi chú |
 |---|---|---|
@@ -168,12 +168,12 @@ Phân tầng test: unit (domain) > integration (module + DB + Redis) > contract 
 | # | Quyết định | Lý do | Nhãn |
 |---|---|---|---|
 | B-1 | Zod làm DTO/validation, không class-validator | Một schema cho BE, FE, event, OpenAPI | [Đề xuất] |
-| B-2 | Repository mỏng bao Drizzle | Cô lập relational API kém trưởng thành | [Đã xác minh] DATABASE_DESIGN §1.2 |
+| B-2 | Repository mỏng bao Drizzle | Cô lập relational API kém trưởng thành | [Nhất quán với tài liệu nguồn] DATABASE_DESIGN §1.2 |
 | B-3 | Mọi mutation = aggregate + event + outbox trong một tx | Không mất event, replay đúng | [Đề xuất] dựa D-014 |
-| B-4 | Postgres là source of truth, Redis tạm | Recovery sau crash | [Đã xác minh] AGENT_SCHEDULER §3 |
+| B-4 | Postgres là source of truth, Redis tạm | Recovery sau crash | [Nhất quán với tài liệu nguồn] AGENT_SCHEDULER §3 |
 | B-5 | Hợp nhất `AgentAdapter` (thay `BrainAdapter`) | Tránh hai interface cho cùng việc | [Đề xuất] |
 | B-6 | Thêm bảng `event_outbox` | D-014 cần, danh sách 44 bảng chưa có | [Cần người dùng phê duyệt] |
-| B-7 | Hook endpoint trên listener riêng | Giảm bề mặt tấn công | [Đã xác minh] SECURITY §7 |
+| B-7 | Hook endpoint trên listener riêng | Giảm bề mặt tấn công | [Nhất quán với tài liệu nguồn] SECURITY §7 |
 | B-8 | pino + correlationId | Truy vết xuyên API/worker/event | [Đề xuất] |
 
 ## 5. Dependencies

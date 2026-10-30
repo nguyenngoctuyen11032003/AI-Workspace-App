@@ -192,3 +192,6 @@ Chỉ MVP (Phase 1). Các FR phase P2 không có AC ở đây.
 | AP-AC-01 | Toàn bộ 100 AC, đặc biệt các giá trị Đề xuất |
 | AP-AC-02 | Quy ước "pass MVP" = 100% AC Must-FR pass, hay cho phép tỷ lệ (Đề xuất: 100% nhóm B, F, G; ≥ 95% nhóm còn lại) |
 | AP-AC-03 | Giải quyết OI-AC-01…06 |
+
+
+> **Bổ sung Phase 0 finalization:** 74 AC mới (PROPOSED) và bảng truy vết đủ 199 FR nằm ở `PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md`. 16 FR chưa thể viết AC vì thiếu thông tin, chờ Owner. Tệp này giữ nguyên chưa hợp nhất cho tới khi Owner duyệt.

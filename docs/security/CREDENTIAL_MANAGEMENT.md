@@ -17,7 +17,7 @@
 
 | ID | Credential | Provider | Chủ sở hữu | Nơi lưu | App được làm | App **không** được làm | Trạng thái |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-01 | OAuth token Claude (`.credentials.json`, 617 byte, mode 644) | Anthropic | **CLI Claude Code** (user đăng nhập) | `%USERPROFILE%\.claude\` [Đã xác minh] | Gọi `claude auth status` (exit code + JSON) | Đọc/copy/parse/backup/log; mount vào container | Đã xác minh tồn tại |
+| C-01 | OAuth token Claude (`.credentials.json`; file người dùng đọc được bởi tiến trình cùng user, kiểm soát bằng ACL) | Anthropic | **CLI Claude Code** (user đăng nhập) | `%USERPROFILE%\.claude\` [Đã xác minh] | Gọi `claude auth status` (exit code + JSON) | Đọc/copy/parse/backup/log; mount vào container | Đã xác minh tồn tại |
 | C-02 | `~/.claude.json` (account info), `history.jsonl`, `projects/*.jsonl` | Anthropic | CLI | `%USERPROFILE%\.claude*` | Không | Đọc; khuyến nghị user đặt `cleanupPeriodDays` nhỏ (R9) | Đã xác minh |
 | C-03 | Codex login `auth.json` | OpenAI | **CLI Codex** | `%USERPROFILE%\.codex\` | `codex login status` | Như C-01 | Codex chưa cài [Đã xác minh]; thiết kế = Giả định |
 | C-04 | `ANTHROPIC_API_KEY` riêng cho Tier 2 | Anthropic | **User** (nhập vào app) | Credential Manager `aiw/provider.anthropic.t2` | Giải mã trong backend, inject qua file tmpfs | Đặt trong env Tier 1 (override OAuth); ghi DB | Đề xuất |
@@ -221,7 +221,7 @@ Quy tắc: không bao giờ **tự động** đăng nhập thay user, không lư
 
 | Rủi ro | Mức | Giảm thiểu |
 | --- | --- | --- |
-| R2: OAuth file 644 đọc được bởi tiến trình cùng user | Cao | Read deny, không mount; chấp nhận |
+| R2: OAuth file đọc được bởi tiến trình cùng user | Cao | Read deny, không mount; chấp nhận |
 | Credential Manager không bảo vệ khỏi cùng user | Trung bình | Không lưu lâu; scope hàm; chấp nhận |
 | Redaction miss với dạng secret mới | Trung bình | entropy + known-secret; corpus mở rộng |
 | ReDoS trong regex | Thấp | `safe-regex2`, giới hạn input |

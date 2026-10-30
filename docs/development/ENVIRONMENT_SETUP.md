@@ -2,7 +2,7 @@
 
 > **Tác giả:** Agent 14 (DevSecOps & Infrastructure) · **Phase:** 0 · **Trạng thái:** Draft v0.1 · **Ngày:** 2026-10-30
 >
-> Liên quan: `docs/architecture/INFRASTRUCTURE_DESIGN.md`, `docs/architecture/WORKSPACE_AND_GIT_ISOLATION.md`, `docs/development/CI_CD.md`, `docs/operations/DEVSECOPS_GUIDE.md`, `docs/security/SECURITY.md` (A09).
+> Liên quan: `docs/architecture/INFRASTRUCTURE_DESIGN.md`, `docs/architecture/WORKSPACE_AND_GIT_ISOLATION.md`, `docs/development/CI_CD.md`, `docs/operations/DEVSECOPS_GUIDE.md`, `docs/SECURITY.md` (A09).
 >
 > Nhãn: **[Đã xác minh]** / **[Đề xuất]** / **[Giả định]** / **[Cần người dùng phê duyệt]**.
 
@@ -175,7 +175,7 @@ Validation env bằng `zod` lúc khởi động; thiếu biến bắt buộc →
 ### 4.7 Database migration & seed
 
 ```powershell
-pnpm --filter api db:migrate      # công cụ migration do A08 quyết định (Prisma/Drizzle/TypeORM)
+pnpm --filter api db:migrate      # công cụ migration do A08 quyết định (ORM theo D-002, đề xuất, chờ duyệt)
 pnpm --filter api db:seed         # dữ liệu mẫu dev
 ```
 

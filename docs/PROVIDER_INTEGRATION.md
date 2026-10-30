@@ -523,3 +523,6 @@ Quy tắc **[Đề xuất]**:
 - [ ] Bundle production không chứa `MockProviderAdapter`; registry từ chối `mock` khi `AIW_TEST_MODE!=='ci'`.
 - [ ] Codex adapter đánh dấu "chưa xác minh live" cho tới khi checklist §11.4 research hoàn tất trên máy có CLI cài.
 - [ ] Mọi giá trị usage hiển thị có nhãn `list`/`estimated`/`billed`.
+
+
+> **Phụ lục sửa đổi (D-021, PROPOSED):** nạp skill Markdown động theo từng agent, quét lúc giao task, xem `docs/architecture/DYNAMIC_SKILL_INJECTION.md`. Phụ lục này bổ sung nguồn skill trên đĩa và rào chắn `.ai/**`; phần còn lại của tài liệu này giữ nguyên cho đến khi Owner duyệt.

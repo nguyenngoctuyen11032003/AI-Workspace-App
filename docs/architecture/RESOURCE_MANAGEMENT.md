@@ -16,7 +16,7 @@ Ký hiệu: [Đã xác minh] / [Đề xuất] / [Giả định] / [Cần ngườ
 - Trong: limits, budgets, process monitor, timeouts, provider quota handling, degraded modes, config schema, measurements & extrapolation.
 - Ngoài: thuật toán chọn agent (`AGENT_SCHEDULER.md`), sandbox/permission (A09), cách spawn CLI cụ thể (A05/A06), billing UI (A11).
 
-## 3. Số đo thực nghiệm [Đã xác minh] — 2026-10-30
+## 3. Số đo thực nghiệm [Tài liệu tự báo cáo, chưa tái hiện] — 2026-10-30
 
 Máy: Acer Nitro AN515-57, Intel Core i5-11400H (6 core / 12 thread, 2.7 GHz), 15.77 GB RAM (6.4 GB free lúc đo), Windows 11 Pro for Workstations 10.0.26300, Node v24.19.0, Claude Code 2.1.312 (`claude.exe` là PE32+ native executable 298 MB — không phải node script; header `MZ`, `file` báo `PE32+ executable, x86-64, console`). Đăng nhập: `authMethod: claude.ai`, `subscriptionType: team`, `apiProvider: firstParty`.
 
@@ -108,11 +108,11 @@ Lưu ý: vì subscription `team` không tính tiền theo token, **budget USD l�
 
 ### 8.1 Claude (tài khoản hiện tại: claude.ai, `subscriptionType: team`) [Đã xác minh phần đăng nhập]
 
-- [Giả định — chưa xác minh bằng tài liệu trong phiên này; A13 không chạy WebSearch để tránh phụ thuộc kết quả ngoài] Các gói Pro/Max/Team dùng **cửa sổ quota 5 giờ** cộng thêm **giới hạn tuần**; quota tính theo lượng token/tin nhắn tiêu thụ, chia sẻ giữa claude.ai web và Claude Code; gói Max cao hơn Pro ~5× hoặc ~20×. Khi hết quota, CLI trả lỗi dạng "usage limit reached, resets at HH:MM" và `is_error=true`. **Owner cần xác nhận gói cụ thể của tài khoản team và có bật "extra usage" không** (thực nghiệm cho thấy `fast_mode_disabled_reason: extra_usage_disabled`).
+- [Giả định — chưa xác minh bằng tài liệu trong phiên này; A13 không chạy WebSearch để tránh phụ thuộc kết quả ngoài] Các gói Pro/Max/Team dùng **cửa sổ quota 5 giờ** cộng thêm **giới hạn tuần**; quota tính theo lượng token/tin nhắn tiêu thụ, chia sẻ giữa claude.ai web và Claude Code; gói Max cao hơn Pro ~5× hoặc ~20×. Khi hết quota, CLI trả lỗi dạng "usage limit reached, resets at HH:MM" và `is_error=true`. **Owner cần xác nhận gói cụ thể của tài khoản team và có bật "extra usage" không** (thực nghiệm cho thấy `fast_mode_disabled_reason: extra_usage_disabled`). Nguồn đọc quota: `rate_limit_event.unifiedWindows` (PROVIDER_INTEGRATION §7) [Tài liệu, chưa chạy live].
 - Hệ quả thiết kế: 18 agent dùng chung một quota → tổng throughput bị chặn bởi quota, không phải bởi số process. Tăng concurrency chỉ làm **cạn quota nhanh hơn**, không tăng tổng công việc/ngày.
 - Rate-limit API (HTTP 429, `retry-after`) với `--output-format json` chỉ xuất hiện sau khi process kết thúc; với `stream-json` có thể bắt sớm hơn (A05 xác nhận).
 
-### 8.2 Codex (ChatGPT plan) [Giả định — CLI chưa cài]
+### 8.2 Codex (ChatGPT plan) [Giả định — CLI chưa cài] Đường đọc quota: `account/rateLimits/read` (bindings app-server 0.164) [Tài liệu, chưa chạy live].
 
 - Plus/Pro/Team có giới hạn số "message" Codex theo cửa sổ 5 giờ và theo tuần; Pro cao hơn Plus nhiều lần. Chi tiết chờ A06 + owner cài CLI và `codex login`.
 
@@ -181,8 +181,8 @@ Giả định (ghi rõ để owner kiểm): (A1) mỗi process ổn định ở 
 
 | Số agent executing | RAM ước tính (nhẹ / nặng) | CPU | Cost list/giờ (nhẹ / nặng) | Khả thi trên máy này (16 GB, 6C/12T)? |
 |---|---|---|---|---|
-| 1 (đo) | 0.23 GB | ~0% idle, 65% 1 core lúc khởi động | spawn 0.37 | Có [Đã xác minh] |
-| 3 (đo) | 0.69 GB đỉnh | đỉnh 79% toàn hệ thống trong ~1 s | 1.12 cho 3 spawn | Có, không lỗi rate-limit [Đã xác minh] |
+| 1 (đo) | 0.23 GB | ~0% idle, 65% 1 core lúc khởi động | spawn 0.37 | Có [Tài liệu tự báo cáo, chưa tái hiện] |
+| 3 (đo) | 0.69 GB đỉnh | đỉnh 79% toàn hệ thống trong ~1 s | 1.12 cho 3 spawn | Có, không lỗi rate-limit [Tài liệu tự báo cáo, chưa tái hiện] |
 | 5 | 1.2 / 4.5 GB | thoải mái; build đồng thời có thể bão hòa 12 thread | 5–15 / 10–25 USD | **Có — khuyến nghị mặc định** |
 | 10 | 2.3 / 9 GB | 10 build/test đồng thời sẽ chậm ×2–3 | 10–30 / 20–50 USD | Có với free RAM ≥ 10 GB (hiện chỉ 6.4 GB free → phải đóng app khác); quota là chặn thực tế |
 | 18 | 4.1 / 16 GB | bão hòa CPU; latency tool call tăng mạnh | 18–54 / 36–90 USD | **Nhẹ: có; nặng: không** trên 16 GB RAM. Cần ≥ 32 GB hoặc chia agent sang máy/container khác; quota gần như chắc chắn cạn trước |
@@ -216,7 +216,7 @@ A05 (stream-json usage events, flags `--settings`/`--strict-mcp-config`/`CLAUDE_
 ## 15. Vấn đề chưa giải quyết
 
 1. [Cần người dùng phê duyệt] Gói Claude của tài khoản team là gì, có bật extra usage không, có chấp nhận dùng API key (pay-as-you-go) cho một số agent không?
-2. Có API/CLI nào đọc quota còn lại của subscription không? (chưa thấy trong output JSON; A05 kiểm `/usage` hoặc endpoint).
+2. Có API/CLI nào đọc quota còn lại của subscription không? (chưa thấy trong output JSON; A05 kiểm `/usage` hoặc endpoint). (đã có đường đọc: xem §8.1, 8.2)
 3. Đo RAM/CPU của task thật (build + test) — chưa có số, cần Phase 1 benchmark (test plan trong `MULTI_AGENT_SCALABILITY.md` §9).
 4. Job Object trên Node 24: chọn addon nào, hay viết PowerShell helper.
 5. Codex limits — chờ cài CLI.

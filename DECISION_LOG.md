@@ -32,3 +32,8 @@ Ngày: 2026-10-30. Nguồn chi tiết: tài liệu trong `docs/` (cột Nguồn)
 3. Docker daemon chưa chạy lúc kiểm tra, nên cgroup, ECI và rootless chưa xác minh.
 4. Codex CLI chưa cài, nên mọi kiểm thử Codex thực chưa chạy.
 5. Quy ước `task_status` viết HOA trong khi enum khác viết thường (DATABASE_DESIGN mục 12).
+
+## Quyết định bổ sung
+| ID | Quyết định đề xuất | Phương án đã loại | Nguồn | Phê duyệt |
+|---|---|---|---|---|
+| D-021 | Skill Overlay Directory: Owner thêm/sửa/xóa file Markdown trong `.ai/skills/<agent-slug>/` (ngoài worktree). Quét và nạp lúc giao mỗi task, tiêm vào system prompt Claude Code qua SDK `systemPrompt.append` hoặc `--append-system-prompt-file`, không hot-reload giữa task. Overlay không cấp quyền, agent không được sửa `.ai/**`. Resume cần xử lý do `--system-prompt-snapshot` (mặc định bật) giữ nguyên system prompt cũ: chờ PoC. | Chỉ quản lý skill qua Library; hot-reload giữa task | architecture/DYNAMIC_SKILL_INJECTION.md | PENDING_OWNER_APPROVAL |

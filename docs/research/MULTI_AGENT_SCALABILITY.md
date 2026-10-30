@@ -16,7 +16,7 @@ Trả lời bằng bằng chứng câu hỏi của owner: *máy hiện tại (Wi
 - Trong: thực nghiệm 1 và 3 process, tài nguyên máy, giới hạn OS, giới hạn provider (ở mức biết được), cost model, khuyến nghị, rủi ro, test plan.
 - Ngoài: thiết kế scheduler/resource manager (đã có file riêng), so sánh workflow engine (A07), đánh giá Codex (A06, CLI chưa cài).
 
-## 3. Phương pháp [Đã xác minh]
+## 3. Phương pháp [Tài liệu tự báo cáo, chưa tái hiện: xem PHASE_0_TECHNICAL_VALIDATION_REPORT.md]
 
 - Thư mục chạy: `C:\Users\TUYEN\AppData\Local\Temp\claude\d--Code-Tuyen-Agent-management\9dde48b7-c365-4f17-9f11-5331b00699a6\scratchpad\a13` (và `c1`, `c2`, `c3` cho 3 process). Output JSON lưu tại `single.json`, `concurrent_1.json`, `concurrent_2.json`, `concurrent_3.json` trong thư mục đó.
 - Lệnh: `claude -p "Reply with exactly OK" --output-format json --max-turns 1`.
@@ -24,7 +24,7 @@ Trả lời bằng bằng chứng câu hỏi của owner: *máy hiện tại (Wi
 - Giới hạn: chỉ chạy tối đa 3 process đồng thời để không đốt quota của user; mọi con số > 3 là ngoại suy có ghi giả định.
 - Binary: `C:\Users\TUYEN\.local\bin\claude.exe`, 298 690 208 byte, PE32+ x86-64 console (native executable, không phải node script) — nên RSS không phụ thuộc Node runtime của hệ thống.
 
-## 4. Kết quả đo [Đã xác minh]
+## 4. Kết quả đo [Tài liệu tự báo cáo, chưa tái hiện: xem PHASE_0_TECHNICAL_VALIDATION_REPORT.md]
 
 ### 4.1 Máy
 
@@ -150,10 +150,10 @@ Dự toán quota: T1–T4 ≈ 5×3 + 10×2 + 18×2 + 18 = 89 spawn nhẹ ≈ 33 
 
 | Quyết định | Lý do | Trạng thái |
 |---|---|---|
-| Chỉ đo tới 3 đồng thời trong Phase 0 | Bảo vệ quota của user theo chỉ thị | [Đã xác minh] |
+| Chỉ đo tới 3 đồng thời trong Phase 0 | Bảo vệ quota của user theo chỉ thị | [Tài liệu tự báo cáo, chưa tái hiện: xem PHASE_0_TECHNICAL_VALIDATION_REPORT.md] |
 | Default 5, max 18 | Số đo + quota chưa rõ + review throughput | [Đề xuất] |
 | 18 chỉ bật sau test §9 từng bước | Owner yêu cầu bằng chứng session thật | [Đề xuất] |
-| Spawn tax là KPI phải giảm trước khi scale | 48k token/spawn là chi phí lớn nhất đo được | [Đã xác minh] |
+| Spawn tax là KPI phải giảm trước khi scale | 48k token/spawn là chi phí lớn nhất đo được | [Tài liệu tự báo cáo, chưa tái hiện: xem PHASE_0_TECHNICAL_VALIDATION_REPORT.md] |
 
 ## 11. Dependencies
 

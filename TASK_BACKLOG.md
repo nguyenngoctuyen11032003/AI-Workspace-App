@@ -27,10 +27,10 @@ Cập nhật: 2026-10-30. Trạng thái: DONE (có sản phẩm tài liệu và 
 | OPS-001 | Infra, git isolation, CI/CD, deployment, env | DONE | Agent DevSecOps | docs/architecture, development, operations |
 | DEV-001 | Dev guide, testing, coding standards, components, roadmap, risks | DONE | Agent delivery | docs/development, IMPLEMENTATION_ROADMAP.md |
 | RES-007 | So sánh kiến trúc, reuse, technology evaluation | DONE | Agent nghiên cứu | docs/research/ |
-| ADR-001 | ADR cho D-001..D-020 và danh sách mâu thuẫn | REVIEW | Agent kiến trúc | docs/adr/ |
-| QA-001 | Review kỹ thuật độc lập toàn bộ tài liệu | REVIEW | Agent QA | docs/QA_REVIEW_PHASE0.md |
+| ADR-001 | ADR cho D-001..D-020 và danh sách mâu thuẫn | DONE | Agent kiến trúc | docs/adr/ |
+| QA-001 | Review kỹ thuật độc lập toàn bộ tài liệu | DONE | Agent QA | docs/QA_REVIEW_PHASE0.md |
 | DOC-001 | Hợp nhất mâu thuẫn trong tài liệu theo quyết định đã duyệt | BLOCKED | Orchestrator | Chờ chủ sở hữu duyệt CF-xxx |
-| DOC-002 | PHASE_0_FINAL_REPORT.md | TODO | Orchestrator | Sau QA-001 |
+| DOC-002 | PHASE_0_FINAL_REPORT.md (cập nhật Finalization) | DONE | Orchestrator | Sau QA-001 |
 | OWN-001 | Chủ sở hữu duyệt quyết định D-001..D-020 | BLOCKED | Chủ sở hữu | Điều kiện bắt đầu Phase 1 |
 
 ## Hạng mục việc môi trường (cần chủ sở hữu hoặc máy dev)
@@ -38,8 +38,23 @@ Cập nhật: 2026-10-30. Trạng thái: DONE (có sản phẩm tài liệu và 
 |---|---|---|
 | ENV-001 | Cài Codex CLI (`npm i -g @openai/codex`) để test live | TODO, cần chủ sở hữu |
 | ENV-002 | Bật Docker Desktop và xác minh cgroup, ECI, flags sandbox | TODO |
-| ENV-003 | Khởi tạo git repo cho AI-Workspace-App | TODO, chờ chốt chính sách commit |
+| ENV-003 | Chốt chính sách commit (repo đã có git, 44 thay đổi chưa commit) | TODO, cần Owner |
 | ENV-004 | Xác minh điều khoản subscription cho nhiều phiên song song | TODO, cần chủ sở hữu |
 
 ## Phase 1 (chưa bắt đầu, chờ OWN-001)
 Xem `docs/IMPLEMENTATION_ROADMAP.md`, mục Phase 1 breakdown. Các task F1..F6 chạy song song sau khi API contract và event schema được đóng băng.
+
+## Phase 0 Finalization
+| ID | Task | Trạng thái | Kết quả |
+|---|---|---|---|
+| FIN-001 | Truy vết AC cho 199 FR | DONE | PHASE_0_ACCEPTANCE_CRITERIA_TRACEABILITY.md |
+| FIN-002 | Phân loại 55 mâu thuẫn, sổ quyết định | DONE | PHASE_0_OWNER_DECISION_REGISTER.md |
+| FIN-003 | Viết lại 20 ADR | DONE | docs/adr/ |
+| FIN-004 | Rà soát bảo mật | DONE | PHASE_0_SECURITY_SIGNOFF_CHECKLIST.md, PHASE_0_REMAINING_RISKS.md |
+| FIN-005 | Kiểm chứng kỹ thuật (đọc) và runbook | DONE | PHASE_0_TECHNICAL_VALIDATION_REPORT.md |
+| FIN-006 | Đồng bộ tài liệu độc lập quyết định | DONE | docs/DOC_SYNC_LOG_PHASE0.md |
+| FIN-007 | Skill Markdown động (D-021) | DONE (đặc tả) | docs/architecture/DYNAMIC_SKILL_INJECTION.md |
+| FIN-008 | QA độc lập lần hai | DONE (PASS WITH FIXES, 0 P0, 3 P1, 8 P2, 6 P3) | PHASE_0_QA_REVIEW_2.md |
+| FIN-009 | PoC kiểm chứng skill động và resume | BLOCKED | Chờ Owner cho phép chạy |
+| FIN-010 | Đồng bộ giá trị phụ thuộc quyết định | BLOCKED | Chờ Owner duyệt D-xxx, Q-xx |
+| FIN-011 | AC cho 16 FR chờ làm rõ | BLOCKED | Chờ Owner |

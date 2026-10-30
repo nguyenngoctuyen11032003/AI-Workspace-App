@@ -292,3 +292,6 @@ Giả định đầu vào: một `node_run` kiểu agent đã `READY` (xem `WORK
 - [ ] Memory chưa duyệt không xuất hiện trong context snapshot; memory đã duyệt xuất hiện tối đa 1 000 token.
 - [ ] Audit log của mọi session có đủ `(userId, agentId, providerId)`.
 - [ ] Owner đã duyệt các mục đánh dấu [Cần người dùng phê duyệt] ở §3.1.1, §3.6, AD-04.
+
+
+> **Phụ lục sửa đổi (D-021, PROPOSED):** nạp skill Markdown động theo từng agent, quét lúc giao task, xem `docs/architecture/DYNAMIC_SKILL_INJECTION.md`. Phụ lục này bổ sung nguồn skill trên đĩa và rào chắn `.ai/**`; phần còn lại của tài liệu này giữ nguyên cho đến khi Owner duyệt.
