@@ -7,7 +7,7 @@
 - **Decision ID:** D-002 (trong `DECISION_LOG.md`)
 - **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** Owner, 2026-10-30 (tin nhắn trong phiên; xem PHASE_0_OWNER_DECISION_REGISTER.md mục 8)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-1; OWR-2 không đổi trạng thái)
 - **Nguồn:** DATABASE_DESIGN.md §1, research/TECHNOLOGY_EVALUATION.md TE-01, QA_REVIEW_PHASE0.md (P1-08)
 
 ## 2. Context
@@ -107,3 +107,20 @@ Chủ sở hữu cần xác nhận chính xác:
 - Spike phát hiện drift không sửa được: đánh giá lại Prisma + SQL thô.
 - Chủ sở hữu duyệt Prisma vì lý do kỹ năng đội: dịch lại 44 bảng.
 - Drizzle ngừng bảo trì hoặc phá vỡ API lớn; hoặc 1.0 beta không ổn định mà 0.45.x không đủ tính năng.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §5.4, §2 Q-06, Q-12, Q-13 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Trạng thái không đổi. OWR-2 §5.4 cho phép Drizzle PoC **trong thư mục scratch**, không ảnh hưởng production schema: kiểm tra Drizzle stable (ưu tiên pin `0.45.4` nếu xác minh tồn tại và tương thích), partition `agent_events`, partial unique index, circular foreign keys, `drizzle-kit generate --custom`, chạy migration hai lần, kiểm tra schema drift và idempotency. PoC **chưa chạy**; không có kết quả.
+- Nếu PoC thất bại: báo cáo và đưa lựa chọn cho Owner; **không tự đổi ORM**.
+- Q-13: `task_status` UPPERCASE, enum khác lowercase. Q-12: `agent_events.type` dạng dotted lowercase. Q-06: audit online 365 ngày, signed export 2 năm (ảnh hưởng retention/partition của audit).
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+## Cập nhật PoC (2026-10-30, OWR-2 mục 5.4)
+Kết quả `docs/poc/POC_DRIZZLE.md`: 9 PASS, 1 FAIL, 1 BLOCKED. Engine là PGlite 0.5.13 (báo PostgreSQL 18.6), **không phải PostgreSQL 16**, vì Docker daemon tắt; một PostgreSQL 17 cục bộ đang chạy nhưng cần thông tin đăng nhập nên không dùng. Đã ghim `drizzle-orm@0.45.4` (tồn tại, là bản stable `latest`), `drizzle-kit@0.31.11`.
+- PASS: migration, bảng phân vùng, partial unique index, FK vòng qua custom SQL, chạy migration hai lần, trigger append-only, đọc ghi qua ORM.
+- **Giới hạn:** unique index trên bảng phân vùng phải chứa khóa phân vùng, nên `(aggregate_type, aggregate_id, sequence)` không thể unique ở mức DB; ứng dụng phải tự bảo đảm.
+- **FAIL:** `drizzle-kit generate` và `check` không phát hiện thay đổi thủ công trong DB; `pull` thì có. Đây là hành vi công cụ, không phải lỗi schema; cần quy trình kiểm drift dùng `pull`.
+- BLOCKED: PostgreSQL 16 thật, postgres.js driver (chưa cài), hành vi pruning.
+Mức bằng chứng nâng từ Unverified lên **Partial (PGlite)**. Không VERIFIED. Quyết định ORM không đổi.

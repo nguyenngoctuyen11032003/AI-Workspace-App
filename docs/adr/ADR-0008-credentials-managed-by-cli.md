@@ -5,9 +5,9 @@
 - **ID:** ADR-0008
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-008 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** SECURITY.md §7, security/CREDENTIAL_MANAGEMENT.md
 
 ## 2. Context
@@ -106,3 +106,11 @@ Chủ sở hữu cần xác nhận chính xác:
 - Điều khoản/quota buộc chuyển API key theo agent: thiết kế lại vault và thêm bảng `secrets`.
 - CLI cung cấp API token ngắn hạn an toàn hơn: đánh giá lại.
 - Chuyển server mode nhiều người dùng: cần Vault/SOPS/age.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-008, §8 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- App không tự ý đọc `.credentials.json` hoặc `auth.json`; không lưu plaintext token trong database hoặc frontend; secret khác dùng OS keychain hoặc cơ chế phù hợp.
+- Bổ sung: **không mount thư mục credential của Owner vào Agent sandbox** (khớp security gate OWR-2 §8). Không dùng credential thật trong PoC (§9).
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

@@ -5,9 +5,9 @@
 - **ID:** ADR-0001
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-001 (trong `DECISION_LOG.md`)
-- **Decision status:** APPROVED (trừ khung frontend, Q-16)
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** Owner, 2026-10-30 (tin nhắn trong phiên; xem PHASE_0_OWNER_DECISION_REGISTER.md mục 8)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-1; hoàn tất khung frontend theo OWR-2 Q-16)
 - **Nguồn:** research/LICENSE_AND_REUSE.md §5, development/DEPLOYMENT.md, research/TECHNOLOGY_EVALUATION.md TE-06/TE-09/TE-10
 
 ## 2. Context
@@ -106,3 +106,12 @@ Chủ sở hữu cần xác nhận chính xác:
 - Spike sidecar (NestJS + native module) trên Windows thất bại hoặc vượt ngân sách thời gian: chuyển Electron.
 - Chủ sở hữu chỉ cần web/server, không desktop: bỏ Tauri khỏi lộ trình.
 - Đội không có năng lực Rust sau Phase 2: đánh giá lại Electron.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §1 Q-16 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Q-16 đã được trả lời: React 19 + Vite, NestJS backend, monorepo TypeScript, pnpm workspace. **Không chuyển sang Next.js trong MVP.** Bảo lưu "trừ khung frontend" trước đây không còn hiệu lực; D-001 là APPROVED đầy đủ.
+- Tauri 2 ở phase sau, pnpm thuần không Turborepo: không đổi so với nội dung ADR.
+- Tài liệu liên quan cần đồng bộ (do agent khác thực hiện, chưa xác nhận): `FRONTEND_ARCHITECTURE.md`, `development/DEPLOYMENT.md`.
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

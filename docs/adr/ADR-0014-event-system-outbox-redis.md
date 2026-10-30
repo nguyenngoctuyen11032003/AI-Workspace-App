@@ -5,9 +5,9 @@
 - **ID:** ADR-0014
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-014 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** research/ORCHESTRATION_WORKFLOW_RESEARCH.md, EVENT_SYSTEM.md, research/TECHNOLOGY_EVALUATION.md TE-08, QA_REVIEW_PHASE0.md (P1-13)
 
 ## 2. Context
@@ -106,3 +106,12 @@ Chủ sở hữu cần xác nhận chính xác:
 - Đo thực cho thấy relay là nút cổ chai: logical replication/Debezium hoặc `LISTEN/NOTIFY` + cursor.
 - Nhiều instance khiến Socket.IO + sticky quá phức tạp: chuyển `ws` thuần.
 - Chủ sở hữu chấp nhận mất event khi crash cho một số loại: nới outbox.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-014, §1 Q-19, §2 Q-12 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Dùng Transactional Outbox; một relay leader chịu trách nhiệm phát event; Redis Pub/Sub hoặc Streams cho realtime delivery; hỗ trợ replay bằng `lastEventId`.
+- Naming theo Q-19: database dùng `lowercase.dot.notation` (ví dụ `task.started`, `task.completed`, `agent.blocked`); API hoặc lớp tương thích có thể ánh xạ sang `UPPER_SNAKE_CASE`. Không tạo hai hệ thống event naming độc lập.
+- **PENDING_OWNER_CLARIFICATION:** nội dung "Prompt 1 mục 8.4" (danh sách event gốc) không được lưu trong repo. Owner yêu cầu không tự tạo danh sách. Ghi nhận: mười sáu tên event có trong văn bản prompt đầu tiên của Owner; Owner cần xác nhận một bản sao lưu trong repo. ADR này không chép danh sách đó và không coi danh sách event hiện tại là nội dung gốc đã phê duyệt.
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

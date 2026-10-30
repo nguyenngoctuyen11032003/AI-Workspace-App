@@ -5,9 +5,9 @@
 - **ID:** ADR-0006
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-006 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED (hoãn đến sau Phase 4)
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** research/OPENHANDS_ANALYSIS.md, PROVIDER_INTEGRATION.md §9, §25
 
 ## 2. Context
@@ -104,3 +104,11 @@ Chủ sở hữu cần xác nhận chính xác:
 - Chủ sở hữu duyệt ACP sub-mode: thiết kế lại credential handling và cập nhật ADR-0008.
 - Agent-server không ổn định hoặc license/đóng gói đổi: tự xây runtime container tối giản.
 - Tier 2 không dùng ở phase nào: bỏ provider này.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-006, §2 Q-02 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- OpenHands bị hoãn đến **sau Phase 4**; không tích hợp như provider thứ ba trong MVP. Q-02: không tích hợp OpenHands ACP trong MVP.
+- Hệ quả: Tier 2 của ADR-0007 chưa có runtime OpenHands trong MVP (register mục 11, X-9). Cần Owner biết khi lập kế hoạch Tier 2.
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

@@ -5,9 +5,9 @@
 - **ID:** ADR-0017
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-017 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** design/HERDR_DESIGN_INTEGRATION.md §2, research/HERDR_ANALYSIS.md §4
 
 ## 2. Context
@@ -103,3 +103,10 @@ Chủ sở hữu cần xác nhận chính xác:
 - Người dùng thử nghiệm không phân biệt được `done` chưa xem: đổi trạng thái.
 - Số lifecycle state đổi: cập nhật ánh xạ và test.
 - Chi phí `notification_reads` vượt lợi ích: chỉ giữ cờ cục bộ.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-017 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- 5 trạng thái: `blocked`, `working`, `done`, `idle`, `unknown`. Chỉ suy ra trạng thái từ lifecycle event và heartbeat thực tế; không tự suy diễn khi thiếu dữ liệu.
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

@@ -5,9 +5,9 @@
 - **ID:** ADR-0005
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-005 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED (hoãn Codex khỏi MVP)
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** research/CODEX_INTEGRATION.md, research/TECHNOLOGY_EVALUATION.md TE-04
 
 ## 2. Context
@@ -106,3 +106,12 @@ Chủ sở hữu cần xác nhận chính xác:
 - Live test cho thấy app-server không ổn định hoặc thiếu approval: chuyển `exec --json` + Tier 2 sandbox.
 - Chủ sở hữu không muốn cài Codex hoặc tốn quota: để Codex ngoài MVP.
 - OpenAI công bố SDK có approval callback ổn định.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-005, §5.2, §2 Q-10 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Quyết định của Owner là **hoãn tích hợp Codex khỏi MVP**. Phần đề xuất `codex app-server` trong ADR này chỉ còn là thiết kế tham khảo cho sau MVP, **chưa được duyệt triển khai**. Giữ abstraction `AgentAdapter` để mở rộng sau.
+- Không cài Codex CLI (không chạy `npm i -g @openai/codex`), không live test trong phạm vi hiện tại (Q-10).
+- **Xung đột cần Owner biết:** quyết định này THAY ĐỔI nhóm chấp nhận MVP B (Provider) của đặc tả gốc, vốn yêu cầu kết nối Codex (FR-077 "M, MVP, [Owner]", AC-022, GP-1 trong `product/ACCEPTANCE_CRITERIA.md`). Agent không tự sửa FR/AC; đã ghi ở register mục 11 (X-2), PENDING_OWNER_CLARIFICATION P-8.
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

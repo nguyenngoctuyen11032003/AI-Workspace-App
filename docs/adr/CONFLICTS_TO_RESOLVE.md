@@ -464,3 +464,72 @@ Nguồn: `PHASE_0_OWNER_DECISION_REGISTER.md` mục 8 và `docs/DOC_SYNC_LOG_PHA
 - **Vẫn hoãn:** CF-004, CF-035, CF-010, CF-036 (liên quan D-002 nhưng còn phụ thuộc D-014 và Q-12), CF-038 (số lần retry: 2 hay 3, chưa chốt), CF-048 (ngưỡng thời gian approval), phần đặt tên Redis, ID và queue của CF-042, phần D-009 của CF-053.
 - **Mới phát sinh:** Q-16 (khung frontend Next.js hay Vite), Q-17 (D-004), Q-18 (D-021 và bốn FR), Q-19 (event naming trong DB), Q-20 (D-003).
 - Kiểm tra độc lập sau đồng bộ: không còn đường dẫn `prisma/**` trong cấu hình; seed `max_concurrent_agents` là 5; không có thay đổi nào về Vite hay Next.js ngoài một dòng đánh dấu chờ xác nhận (Q-16).
+
+
+---
+
+## Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md` (OWR-2), đối chiếu `PHASE_0_OWNER_DECISION_REGISTER.md` mục 9 đến 11. Các đoạn "Quy tắc bắt buộc: chủ sở hữu chưa duyệt bất kỳ quyết định nào" và cột `PENDING_OWNER_APPROVAL` ở trên là nội dung lịch sử lúc lập (phiên bản 2); **trạng thái hiện hành là bảng dưới đây**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
+
+Trạng thái dùng ở mục này: `RESOLVED_BY_OWNER_DECISION` = Owner đã quyết định (cần kèm Q/D); **việc đồng bộ tài liệu chưa được xác nhận (doc sync pending)**, do agent khác thực hiện; `STILL_OPEN` = OWR-2 không giải quyết hoặc còn điều kiện, kèm lý do. Không dòng nào dưới đây là VERIFIED.
+
+### A. Đóng bằng quyết định của Owner (doc sync pending)
+
+| CF | Quyết định | Nguồn OWR-2 | Kết quả | Việc đồng bộ còn lại |
+|---|---|---|---|---|
+| CF-003 | Tên event: DB dùng dotted lowercase (`task.started`, `agent.blocked`); API/lớp tương thích có thể ánh xạ UPPER_SNAKE; không hai hệ thống độc lập (phương án A) | Q-12, Q-19 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | EVENT_SYSTEM.md M-E2 (dòng 39,72,172,407), VIRTUAL_OFFICE.md; bảng ánh xạ 1-1 trong `@aiw/contracts` |
+| CF-004 | Transactional Outbox, một relay leader, Redis Pub/Sub hoặc Streams, replay `lastEventId` (phương án A: `event_outbox`) | D-014 | RESOLVED_BY_OWNER_DECISION (doc sync pending). CF-035 (thiếu bảng `event_outbox`) cùng hướng, doc sync pending | Sửa ADR-0014 nội dung gốc "đọc theo `global_seq`" thành đọc `event_outbox`; DATABASE_DESIGN thêm bảng. Danh sách event gốc xem CF-056 (mới) |
+| CF-006 | Audit online 365 ngày; signed export 2 năm | Q-06 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | SECURITY.md:498 `180 ngày` -> 365 ngày + export 2 năm |
+| CF-007 | Approval wait tối đa 540 s, rồi lưu trạng thái, chuyển `WAITING_HUMAN`, không giữ worker; nhắc 24 giờ; deploy production/xóa dữ liệu/merge main duyệt riêng, hết hạn 15 phút | Q-05 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | Sáu giá trị còn lệch trong SECURITY.md:400, BACKEND_ARCHITECTURE.md:149, DATABASE_DESIGN.md:832 (3600 s), PROVIDER_INTEGRATION.md:411 (10 phút), RESOURCE_MANAGEMENT.md:104, WORKFLOW_ENGINE.md:201,359, research Claude (30 phút) |
+| CF-048 | Cùng Q-05: tool-level chờ tới 540 s rồi `WAITING_HUMAN` không chiếm worker | Q-05 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | RESOURCE_MANAGEMENT.md:55,104 theo bản sửa của CF-048 |
+| CF-008 | L0-L5 ánh xạ `permission_level` + `permission_profile`; không `full` | Q-03 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | DATABASE_DESIGN.md:170 bỏ `full`, thêm CHECK; chốt số level (AGENT_ORGANIZATION.md:30 ghi L0..L4) |
+| CF-011 | `task_status` UPPERCASE; enum khác lowercase | Q-13 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | DATABASE_DESIGN.md §12 ghi rõ quy ước |
+| CF-013 | Claude Agent SDK là adapter chính; raw CLI chỉ hỗ trợ/kiểm tra/PoC | D-004, Q-17 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | SECURITY.md §5.1 viết lại theo PROVIDER_INTEGRATION §17 |
+| CF-014 | Cùng D-004 (SDK chính). OWR-2 **không** nêu chế độ spawn `default` + whitelist cụ thể | D-004, Q-17 | RESOLVED_BY_OWNER_DECISION cho hướng SDK; chế độ permission mặc định là chi tiết thiết kế, **chưa được Owner nêu**, coi là STILL_OPEN nhỏ | WORKSPACE_AND_GIT_ISOLATION.md:116,129; SECURITY.md:94,114 |
+| CF-015, CF-050 | Hoãn Codex khỏi MVP | D-005 | RESOLVED_BY_OWNER_DECISION ở nghĩa hoãn phạm vi; mở lại khi Codex quay lại | WORKSPACE_AND_GIT_ISOLATION.md:132 ghi chú hoãn |
+| CF-017 | Agent merge `integration/*` khi qua gate; `main` luôn cần Owner; Lead không thay Owner | Q-04, D-009 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | USER_ROLES_AND_PERMISSIONS.md:119,120,148,159 POL-11/12; PERMISSION_MODEL R030/R040/R050. Quy tắc `dependency_add` ở project tin cậy/chưa tin cậy **không được OWR-2 nêu**, giữ như đề xuất cũ chưa duyệt |
+| CF-018 | Phaser 3.90 qua `OfficeRenderer` | D-011 | RESOLVED_BY_OWNER_DECISION, kèm điều kiện benchmark trước khi khóa (doc sync pending) | SCREEN_SPECIFICATION.md:142,690 |
+| CF-009 | 5 attention state (`blocked`, `working`, `done`, `idle`, `unknown`) chỉ suy ra từ lifecycle event và heartbeat thật | D-017 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | Bảng ánh xạ 12 -> 5 -> 8 tone trong `packages/contracts` |
+| CF-036 | 18 role là seed data; tách Agent/Provider/User Identity | D-016, D-017 | RESOLVED_BY_OWNER_DECISION cho hướng seed data; bảng template version là thiết kế còn lại | DATABASE_DESIGN.md thêm bảng template/version |
+| CF-021 | Accent tím và token theo D-015 (màu `blocked` cam hay đỏ OWR-2 **không** nêu) | D-015 | STILL_OPEN: OWR-2 chỉ nêu accent, font, density, avatar, locale; chưa nêu màu `blocked` | SCREEN_SPECIFICATION.md:143 so với DESIGN_TOKENS.md:58,183 |
+| CF-022 | Idle không tự đi coffee/relax mặc định; có setting tùy chọn | Q-14 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | SCREEN_SPECIFICATION.md:143,678; VIRTUAL_OFFICE.md:157-158 |
+| CF-024 | Không tích hợp OpenHands ACP trong MVP | Q-02 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | PROVIDER_INTEGRATION.md:263 (§9.5 #1) |
+| CF-026 | Chỉ CC0 mặc định; font OFL kèm license/NOTICE; CC-BY duyệt từng package. MIT cho asset **không** được nêu | Q-15, D-012 | RESOLVED_BY_OWNER_DECISION với chính sách CC0 mặc định; điểm MIT cho asset là PENDING_OWNER_CLARIFICATION (register P-9) | D-012/ADR-0012, LICENSE_AND_REUSE.md:134, VIRTUAL_OFFICE.md §21 |
+| CF-029 | 9 UI node types, 11 engine kinds; cập nhật FR-113 | Q-11 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | FR-113, WORKFLOW_ENGINE.md M-W2, SCREEN_SPECIFICATION.md:471 |
+| CF-031 | FR-109 dùng công thức deterministic; PM Agent chỉ can thiệp khi mắc kẹt | Q-09 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | FR-109 (FUNCTIONAL_REQUIREMENTS.md:129); công thức cụ thể chưa được Owner nêu |
+| CF-039 | Không tự động failover provider khi hết quota; thông báo Owner và chờ | Q-08 | RESOLVED_BY_OWNER_DECISION (doc sync pending) | DATABASE_DESIGN.md:383,391 ghi `priority` chỉ là gợi ý |
+| CF-052 | Không plaintext token trong DB hoặc frontend; secret khác dùng OS keychain | D-008 | RESOLVED_BY_OWNER_DECISION (doc sync pending); hướng khớp `credential_ref` | Bảng `secrets` không đưa vào MVP |
+| CF-054 | OpenHands hoãn sau Phase 4; tái dùng code MIT/Apache sau xác minh license; asset AGPL cấm | D-006, D-012 | RESOLVED_BY_OWNER_DECISION cho phạm vi (UI OpenHands không dùng trong MVP) (doc sync pending) | LICENSE_AND_REUSE.md, ADR-0006/0012 |
+
+### B. Vẫn mở (STILL_OPEN)
+
+| CF | Lý do còn mở | Nguồn OWR-2 |
+|---|---|---|
+| CF-019 | Kích thước tile 16 hay 32 không được quyết định; chờ benchmark `OfficeRenderer` và Owner (register P-7) | D-011 |
+| CF-020, CF-023 | OWR-2 không nêu 13 animation hay chỗ đứng của `waiting_approval`. D-011 đã APPROVED_CONDITIONAL nhưng điều kiện benchmark chưa đạt; chờ xác nhận có áp dụng đồng bộ ngay không | D-011 |
+| CF-025 | Giấy phép sprite JIK-A-4 vẫn chưa có bằng chứng lưu; Q-15 chỉ cho phép CC0 mặc định, nên cần ảnh chụp license trước khi bundle | Q-15 |
+| CF-043 | Q-01 chỉ là xác nhận có điều kiện (OWR-1), Owner chưa ký từng ô checklist; thêm security gates OWR-2 §8 | OWR-1 8.1, 8.3; OWR-2 §8 |
+| CF-044 | Q-07 chỉ giữ **mặc định 5 của ứng dụng**, KHÔNG xác nhận subscription cho phép 5 session song song. Xác minh ToS/usage limit Claude Team và ChatGPT/Codex vẫn mở (PENDING_OWNER_CLARIFICATION); không tự tăng 10 hoặc 18; không tuyên bố 18 Agent đã test | Q-07, §5.1, §8 |
+| CF-045 | Q-10: Docker cần cho sandbox validation, Codex CLI chưa cài trong giai đoạn này. Docker do Owner tự mở thủ công theo §5.3; chưa có kết quả `docker version` / `docker info` mới; SB-00..SB-17 chưa chạy; live test Codex không thực hiện (D-005 hoãn) | Q-10, §5.2, §5.3, §5.6 |
+| CF-010 | run_status so với node_run_status: OWR-2 chỉ quyết định số node type (Q-11) và PoC Conductor (Q-20); enum trạng thái run/node chờ PoC | Q-11, Q-20 |
+| CF-014 (phần permission mode) | Chế độ permission mặc định của Claude chưa được Owner nêu | D-004 |
+| CF-021 (màu `blocked`) | Xem bảng A | D-015 |
+| CF-032, CF-046, CF-053 (phần D-009) | OWR-2 D-009 chỉ nêu một worktree/branch mỗi task, review diff, không auto-merge `main`; không nêu tên branch cụ thể, schema manifest, hay worktree host-truth và volume-truth | D-009 |
+| CF-038 | Số lần retry tối đa (2 hay 3): OWR-2 chỉ nêu "retry an toàn" trong tiêu chí PoC Q-20, không nêu số | Q-20 |
+| CF-042 | Quy ước đặt tên hạ tầng (UUID, tên Redis, queue) không được OWR-2 nêu ngoài tên event (Q-19) | Q-19 |
+| CF-051 | Hash chain audit và phạm vi: OWR-2 chỉ nêu retention (Q-06), không nêu phạm vi hash chain | Q-06 |
+
+### C. Xung đột mới phát sinh từ OWR-2 (chưa có mã CF chính thức; mã CF-056.. là tạm)
+
+| Mã tạm | Nội dung | Trạng thái |
+|---|---|---|
+| CF-056 | Danh sách event "Prompt 1 mục 8.4" không có trong repo (D-014); Owner cần xác nhận bản sao lưu, không tự tạo danh sách | STILL_OPEN (PENDING_OWNER_CLARIFICATION) |
+| CF-057 | D-005 hoãn Codex khỏi MVP làm đổi nhóm chấp nhận MVP B của đặc tả gốc (FR-077 M/MVP, AC-022, GP-1, PRD.md:88) | STILL_OPEN: Owner cần biết (PENDING_OWNER_CLARIFICATION) |
+| CF-058 | D-015: locale mặc định Vietnamese so với tài liệu thiết kế ghi tiếng Anh mặc định (ADR-0015 nội dung gốc, DESIGN_TOKENS.md, UI_UX_GUIDELINES.md, FRONTEND_ARCHITECTURE.md, SYSTEM_ARCHITECTURE.md) | RESOLVED_BY_OWNER_DECISION (D-015, doc sync pending) |
+| CF-059 | Q-15 so với D-012/LICENSE_AND_REUSE: MIT/CC-BY cho asset | STILL_OPEN: MIT cho asset chưa được Owner nêu |
+| CF-060 | D-006 hoãn OpenHands, trong khi Tier 2 của ADR-0007 và nhiều tài liệu (PRD.md:88, SRS.md:28,53) coi OpenHands là adapter | STILL_OPEN: Tier 2 chưa có runtime trong MVP, Owner cần biết |
+| CF-061 | OWR-2 §8: Phase 2 chỉ build adapter ở mock/sandbox mode nếu security gate chưa đạt, so với IMPLEMENTATION_ROADMAP.md và ADR-0004; chưa đối chiếu chi tiết | STILL_OPEN |
+| CF-062 | FR-122, FR-181, FR-182, FR-183: OWR-2 §4 chỉ là đề xuất Acceptance Criteria, chưa APPROVED; phải đối chiếu FR gốc trước khi cập nhật | STILL_OPEN (PENDING_OWNER_CLARIFICATION) |
+
+Ghi chú: các CF còn lại (không liệt kê ở trên) không bị OWR-2 tác động; trạng thái của chúng theo "Cập nhật 2026-10-30 sau phản hồi của Owner" ở trên. Việc đóng CF ở mục này nghĩa là Owner đã quyết định, **không** có nghĩa tài liệu đã được sửa hay đã được kiểm chứng.

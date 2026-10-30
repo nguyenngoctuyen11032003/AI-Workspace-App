@@ -5,9 +5,9 @@
 - **ID:** ADR-0004
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-004 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** research/CLAUDE_CODE_INTEGRATION.md, research/TECHNOLOGY_EVALUATION.md TE-03, PROVIDER_INTEGRATION.md §17
 
 ## 2. Context
@@ -104,3 +104,12 @@ Chủ sở hữu cần xác nhận chính xác:
 - Điều khoản dịch vụ cấm OAuth subscription cho tự động hóa: chuyển API key (cần quyết định chi phí).
 - SDK phá vỡ API liên tục: quay về raw CLI + MCP permission tool.
 - Hai tầng approval gây quyết định trùng không giải được.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §1 Q-17, §5.1, §2 Q-07, §8 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Claude Agent SDK là adapter chính cho Claude. Không dùng raw CLI spawn làm kiến trúc tích hợp chính; CLI chỉ cho tác vụ hỗ trợ, kiểm tra hoặc PoC được cấp phép.
+- Điều kiện: phải phân biệt subscription authentication, API authentication và usage limits; **không mặc định** rằng dùng Agent SDK nghĩa là được chạy số session không giới hạn. Điều khoản dịch vụ cho tự động hóa gói Team **chưa xác nhận** (Q-07, PENDING_OWNER_CLARIFICATION).
+- Phase 2 chỉ được xây provider adapter ở mock/sandbox mode nếu security gate chưa đạt (OWR-2 §8); không giả lập Agent hoạt động khi thiếu execution evidence.
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

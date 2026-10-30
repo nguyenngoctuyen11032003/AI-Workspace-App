@@ -5,9 +5,9 @@
 - **ID:** ADR-0018
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-018 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** design/HERDR_DESIGN_INTEGRATION.md §3, §4, research/HERDR_ANALYSIS.md §3
 
 ## 2. Context
@@ -102,3 +102,10 @@ Chủ sở hữu cần xác nhận chính xác:
 - Thử nghiệm người dùng cho thấy Rail gây nhiễu: panel tùy chọn.
 - Màn hình mục tiêu chủ yếu nhỏ: bỏ vùng Agent.
 - herdr đổi license hoặc bị loại khỏi tham chiếu.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-018 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Agent Rail chia 2 section; cho phép ẩn/hiện; mặc định hiển thị trên màn hình lớn.
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

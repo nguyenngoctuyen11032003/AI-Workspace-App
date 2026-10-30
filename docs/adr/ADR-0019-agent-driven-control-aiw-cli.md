@@ -5,9 +5,9 @@
 - **ID:** ADR-0019
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-019 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED_CONDITIONAL
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** design/HERDR_DESIGN_INTEGRATION.md §6, research/HERDR_ANALYSIS.md §7
 
 ## 2. Context
@@ -102,3 +102,10 @@ Chủ sở hữu cần xác nhận chính xác:
 - Đánh giá bảo mật cho thấy token agent không bảo vệ đủ: kênh một chiều qua stdout.
 - Provider chuẩn hóa MCP đủ tốt: dùng MCP thay `aiw`.
 - Phase 3 bị hoãn: lùi thời điểm áp dụng.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-019 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Agent CLI/API **chỉ triển khai trong Phase 3, sau Security Review** (chưa thực hiện): điều kiện chưa đạt. Short-lived token với least privilege; có redaction; ngăn nested execution không được phép.
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

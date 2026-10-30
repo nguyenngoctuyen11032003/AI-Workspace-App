@@ -5,9 +5,9 @@
 - **ID:** ADR-0007
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-007 (trong `DECISION_LOG.md`)
-- **Decision status:** APPROVED, có điều kiện (xem sổ quyết định mục 8)
+- **Decision status:** APPROVED_CONDITIONAL
 - **Owner approval required:** yes
-- **Approved by/date:** Owner, 2026-10-30 (tin nhắn trong phiên; xem PHASE_0_OWNER_DECISION_REGISTER.md mục 8)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-1; OWR-2 không nâng trạng thái)
 - **Nguồn:** SECURITY.md §10 (R1–R10), security/SANDBOX_DESIGN.md, security/THREAT_MODEL.md, PROJECT_RISKS.md
 
 ## 2. Context
@@ -105,3 +105,13 @@ Chủ sở hữu cần xác nhận chính xác:
 - Chủ sở hữu không ký R1, R2, R3, R5, R6: chuyển Tier 2 mặc định và xem lại ADR-0008.
 - Anthropic phát hành sandbox native Windows ổn định: nâng Tier 1 thành ranh giới thật.
 - Test SB-00..SB-17 phát hiện vượt ranh giới không vá được.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-1 mục 8.1, 8.3; OWR-2 §8, §5.3, §2 Q-10 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Điều kiện OWR-1 giữ nguyên: Phase 0 đến 1 không cho agent chạy thật; checksum và audit log cho rủi ro ghi overlay; fail-closed khi Docker tắt; SB-00..SB-17 phải qua trên máy có Docker.
+- Security gates OWR-2 §8: không cho Agent thực thi arbitrary code trên Windows host khi chưa có sandbox đạt chuẩn; không mount host credential directory hoặc Docker socket vào Agent; sandbox không hoạt động thì fail closed; không đưa production-capable Agent execution vào trước khi authentication, authorization, permission model, credential isolation, audit, sandbox và emergency stop hoàn thành.
+- Q-10: Docker cần cho sandbox validation. §5.3: Owner tự mở Docker Desktop, chạy `docker version`, `docker info`, ghi RAM trước và sau; không tự khởi động Docker cùng ứng dụng; không đổi WSL hay `wsl --shutdown` khi chưa phê duyệt riêng. Docker daemon chưa được ghi nhận là chạy; sandbox chưa được xác thực.
+- Q-01: chỉ là xác nhận có điều kiện của Owner (các ô checklist chưa được Owner ký). Không tuyên bố 18 Agent concurrent đã kiểm thử.
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

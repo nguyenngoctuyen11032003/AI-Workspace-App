@@ -5,9 +5,9 @@
 - **ID:** ADR-0015
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-015 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** design/DESIGN_TOKENS.md
 
 ## 2. Context
@@ -104,3 +104,11 @@ Chủ sở hữu cần xác nhận chính xác:
 - Kiểm thử người dùng cho thấy tím gây nhầm với trạng thái: đổi accent.
 - Chủ sở hữu chọn Geist hoặc locale VI mặc định.
 - Brand guideline tổ chức yêu cầu bảng màu khác.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-015 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Primary accent Purple; font Inter + JetBrains Mono; density Comfortable; Agent avatar Square; Owner avatar Round.
+- **Locale mặc định ĐỔI: Vietnamese là mặc định, English là locale thứ hai.** Phần "giao diện mặc định tiếng Anh" ở tiêu đề, phương án và nội dung trên là đề xuất cũ, bị thay thế bởi cập nhật này (xung đột X-1 với DESIGN_TOKENS.md, UI_UX_GUIDELINES.md, FRONTEND_ARCHITECTURE.md, SYSTEM_ARCHITECTURE.md; chờ đồng bộ).
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

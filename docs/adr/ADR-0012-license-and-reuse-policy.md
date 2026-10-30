@@ -5,9 +5,9 @@
 - **ID:** ADR-0012
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-012 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** research/LICENSE_AND_REUSE.md, research/REUSE_DECISIONS.md §4.4, QA_REVIEW_PHASE0.md (P1-10)
 
 ## 2. Context
@@ -107,3 +107,12 @@ Chủ sở hữu cần xác nhận chính xác:
 - Luật sư xác nhận cách diễn giải AGPL khác: nới quy tắc.
 - Chủ sở hữu chọn phát hành mã nguồn mở tương thích: cập nhật verdict.
 - Phát hiện asset vi phạm license: gỡ và thay thế.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-012, §2 Q-15 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Được tái dùng code Apache-2.0 và MIT sau khi xác minh license và attribution. My Virtual Office (AGPL-3.0) chỉ làm tham khảo ý tưởng; không sao chép code, prompt, layout hoặc asset.
+- Asset theo Q-15: chỉ CC0 mặc định; font OFL được phép nếu lưu đầy đủ license/NOTICE; CC-BY chỉ khi Owner phê duyệt từng package.
+- **Xung đột:** danh sách asset trong ADR này (CC0/MIT/OFL) và `research/LICENSE_AND_REUSE.md:134` (CC0 hoặc MIT/CC-BY) rộng hơn Q-15. OWR-2 không nhắc MIT cho asset: coi là chưa được duyệt (register P-9, X-5). Giấy phép sprite JIK-A-4 vẫn chưa có bằng chứng lưu (CF-025).
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

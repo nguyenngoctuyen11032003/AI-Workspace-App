@@ -5,9 +5,9 @@
 - **ID:** ADR-0020
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-020 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** research/HERDR_ANALYSIS.md §8, §9, design/HERDR_DESIGN_INTEGRATION.md
 
 ## 2. Context
@@ -103,3 +103,10 @@ Chủ sở hữu cần xác nhận chính xác:
 - PoC cho thấy giá trị rõ cho người dùng terminal: nâng thành tính năng chính thức.
 - herdr đổi license hoặc ngừng phát triển: bỏ HerdrRuntime.
 - Chủ sở hữu muốn terminal tương tác ngay ở MVP: lùi lịch và đánh giá lại.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-020 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- herdr chỉ là design reference. Không tái sử dụng Rust runtime. Không dùng screen heuristic làm nguồn dữ liệu sự thật.
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

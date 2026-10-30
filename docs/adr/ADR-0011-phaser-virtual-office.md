@@ -5,9 +5,9 @@
 - **ID:** ADR-0011
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-011 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED_CONDITIONAL
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** research/PIXEL_AGENTS_ANALYSIS.md, research/LICENSE_AND_REUSE.md §5.1, research/TECHNOLOGY_EVALUATION.md TE-05, VIRTUAL_OFFICE.md, QA_REVIEW_PHASE0.md (P2-09)
 
 ## 2. Context
@@ -107,3 +107,12 @@ Chủ sở hữu cần xác nhận chính xác:
 - Spike không đạt 60 fps trên máy tham chiếu: chuyển Pixi.
 - Bundle vượt ngân sách tải: chuyển Pixi hoặc Canvas.
 - Chủ sở hữu yêu cầu đổi engine, hoặc điều kiện nâng 4.x thỏa.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-011, §2 Q-14 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Chọn Phaser 3.90 qua abstraction **`OfficeRenderer`**. Điều kiện: **benchmark trước khi khóa implementation** (chưa chạy).
+- Animation và trạng thái nhân vật phải phản ánh event thực tế, không giả lập trạng thái Agent. Q-14: agent idle không tự chuyển sang coffee/relax mặc định, chỉ có setting tùy chọn.
+- Chưa quyết định: kích thước tile 16 hay 32 (CF-019: DATABASE_DESIGN và SCREEN_SPECIFICATION ghi 32; VIRTUAL_OFFICE và Pixel Agents dùng 16). OWR-2 không giải quyết; PENDING_OWNER_CLARIFICATION.
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

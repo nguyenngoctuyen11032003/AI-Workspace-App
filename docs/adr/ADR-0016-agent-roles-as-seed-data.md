@@ -5,9 +5,9 @@
 - **ID:** ADR-0016
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-016 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** architecture/AGENT_ORGANIZATION.md, AGENT_ARCHITECTURE.md §3.1
 
 ## 2. Context
@@ -104,3 +104,10 @@ Chủ sở hữu cần xác nhận chính xác:
 - Seed 18 vai trò không đủ linh hoạt: nhà thiết kế role đầy đủ cho người dùng.
 - Multi-user khiến Provider Identity theo người dùng.
 - Số vai trò thực tế sau Phase 1 khác xa 18.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-016 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- 18 Agent roles là seed data, không hardcode. Phân tách Agent Identity, Provider Identity, User Identity.
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

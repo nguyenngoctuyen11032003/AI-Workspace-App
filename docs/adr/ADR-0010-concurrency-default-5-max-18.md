@@ -5,9 +5,9 @@
 - **ID:** ADR-0010
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-010 (trong `DECISION_LOG.md`)
-- **Decision status:** APPROVED (Q-07 điều khoản subscription còn mở)
+- **Decision status:** APPROVED
 - **Owner approval required:** yes
-- **Approved by/date:** Owner, 2026-10-30 (tin nhắn trong phiên; xem PHASE_0_OWNER_DECISION_REGISTER.md mục 8)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-1; OWR-2 Q-07, Q-08)
 - **Nguồn:** architecture/RESOURCE_MANAGEMENT.md, research/MULTI_AGENT_SCALABILITY.md
 
 ## 2. Context
@@ -104,3 +104,12 @@ Chủ sở hữu cần xác nhận chính xác:
 - Test plan §9 chứng minh 10 hoặc 18 session ổn định và quota đủ: nâng mặc định.
 - Chủ sở hữu xác nhận gói có ngưỡng thấp hơn: hạ trần.
 - Chuyển API key trả theo token khiến quota không còn là nút thắt.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §2 Q-07, Q-08, §5.1, §8 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Giữ concurrency mặc định 5. Đây là **giới hạn mặc định của ứng dụng, KHÔNG phải xác nhận rằng subscription cho phép 5 session song song.** Không tự tăng lên 10 hoặc 18 khi chưa xác minh điều khoản provider. Xác minh ToS vẫn **mở** (PENDING_OWNER_CLARIFICATION).
+- Q-08: không tự động failover provider khi hết quota; thông báo Owner và chờ quyết định.
+- Không tuyên bố giới hạn concurrency cụ thể của subscription và không tuyên bố 18 Agent concurrent đã được kiểm thử (OWR-2 §5.1, §8). Cap Codex 3 trong ADR chỉ còn mang tính tham khảo vì Codex hoãn khỏi MVP (D-005).
+- **Validation evidence (trung thực):** mức giữ nguyên **Partial** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.

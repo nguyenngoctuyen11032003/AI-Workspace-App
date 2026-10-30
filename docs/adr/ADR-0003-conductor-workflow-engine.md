@@ -5,9 +5,9 @@
 - **ID:** ADR-0003
 - **Ngày:** 2026-10-30
 - **Decision ID:** D-003 (trong `DECISION_LOG.md`)
-- **Decision status:** PENDING_OWNER_APPROVAL
+- **Decision status:** APPROVED_CONDITIONAL
 - **Owner approval required:** yes
-- **Approved by/date:** (để trống, chủ sở hữu chưa duyệt)
+- **Approved by/date:** Owner, 2026-10-30 (OWR-2)
 - **Nguồn:** research/ORCHESTRATION_WORKFLOW_RESEARCH.md, research/TECHNOLOGY_EVALUATION.md TE-02, WORKFLOW_ENGINE.md
 
 ## 2. Context
@@ -107,3 +107,13 @@ Chủ sở hữu cần xác nhận chính xác:
 - Spike scheduler vượt ngân sách hoặc không qua chaos test: đánh giá Temporal hoặc LangGraph bọc ngoài.
 - Yêu cầu đổi sang workflow do code định nghĩa.
 - Quy mô vượt xa ~18 agent khiến scheduler tự xây không chịu tải.
+
+## 13. Cập nhật OWR-2 (2026-10-30)
+
+Nguồn: OWR-2 §3 D-003, §1 Q-20, §2 Q-05, Q-11 trong `docs/owner-responses/OWR-2_2026-10-30_phase0_finalization.md`. Các mục 5 đến 12 ở trên là đề xuất gốc; **nếu mâu thuẫn với cập nhật này thì cập nhật này là trạng thái hiện hành**, lịch sử không bị xóa. Việc đồng bộ tài liệu khác do agent khác thực hiện, chưa được xác nhận ở đây.
+
+- Owner giữ chấp thuận về **định hướng** BullMQ + PostgreSQL (Conductor). **Chưa khóa implementation** cho đến khi PoC chứng minh đủ sáu tiêu chí: (1) crash recovery; (2) idempotency; (3) không chạy lặp node ngoài ý muốn; (4) retry an toàn; (5) approval state lưu bền vững; (6) worker không bị giữ trong lúc chờ Owner approval.
+- Nếu PoC không đạt: báo cáo phương án thay thế (Temporal hoặc LangGraph) để Owner quyết định; không tự chuyển.
+- Q-05: approval wait tối đa 540 giây rồi lưu trạng thái và chuyển `WAITING_HUMAN`, không giữ worker (khớp tiêu chí 5 và 6). Q-11: 9 UI node types, 11 engine kinds.
+- PoC chưa chạy; điều kiện chưa đạt.
+- **Validation evidence (trung thực):** mức giữ nguyên **Unverified** (xem `README.md`). Chưa có PoC report hay bằng chứng kiểm thử mới; **chưa có mục nào VERIFIED**. Phase 0 vẫn mở, Phase 1 chưa được cho phép.
